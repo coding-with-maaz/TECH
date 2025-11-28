@@ -145,39 +145,69 @@
         </div>
     </div>
 
-    <!-- Watch/Download Section for Custom Movies -->
-    @if(isset($isCustom) && $isCustom && isset($content) && ($content->watch_link || $content->download_link))
+    <!-- Video Player Section for Custom Movies -->
+    @if(isset($isCustom) && $isCustom && isset($content) && $content->watch_link)
     <div class="bg-white border border-gray-200 p-6 mb-8 dark:!bg-bg-card dark:!border-border-secondary rounded-lg">
-        <h2 class="text-xl font-bold text-gray-900 mb-4 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Watch & Download</h2>
-        <div class="space-y-3">
-            @if($content->watch_link)
-            <div class="flex items-center justify-between p-4 bg-gray-50 dark:!bg-bg-card-hover rounded-lg hover:bg-gray-100 dark:!hover:bg-bg-card transition-colors">
-                <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full border-2 border-red-500 flex items-center justify-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                    </span>
-                    <span class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Watch Online</span>
-                </div>
-                <a href="{{ $content->watch_link }}" target="_blank" class="px-4 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                    Watch Now
-                </a>
+        <h2 class="text-xl font-bold text-gray-900 mb-4 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Watch Movie</h2>
+        
+        <!-- Video Player Container -->
+        <div class="mb-4">
+            <div class="relative w-full bg-black rounded-lg overflow-hidden" style="padding-bottom: 56.25%;">
+                <iframe id="moviePlayer" 
+                        src="{{ $content->watch_link }}" 
+                        class="absolute top-0 left-0 w-full h-full border-0" 
+                        allow="autoplay; fullscreen" 
+                        allowfullscreen
+                        frameborder="0">
+                </iframe>
             </div>
-            @endif
-            
-            @if($content->download_link)
-            <div class="flex items-center justify-between p-4 bg-gray-50 dark:!bg-bg-card-hover rounded-lg hover:bg-gray-100 dark:!hover:bg-bg-card transition-colors">
-                <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full border-2 border-green-500 flex items-center justify-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    </span>
-                    <span class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Download</span>
-                </div>
-                <a href="{{ $content->download_link }}" target="_blank" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                    Download
-                </a>
-            </div>
-            @endif
         </div>
+
+        <!-- Server Selection (if multiple servers available) -->
+        @php
+            $servers = [];
+            if ($content->watch_link) {
+                $servers[] = [
+                    'name' => 'Server 1',
+                    'url' => $content->watch_link,
+                    'quality' => 'HD',
+                    'active' => true
+                ];
+            }
+        @endphp
+        
+        @if(count($servers) > 1)
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-900 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Select Server:</label>
+            <div class="flex flex-wrap gap-2">
+                @foreach($servers as $index => $server)
+                <button onclick="changeServer('{{ $server['url'] }}')" 
+                        class="px-4 py-2 rounded-lg transition-colors {{ $server['active'] ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:!bg-bg-card-hover dark:!text-text-secondary' }}"
+                        style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                    {{ $server['name'] }} @if(isset($server['quality'])) - {{ $server['quality'] }} @endif
+                </button>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Download Links -->
+        @if($content->download_link)
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:!border-border-secondary">
+            <h3 class="text-lg font-bold text-gray-900 mb-3 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Download</h3>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ $content->download_link }}" 
+                   target="_blank" 
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                   style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download Movie
+                </a>
+            </div>
+        </div>
+        @endif
     </div>
     @endif
 
@@ -298,4 +328,15 @@
         display: none;
     }
 </style>
+
+@if(isset($isCustom) && $isCustom && isset($content) && $content->watch_link)
+<script>
+    function changeServer(videoUrl) {
+        const iframe = document.getElementById('moviePlayer');
+        if (iframe) {
+            iframe.src = videoUrl;
+        }
+    }
+</script>
+@endif
 @endsection

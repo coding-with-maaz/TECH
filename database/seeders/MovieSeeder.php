@@ -36,16 +36,18 @@ class MovieSeeder extends Seeder
                 'poster_path' => 'https://via.placeholder.com/500x750?text=Test+Movie+Poster',
                 'backdrop_path' => 'https://via.placeholder.com/1280x720?text=Test+Movie+Backdrop',
                 'watch_link' => 'https://kdfeevideo.rpmvid.com/#heuz8d',
+                'download_link' => 'https://example.com/download/movie.mp4',
                 'sort_order' => 0,
                 'is_featured' => false,
             ]
         );
 
-        // Update watch link if movie already exists
+        // Update watch and download links if movie already exists
         if ($movie->wasRecentlyCreated === false) {
             $movie->watch_link = 'https://kdfeevideo.rpmvid.com/#heuz8d';
+            $movie->download_link = 'https://example.com/download/movie.mp4';
             $movie->save();
-            $this->command->info("Updated watch link for existing movie.");
+            $this->command->info("Updated watch and download links for existing movie.");
         }
 
         // Ensure slug is generated if it doesn't exist
@@ -57,6 +59,7 @@ class MovieSeeder extends Seeder
         $this->command->info("Created/Found test movie: {$movie->title} (ID: {$movie->id})");
         $this->command->info("Movie slug: {$movie->slug}");
         $this->command->info("Watch link: {$movie->watch_link}");
+        $this->command->info("Download link: {$movie->download_link}");
         $this->command->info("✅ Movie seeded successfully!");
         $this->command->info("Movie URL: /movies/{$movie->slug}");
         $this->command->info("Manage Movie: /admin/contents/{$movie->id}");
