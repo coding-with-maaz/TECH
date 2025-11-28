@@ -3,6 +3,74 @@
 @section('title', 'Home - Nazaarabox')
 
 @section('content')
+<!-- Hero Section with Search -->
+<div class="relative w-full mb-12">
+    <div class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-gray-950 dark:via-gray-900 dark:to-black">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 20% 50%, rgba(229, 9, 20, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(229, 9, 20, 0.2) 0%, transparent 50%);"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <div class="text-center">
+                <!-- Main Heading -->
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 800; line-height: 1.2;">
+                    Discover Movies & TV Shows
+                </h1>
+                
+                <!-- Subheading -->
+                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Search thousands of movies and TV series. Watch, download, and enjoy your favorite content.
+                </p>
+                
+                <!-- Search Form -->
+                <form action="{{ route('search') }}" method="GET" class="max-w-2xl mx-auto">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Search for movies, TV shows..." 
+                            class="w-full px-6 py-4 pr-16 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-lg transition-all duration-300"
+                            style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                            autocomplete="off"
+                            value="{{ request('q') }}">
+                        <button 
+                            type="submit" 
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-3 bg-accent hover:bg-accent-light text-white rounded-full font-semibold transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                            style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Quick Links -->
+                <div class="flex flex-wrap justify-center gap-4 mt-8">
+                    <a href="{{ route('movies.index') }}" class="px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-300 backdrop-blur-sm border border-white/20" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                        Popular Movies
+                    </a>
+                    <a href="{{ route('tv-shows.index') }}" class="px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-300 backdrop-blur-sm border border-white/20" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                        TV Shows
+                    </a>
+                    <a href="{{ route('movies.index', ['type' => 'top_rated']) }}" class="px-5 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-300 backdrop-blur-sm border border-white/20" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                        Top Rated
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Wave -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-12 md:h-16 lg:h-20">
+                <path d="M0,120 L60,105 C120,90 240,60 360,50 C480,40 600,50 720,55 C840,60 960,60 1080,55 C1200,50 1320,40 1380,35 L1440,30 L1440,120 L1380,120 C1320,120 1200,120 1080,120 C960,120 840,120 720,120 C600,120 480,120 360,120 C240,120 120,120 60,120 L0,120 Z" fill="white" class="dark:fill-gray-900"></path>
+            </svg>
+        </div>
+    </div>
+</div>
+
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content Area (2 columns on large screens) -->
