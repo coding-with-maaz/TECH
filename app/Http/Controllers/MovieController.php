@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Content;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 
@@ -26,8 +27,20 @@ class MovieController extends Controller
             default => $this->tmdb->getPopularMovies($page),
         };
 
+        // Get custom movie content
+        $customMovies = Content::published()
+            ->whereIn('type', ['movie', 'documentary', 'short_film'])
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('release_date', 'desc')
+            ->get();
+
+        // Get top rated movies for sidebar
+        $topRatedMovies = $this->tmdb->getTopRatedMovies(1);
+
         return view('movies.index', [
             'movies' => $movies['results'] ?? [],
+            'customMovies' => $customMovies,
+            'topRatedMovies' => $topRatedMovies['results'] ?? [],
             'currentPage' => $movies['page'] ?? 1,
             'totalPages' => $movies['total_pages'] ?? 1,
             'type' => $type,
