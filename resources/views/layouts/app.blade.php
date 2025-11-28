@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Nazaarabox - Movies & TV Shows')</title>
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                    },
                     colors: {
                         'bg-primary': '#0D0D0D',
                         'bg-secondary': '#181818',
@@ -142,11 +149,38 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #FFFFFF;
             color: #1F1F1F;
             min-height: 100vh;
             transition: background 0.3s ease, color 0.3s ease;
+            font-weight: 400;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+        
+        p {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            line-height: 1.7;
+        }
+        
+        a {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+        
+        button {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
         }
         
         body.dark-mode {
@@ -252,22 +286,23 @@
     <nav class="sticky top-0 z-50 bg-bg-primary/95 backdrop-blur-lg shadow-lg border-b border-border-primary dark-mode:bg-bg-primary/95 dark-mode:border-border-primary">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <a href="{{ route('home') }}" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors">
+                <a href="{{ route('home') }}" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
                     Nazaarabox
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
-                    <li><a href="{{ route('home') }}" class="text-text-primary hover:text-accent transition-colors font-medium dark-mode:text-text-primary">Home</a></li>
-                    <li><a href="{{ route('movies.index') }}" class="text-text-primary hover:text-accent transition-colors font-medium dark-mode:text-text-primary">Movies</a></li>
-                    <li><a href="{{ route('tv-shows.index') }}" class="text-text-primary hover:text-accent transition-colors font-medium dark-mode:text-text-primary">TV Shows</a></li>
-                    <li><a href="#" class="text-text-primary hover:text-accent transition-colors font-medium dark-mode:text-text-primary">Upcoming</a></li>
-                    <li><a href="#" class="text-text-primary hover:text-accent transition-colors font-medium dark-mode:text-text-primary">About Us</a></li>
+                    <li><a href="{{ route('home') }}" class="text-text-primary hover:text-accent transition-colors font-semibold dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
+                    <li><a href="{{ route('movies.index') }}" class="text-text-primary hover:text-accent transition-colors font-semibold dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Movies</a></li>
+                    <li><a href="{{ route('tv-shows.index') }}" class="text-text-primary hover:text-accent transition-colors font-semibold dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">TV Shows</a></li>
+                    <li><a href="#" class="text-text-primary hover:text-accent transition-colors font-semibold dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Upcoming</a></li>
+                    <li><a href="#" class="text-text-primary hover:text-accent transition-colors font-semibold dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
                 </ul>
                 <form action="{{ route('search') }}" method="GET" class="hidden lg:flex items-center gap-2">
                     <input type="text" name="q" 
                            class="px-4 py-2 w-64 rounded-full bg-bg-card border border-border-primary text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary" 
                            placeholder="Search movies or TV shows..." 
-                           value="{{ request('q') }}">
-                    <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all hover:scale-105 hover:shadow-accent">
+                           value="{{ request('q') }}"
+                           style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Search
                     </button>
                 </form>
@@ -311,7 +346,7 @@
                         </svg>
                     </a>
                 </div>
-                <p class="text-text-secondary text-sm dark-mode:text-text-secondary">
+                <p class="text-text-secondary text-sm dark-mode:text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                     Copyright © {{ date('Y') }} - Nazaarabox
                 </p>
             </div>

@@ -62,23 +62,23 @@
                         
                         <!-- Card Content -->
                         <div class="p-4 bg-bg-card dark-mode:bg-bg-card">
-                            <h2 class="text-lg md:text-xl font-bold text-text-primary mb-2 group-hover:text-accent transition-colors duration-300 dark-mode:text-text-primary">
+                            <h2 class="text-lg md:text-xl font-bold text-text-primary mb-2 group-hover:text-accent transition-colors duration-300 dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3;">
                                 {{ $item['title'] }}
                                 @if($item['type'] === 'movie')
-                                    <span class="text-base font-normal text-text-secondary dark-mode:text-text-secondary">(Movie)</span>
+                                    <span class="text-base font-normal text-text-secondary dark-mode:text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">(Movie)</span>
                                 @else
-                                    <span class="text-base font-normal text-text-secondary dark-mode:text-text-secondary">(TV Show)</span>
+                                    <span class="text-base font-normal text-text-secondary dark-mode:text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">(TV Show)</span>
                                 @endif
                             </h2>
                             
                             @if(!empty($item['overview']))
-                            <p class="text-text-tertiary text-sm mb-3 line-clamp-2 dark-mode:text-text-tertiary">
+                            <p class="text-text-tertiary text-sm mb-3 line-clamp-2 dark-mode:text-text-tertiary" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
                                 {{ $item['overview'] }}
                             </p>
                             @endif
                             
                             @if($item['date'])
-                            <p class="text-text-secondary text-sm font-medium dark-mode:text-text-secondary">
+                            <p class="text-text-secondary text-sm font-medium dark-mode:text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                                 {{ \Carbon\Carbon::parse($item['date'])->format('F d, Y') }}
                             </p>
                             @endif
@@ -90,23 +90,23 @@
 
             <!-- Pagination -->
             <div class="mt-8 flex justify-center items-center gap-2 flex-wrap">
-                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary">
+                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                     Previous
                 </a>
-                <a href="#" class="px-4 py-2 bg-gradient-primary text-white rounded-lg shadow-accent font-semibold">
+                <a href="#" class="px-4 py-2 bg-gradient-primary text-white rounded-lg shadow-accent font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                     1
                 </a>
-                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary">
+                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                     2
                 </a>
-                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary">
+                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                     3
                 </a>
                 <span class="text-text-secondary px-2 dark-mode:text-text-secondary">…</span>
-                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary">
+                <a href="#" class="px-4 py-2 bg-bg-card hover:bg-bg-card-hover text-text-primary rounded-lg border border-border-primary transition-all dark-mode:bg-bg-card dark-mode:border-border-primary dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                     74
                 </a>
-                <a href="#" class="px-4 py-2 bg-gradient-primary hover:bg-accent-light text-white rounded-lg shadow-accent font-semibold transition-all">
+                <a href="#" class="px-4 py-2 bg-gradient-primary hover:bg-accent-light text-white rounded-lg shadow-accent font-semibold transition-all" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                     Next →
                 </a>
             </div>
@@ -116,15 +116,15 @@
         <div class="lg:col-span-1">
             <!-- Telegram Promotion Card -->
             <div class="bg-bg-card rounded-xl border border-border-secondary p-6 mb-6 sticky top-24 dark-mode:bg-bg-card dark-mode:border-border-secondary">
-                <h3 class="text-xl font-bold text-text-primary mb-4 text-center">Join our Telegram Channel & Group</h3>
+                <h3 class="text-xl font-bold text-text-primary mb-4 text-center" style="font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.02em;">Join our Telegram Channel & Group</h3>
                 <div class="flex flex-col items-center justify-center space-y-4">
                     <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                         <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c.172 0 .31.139.31.311v1.378c0 .172-.138.311-.31.311h-1.378c-.172 0-.311-.139-.311-.311V8.472c0-.172.139-.311.311-.311h1.378zm-3.378 0c.172 0 .311.139.311.311v1.378c0 .172-.139.311-.311.311H12.81c-.172 0-.311-.139-.311-.311V8.472c0-.172.139-.311.311-.311h1.374zm-3.378 0c.172 0 .311.139.311.311v1.378c0 .172-.139.311-.311.311H9.432c-.172 0-.311-.139-.311-.311V8.472c0-.172.139-.311.311-.311h1.374zm-3.378 0c.172 0 .311.139.311.311v1.378c0 .172-.139.311-.311.311H6.054c-.172 0-.311-.139-.311-.311V8.472c0-.172.139-.311.311-.311h1.374zm12.756 2.322H5.184c-.172 0-.311.139-.311.311v1.378c0 .172.139.311.311.311h13.188c.172 0 .311-.139.311-.311v-1.378c0-.172-.139-.311-.311-.311z"/>
                         </svg>
                     </div>
-                    <p class="text-text-primary font-semibold text-lg">Telegram</p>
-                    <a href="#" class="w-full px-6 py-3 bg-gradient-primary hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105 hover:shadow-accent text-center">
+                    <p class="text-text-primary font-semibold text-lg" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Telegram</p>
+                    <a href="#" class="w-full px-6 py-3 bg-gradient-primary hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105 hover:shadow-accent text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Join Channel
                     </a>
                 </div>
@@ -132,7 +132,7 @@
 
             <!-- Popular Section -->
             <div class="bg-bg-card rounded-xl border border-border-secondary p-6 dark-mode:bg-bg-card dark-mode:border-border-secondary">
-                <h3 class="text-xl font-bold text-text-primary mb-4 border-b border-border-primary pb-3 dark-mode:text-text-primary dark-mode:border-border-primary">Popular Now</h3>
+                <h3 class="text-xl font-bold text-text-primary mb-4 border-b border-border-primary pb-3 dark-mode:text-text-primary dark-mode:border-border-primary" style="font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.02em;">Popular Now</h3>
                 <div class="space-y-4">
                     @if(!empty($topRatedMovies))
                         @foreach(array_slice($topRatedMovies, 0, 5) as $movie)
@@ -144,10 +144,10 @@
                                      onerror="this.src='https://via.placeholder.com/185x278?text=No+Image'">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h4 class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2 mb-1 dark-mode:text-text-primary">
+                                <h4 class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2 mb-1 dark-mode:text-text-primary" style="font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.4;">
                                     {{ $movie['title'] ?? 'Unknown' }}
                                 </h4>
-                                <p class="text-text-secondary text-xs mb-1 dark-mode:text-text-secondary">
+                                <p class="text-text-secondary text-xs mb-1 dark-mode:text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                                     {{ \Carbon\Carbon::parse($movie['release_date'] ?? '')->format('Y') ?? 'N/A' }}
                                 </p>
                                 <div class="flex items-center gap-1">
