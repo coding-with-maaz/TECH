@@ -7,9 +7,10 @@ A modern Laravel-based website for browsing movies and TV shows using The Movie 
 - 🎬 Browse popular, top-rated, now playing, and upcoming movies
 - 📺 Explore popular and top-rated TV shows
 - 🔍 Search for movies and TV shows
-- 📱 Responsive design with modern UI
-- 🎨 Beautiful gradient-based color scheme
+- 📱 Responsive design with modern UI using Tailwind CSS
+- 🎨 Beautiful dark theme with Netflix-style red accent
 - ⚡ Fast API responses with caching
+- 🎯 SEO optimized
 
 ## Requirements
 
@@ -22,8 +23,8 @@ A modern Laravel-based website for browsing movies and TV shows using The Movie 
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd Nazaarabox
+git clone https://github.com/coding-with-maaz/SEO_BASED_WEBSITE.git
+cd SEO_BASED_WEBSITE
 ```
 
 2. Install dependencies:
@@ -47,7 +48,12 @@ TMDB_API_KEY=your_api_key_here
 TMDB_ACCESS_TOKEN=your_access_token_here
 ```
 
-6. Start the development server:
+6. Run migrations:
+```bash
+php artisan migrate
+```
+
+7. Start the development server:
 ```bash
 php artisan serve
 ```
@@ -77,9 +83,12 @@ app/
     └── TmdbService.php             # TMDB API service class
 
 resources/
+├── css/
+│   ├── theme.css                  # Theme color constants
+│   └── components.css             # Reusable component styles
 └── views/
     ├── layouts/
-    │   └── app.blade.php          # Main layout
+    │   └── app.blade.php          # Main layout with Tailwind CSS
     ├── home.blade.php             # Home page
     ├── movies/
     │   ├── index.blade.php        # Movies listing
@@ -111,8 +120,18 @@ The application uses Laravel's cache system to cache TMDB API responses for 1 ho
 
 - **Laravel 12** - PHP framework
 - **TMDB API** - Movie and TV show data
+- **Tailwind CSS** - Utility-first CSS framework (via CDN)
 - **Blade** - Templating engine
-- **CSS3** - Modern styling with gradients and animations
+- **CSS3** - Custom theme with dark neutral + red accent
+
+## Design Features
+
+- Dark theme with professional color scheme
+- Netflix-style red accent color (#E50914)
+- Responsive grid layouts
+- Smooth hover animations
+- Card-based UI with proper aspect ratios
+- Modern typography and spacing
 
 ## License
 
