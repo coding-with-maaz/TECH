@@ -38,7 +38,8 @@
         if (!empty($customMovies)) {
             foreach ($customMovies as $content) {
                 $allMovies[] = [
-                    'id' => 'custom_' . $content->id,
+                    'id' => $content->slug ?? ('custom_' . $content->id), // Use slug if available
+                    'slug' => $content->slug,
                     'title' => $content->title,
                     'release_date' => $content->release_date ? $content->release_date->format('Y-m-d') : null,
                     'backdrop_path' => $content->backdrop_path,
@@ -81,7 +82,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         @foreach($allMovies as $movie)
         <article class="group relative bg-white overflow-hidden cursor-pointer dark:!bg-bg-card transition-all duration-300">
-            <a href="{{ ($movie['is_custom'] ?? false) ? '#' : route('movies.show', $movie['id']) }}" class="block">
+            <a href="{{ route('movies.show', $movie['id']) }}" class="block">
                 <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                 <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                     @if($movie['is_custom'] ?? false)

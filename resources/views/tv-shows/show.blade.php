@@ -15,14 +15,14 @@
         $duration = $content->duration;
         $country = $content->country;
         $type = ucfirst(str_replace('_', ' ', $content->type));
-        $episodeCount = $content->episode_count ?? $content->episodes()->count();
         $director = $content->director;
         $genres = $content->genres ?? [];
         $cast = $content->cast ?? [];
         $description = $content->description;
         $posterPath = $content->poster_path;
-        $episodes = $content->episodes;
+        $episodes = $content->episodes ?? collect([]);
         $currentEpisodes = $episodes->count();
+        $episodeCount = $content->episode_count ?? $currentEpisodes;
     } else {
         $title = $tvShow['name'] ?? 'Unknown';
         $originalTitle = $tvShow['original_name'] ?? $title;
@@ -239,7 +239,16 @@
             @endforeach
         </div>
         @else
-        <p class="text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">No episodes available yet.</p>
+        <div class="text-center py-12">
+            <p class="text-gray-600 dark:!text-text-secondary text-lg mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                No episodes available yet.
+            </p>
+            @if(isset($isCustom) && $isCustom && isset($content))
+            <p class="text-gray-500 dark:!text-text-tertiary text-sm" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                Episodes will appear here once they are added and published.
+            </p>
+            @endif
+        </div>
         @endif
     </div>
 

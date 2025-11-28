@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Content extends Model
 {
@@ -12,6 +13,7 @@ class Content extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'type',
         'content_type',
@@ -143,5 +145,66 @@ class Content extends Model
     public function scopeOfType($query, $type)
     {
         return $query->where('type', $type);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($content) {
+            if (empty($content->slug)) {
+                $content->slug = $content->generateUniqueSlug();
+            }
+        });
+
+        static::updating(function ($content) {
+            if ($content->isDirty('title') && empty($content->slug)) {
+                $content->slug = $content->generateUniqueSlug();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug from the title.
+     */
+    public function generateUniqueSlug()
+    {
+        $slug = Str::slug($this->title);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id ?? 0)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    /**
+     * Find content by slug or ID (for backward compatibility).
+     */
+    public static function findBySlugOrId($identifier)
+    {
+        // Try to find by slug first
+        $content = static::where('slug', $identifier)->first();
+        
+        if (!$content) {
+            // Try to find by ID as fallback
+            $content = static::find($identifier);
+        }
+        
+        return $content;
     }
 }

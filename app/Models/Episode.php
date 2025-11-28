@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Episode extends Model
 {
@@ -15,6 +16,7 @@ class Episode extends Model
         'content_id',
         'episode_number',
         'title',
+        'slug',
         'description',
         'thumbnail_path',
         'air_date',
@@ -63,5 +65,45 @@ class Episode extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('episode_number', 'asc');
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($episode) {
+            if (empty($episode->slug)) {
+                $episode->slug = $episode->generateUniqueSlug();
+            }
+        });
+
+        static::updating(function ($episode) {
+            if ($episode->isDirty('title') && empty($episode->slug)) {
+                $episode->slug = $episode->generateUniqueSlug();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug from the title.
+     */
+    public function generateUniqueSlug()
+    {
+        $slug = Str::slug($this->title);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)
+            ->where('content_id', $this->content_id)
+            ->where('id', '!=', $this->id ?? 0)
+            ->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
 }

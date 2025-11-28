@@ -15,7 +15,8 @@
                     foreach ($customContent as $content) {
                         $allContent[] = [
                             'type' => $content->type === 'tv_show' ? 'tv' : 'movie',
-                            'id' => 'custom_' . $content->id,
+                            'id' => $content->slug ?? ('custom_' . $content->id), // Use slug if available
+                            'slug' => $content->slug,
                             'title' => $content->title,
                             'date' => $content->release_date ? $content->release_date->format('Y-m-d') : null,
                             'rating' => $content->rating ?? 0,
@@ -79,7 +80,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach(array_slice($allContent, 0, 20) as $item)
                 <article class="group relative bg-white overflow-hidden cursor-pointer dark:!bg-bg-card transition-all duration-300">
-                    <a href="{{ ($item['is_custom'] ?? false) ? '#' : ($item['type'] === 'movie' ? route('movies.show', $item['id']) : route('tv-shows.show', $item['id'])) }}" class="block">
+                    <a href="{{ $item['type'] === 'movie' ? route('movies.show', $item['id']) : route('tv-shows.show', $item['id']) }}" class="block">
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                             @if($item['is_custom'] ?? false)

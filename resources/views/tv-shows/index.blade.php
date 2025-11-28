@@ -30,7 +30,8 @@
                 if (!empty($customTvShows)) {
                     foreach ($customTvShows as $content) {
                         $allTvShows[] = [
-                            'id' => 'custom_' . $content->id,
+                            'id' => $content->slug ?? ('custom_' . $content->id), // Use slug if available
+                            'slug' => $content->slug,
                             'name' => $content->title,
                             'first_air_date' => $content->release_date ? $content->release_date->format('Y-m-d') : null,
                             'backdrop_path' => $content->backdrop_path,
@@ -73,7 +74,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($allTvShows as $tvShow)
                 <article class="group relative bg-white overflow-hidden cursor-pointer dark:!bg-bg-card transition-all duration-300">
-                    <a href="{{ ($tvShow['is_custom'] ?? false) ? '#' : route('tv-shows.show', $tvShow['id']) }}" class="block">
+                    <a href="{{ route('tv-shows.show', $tvShow['id']) }}" class="block">
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                             @if($tvShow['is_custom'] ?? false)

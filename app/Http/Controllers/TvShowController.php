@@ -45,12 +45,32 @@ class TvShowController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        // Check if it's a custom content
-        if (str_starts_with($id, 'custom_')) {
-            $contentId = str_replace('custom_', '', $id);
-            $content = Content::with(['episodes.servers'])->findOrFail($contentId);
+        // First, try to find custom content by slug
+        $content = Content::whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+            ->where(function($query) use ($slug) {
+                $query->where('slug', $slug)
+                      ->orWhere(function($q) use ($slug) {
+                          // Backward compatibility: check if it's an old custom_ format
+                          if (str_starts_with($slug, 'custom_')) {
+                              $contentId = str_replace('custom_', '', $slug);
+                              $q->where('id', $contentId);
+                          }
+                      });
+            })
+            ->first();
+
+        if ($content) {
+            // Load published episodes with servers
+            $episodes = $content->episodes()
+                ->where('is_published', true)
+                ->with('servers')
+                ->orderBy('episode_number')
+                ->get();
+            
+            // Set episodes as a collection attribute
+            $content->setRelation('episodes', $episodes);
             
             // Get recommended movies for custom content
             $recommendedMovies = $this->tmdb->getPopularMovies(1);
@@ -62,26 +82,39 @@ class TvShowController extends Controller
             ]);
         }
 
-        $tvShow = $this->tmdb->getTvShowDetails($id);
+        // If not found as custom content, try as TMDB ID (numeric)
+        if (is_numeric($slug)) {
+            $tvShow = $this->tmdb->getTvShowDetails($slug);
 
-        if (!$tvShow) {
-            abort(404);
+            if ($tvShow) {
+                // Check if there's a custom content linked to this TMDB ID
+                $customContent = Content::where('tmdb_id', $slug)
+                    ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+                    ->first();
+                
+                // Load published episodes only if custom content exists
+                if ($customContent) {
+                    $episodes = $customContent->episodes()
+                        ->where('is_published', true)
+                        ->with('servers')
+                        ->orderBy('episode_number')
+                        ->get();
+                    $customContent->setRelation('episodes', $episodes);
+                }
+
+                // Get recommended movies
+                $recommendedMovies = $this->tmdb->getPopularMovies(1);
+
+                return view('tv-shows.show', [
+                    'tvShow' => $tvShow,
+                    'content' => $customContent,
+                    'isCustom' => false,
+                    'recommendedMovies' => $recommendedMovies['results'] ?? [],
+                ]);
+            }
         }
 
-        // Check if there's a custom content linked to this TMDB ID
-        $customContent = Content::where('tmdb_id', $id)
-            ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
-            ->with(['episodes.servers'])
-            ->first();
-
-        // Get recommended movies (use popular movies as recommendations)
-        $recommendedMovies = $this->tmdb->getPopularMovies(1);
-
-        return view('tv-shows.show', [
-            'tvShow' => $tvShow,
-            'content' => $customContent,
-            'isCustom' => false,
-            'recommendedMovies' => $recommendedMovies['results'] ?? [],
-        ]);
+        // Not found
+        abort(404);
     }
 }
