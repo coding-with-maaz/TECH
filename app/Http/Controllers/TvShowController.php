@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Content;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 
@@ -24,8 +25,20 @@ class TvShowController extends Controller
             default => $this->tmdb->getPopularTvShows($page),
         };
 
+        // Get custom TV show content
+        $customTvShows = Content::published()
+            ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('release_date', 'desc')
+            ->get();
+
+        // Get top rated TV shows for sidebar
+        $topRatedTvShows = $this->tmdb->getTopRatedTvShows(1);
+
         return view('tv-shows.index', [
             'tvShows' => $tvShows['results'] ?? [],
+            'customTvShows' => $customTvShows,
+            'topRatedTvShows' => $topRatedTvShows['results'] ?? [],
             'currentPage' => $tvShows['page'] ?? 1,
             'totalPages' => $tvShows['total_pages'] ?? 1,
             'type' => $type,

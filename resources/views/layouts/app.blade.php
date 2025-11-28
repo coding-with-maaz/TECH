@@ -549,6 +549,44 @@
         body.dark-mode .mt-8 span {
             color: #B3B3B3 !important;
         }
+        
+        /* Filter tabs styling - Light mode */
+        .flex-wrap a.bg-white {
+            background-color: #FFFFFF !important;
+            color: #1F1F1F !important;
+            border-color: #E0E0E0 !important;
+        }
+        
+        .flex-wrap a.bg-white:hover {
+            background-color: #F5F5F5 !important;
+        }
+        
+        .flex-wrap a.bg-accent {
+            background-color: #E50914 !important;
+            color: #FFFFFF !important;
+            border-color: #E50914 !important;
+        }
+        
+        /* Filter tabs styling - Dark mode */
+        html.dark .flex-wrap a.bg-white,
+        body.dark-mode .flex-wrap a.bg-white {
+            background-color: #1F1F1F !important;
+            color: #B3B3B3 !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        html.dark .flex-wrap a.bg-white:hover,
+        body.dark-mode .flex-wrap a.bg-white:hover {
+            background-color: #2A2A2A !important;
+            color: #FFFFFF !important;
+        }
+        
+        html.dark .flex-wrap a.bg-accent,
+        body.dark-mode .flex-wrap a.bg-accent {
+            background-color: #E50914 !important;
+            color: #FFFFFF !important;
+            border-color: #E50914 !important;
+        }
     </style>
 </head>
 <body>
