@@ -345,85 +345,56 @@
         </div>
     </div>
 
-    <!-- Cast Section -->
-    @if(!empty($cast))
+    <!-- Cast Section - Only show for database content -->
+    @if(isset($isCustom) && $isCustom && !empty($cast))
     <div class="mb-8">
         <h3 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Cast</h3>
         <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            @if(isset($isCustom) && $isCustom)
+            @php
+                $castList = is_array($cast) ? $cast : [];
+            @endphp
+            @foreach(array_slice($castList, 0, 10) as $castMember)
                 @php
-                    $castList = is_array($cast) ? $cast : [];
-                @endphp
-                @foreach(array_slice($castList, 0, 10) as $castMember)
-                    @php
-                        $castName = is_array($castMember) ? ($castMember['name'] ?? $castMember) : $castMember;
-                        $castCharacter = is_array($castMember) ? ($castMember['character'] ?? '') : '';
-                        $profilePath = is_array($castMember) && !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
-                        $profileImageUrl = null;
-                        if ($profilePath) {
-                            // Check if it's a TMDB path (starts with /) or content_type is tmdb
-                            if (str_starts_with($profilePath, '/') || ($content->content_type ?? 'custom') === 'tmdb') {
-                                // Use TMDB service for TMDB paths
-                                $profileImageUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
-                            } elseif (str_starts_with($profilePath, 'http')) {
-                                // Full URL
-                                $profileImageUrl = $profilePath;
-                            } else {
-                                // Local storage
-                                $profileImageUrl = asset('storage/' . $profilePath);
-                            }
+                    $castName = is_array($castMember) ? ($castMember['name'] ?? $castMember) : $castMember;
+                    $castCharacter = is_array($castMember) ? ($castMember['character'] ?? '') : '';
+                    $profilePath = is_array($castMember) && !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
+                    $profileImageUrl = null;
+                    if ($profilePath) {
+                        // For database content, check if it's a full URL or use directly
+                        if (str_starts_with($profilePath, 'http')) {
+                            // Full URL
+                            $profileImageUrl = $profilePath;
+                        } elseif (str_starts_with($profilePath, '/') || ($content->content_type ?? 'custom') === 'tmdb') {
+                            // TMDB path - use TMDB service
+                            $profileImageUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
+                        } else {
+                            // Use the path directly (assumed to be a full URL or relative path)
+                            $profileImageUrl = $profilePath;
                         }
-                    @endphp
-                    <div class="min-w-[100px] text-center flex-shrink-0">
-                        @if($profileImageUrl)
-                        <img src="{{ $profileImageUrl }}" 
-                             alt="{{ $castName }}" 
-                             class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 items-center justify-center hidden mx-auto">
-                            <span class="text-gray-400 text-xs">No Photo</span>
-                        </div>
-                        @else
-                        <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 flex items-center justify-center mx-auto">
-                            <span class="text-gray-400 text-xs">No Photo</span>
-                        </div>
-                        @endif
-                        <p class="text-sm font-medium text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castName }}</p>
-                        @if($castCharacter)
-                        <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                            {{ $castCharacter }}
-                        </p>
-                        @endif
+                    }
+                @endphp
+                <div class="min-w-[100px] text-center flex-shrink-0">
+                    @if($profileImageUrl)
+                    <img src="{{ $profileImageUrl }}" 
+                         alt="{{ $castName }}" 
+                         class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 items-center justify-center hidden mx-auto">
+                        <span class="text-gray-400 text-xs">No Photo</span>
                     </div>
-                @endforeach
-            @else
-                @foreach(array_slice($cast, 0, 10) as $castMember)
-                    @php
-                        $profilePath = !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
-                    @endphp
-                    <div class="min-w-[100px] text-center flex-shrink-0">
-                        @if($profilePath)
-                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185') }}" 
-                             alt="{{ $castMember['name'] ?? 'Unknown' }}" 
-                             class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
-                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                        <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 items-center justify-center hidden mx-auto">
-                            <span class="text-gray-400 text-xs">No Photo</span>
-                        </div>
-                        @else
-                        <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 flex items-center justify-center mx-auto">
-                            <span class="text-gray-400 text-xs">No Photo</span>
-                        </div>
-                        @endif
-                        <p class="text-sm font-medium text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castMember['name'] ?? 'Unknown' }}</p>
-                        @if(isset($castMember['character']))
-                        <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                            {{ $castMember['character'] }}
-                        </p>
-                        @endif
+                    @else
+                    <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 flex items-center justify-center mx-auto">
+                        <span class="text-gray-400 text-xs">No Photo</span>
                     </div>
-                @endforeach
-            @endif
+                    @endif
+                    <p class="text-sm font-medium text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castName }}</p>
+                    @if($castCharacter)
+                    <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        {{ $castCharacter }}
+                    </p>
+                    @endif
+                </div>
+            @endforeach
         </div>
     </div>
     @endif

@@ -52,6 +52,9 @@
             <button onclick="switchTab('details')" id="tab-details" class="tab-button px-6 py-3 font-semibold text-accent border-b-2 border-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                 Content Details
             </button>
+            <button onclick="switchTab('cast')" id="tab-cast" class="tab-button px-6 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-accent dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                Cast Management
+            </button>
             <button onclick="switchTab('servers')" id="tab-servers" class="tab-button px-6 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-accent dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                 Servers Management
             </button>
@@ -249,6 +252,28 @@
         </div>
     </div>
 
+    <!-- Cast Management Tab -->
+    <div id="panel-cast" class="tab-panel hidden">
+        <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Cast Management
+                </h2>
+                <button onclick="showAddCastModal()" class="px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    + Add Cast Member
+                </button>
+            </div>
+
+            <div id="cast-list" class="space-y-4">
+                <!-- Cast members will be loaded here -->
+            </div>
+
+            <div id="cast-empty" class="text-center py-12 text-gray-500 dark:!text-text-secondary">
+                <p style="font-family: 'Poppins', sans-serif; font-weight: 400;">No cast members added yet. Click "Add Cast Member" to get started.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Servers Management Tab -->
     <div id="panel-servers" class="tab-panel hidden">
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
@@ -439,7 +464,314 @@
     </div>
 </div>
 
+<!-- Add Cast Member Modal -->
+<div id="add-cast-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:!bg-bg-card rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 dark:!border-border-secondary">
+            <h3 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                Add Cast Member
+            </h3>
+        </div>
+        <form id="add-cast-form" onsubmit="addCastMember(event)" class="p-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="add-cast-name" name="name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Character Name
+                    </label>
+                    <input type="text" id="add-cast-character" name="character"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Profile Image URL
+                    </label>
+                    <input type="text" id="add-cast-profile" name="profile_path" placeholder="https://..."
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="text-xs text-gray-500 dark:!text-text-secondary mt-1">Enter full URL for profile image</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Order
+                    </label>
+                    <input type="number" id="add-cast-order" name="order" min="0"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="text-xs text-gray-500 dark:!text-text-secondary mt-1">Lower numbers appear first</p>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="flex-1 px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Add Cast Member
+                </button>
+                <button type="button" onclick="hideAddCastModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg transition-colors dark:!bg-bg-card-hover dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Cast Member Modal -->
+<div id="edit-cast-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:!bg-bg-card rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 dark:!border-border-secondary">
+            <h3 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                Edit Cast Member
+            </h3>
+        </div>
+        <form id="edit-cast-form" onsubmit="updateCastMember(event)" class="p-6">
+            <input type="hidden" id="edit-cast-id" name="cast_id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="edit-cast-name" name="name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Character Name
+                    </label>
+                    <input type="text" id="edit-cast-character" name="character"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Profile Image URL
+                    </label>
+                    <input type="text" id="edit-cast-profile" name="profile_path" placeholder="https://..."
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="text-xs text-gray-500 dark:!text-text-secondary mt-1">Enter full URL for profile image</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Order
+                    </label>
+                    <input type="number" id="edit-cast-order" name="order" min="0"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="text-xs text-gray-500 dark:!text-text-secondary mt-1">Lower numbers appear first</p>
+                </div>
+            </div>
+            <div class="mt-6 flex gap-3">
+                <button type="submit" class="flex-1 px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Update Cast Member
+                </button>
+                <button type="button" onclick="hideEditCastModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg transition-colors dark:!bg-bg-card-hover dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+const contentId = {{ $content->id }};
+let currentCast = [];
+
+// Load cast on page load and when cast tab is opened
+function loadCast() {
+    fetch(`/admin/contents/${contentId}/cast`, {
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        currentCast = data.cast || [];
+        renderCast();
+    })
+    .catch(error => {
+        console.error('Error loading cast:', error);
+    });
+}
+
+// Render cast list
+function renderCast() {
+    const castList = document.getElementById('cast-list');
+    const castEmpty = document.getElementById('cast-empty');
+    
+    if (currentCast.length === 0) {
+        castList.innerHTML = '';
+        castEmpty.classList.remove('hidden');
+        return;
+    }
+    
+    castEmpty.classList.add('hidden');
+    castList.innerHTML = currentCast.map((member, index) => `
+        <div class="flex items-center gap-4 p-4 bg-gray-50 dark:!bg-bg-card-hover rounded-lg border border-gray-200 dark:!border-border-secondary">
+            <div class="flex-shrink-0">
+                ${member.profile_path ? 
+                    `<img src="${member.profile_path}" alt="${member.name}" class="w-16 h-20 object-cover rounded" onerror="this.src='https://via.placeholder.com/64x80?text=No+Photo'">` :
+                    `<div class="w-16 h-20 bg-gray-200 dark:!bg-gray-800 rounded flex items-center justify-center">
+                        <span class="text-gray-400 text-xs">No Photo</span>
+                    </div>`
+                }
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    ${member.name}
+                </h4>
+                ${member.character ? `<p class="text-sm text-gray-600 dark:!text-text-secondary mt-1">${member.character}</p>` : ''}
+                <p class="text-xs text-gray-500 dark:!text-text-secondary mt-1">Order: ${member.order ?? index}</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="showEditCastModal('${member.id}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Edit
+                </button>
+                <button onclick="deleteCastMember('${member.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Add cast member
+function addCastMember(event) {
+    event.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('add-cast-name').value,
+        character: document.getElementById('add-cast-character').value,
+        profile_path: document.getElementById('add-cast-profile').value,
+        order: document.getElementById('add-cast-order').value || currentCast.length,
+    };
+    
+    fetch(`/admin/contents/${contentId}/cast`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentCast = data.cast || [];
+            renderCast();
+            hideAddCastModal();
+        } else {
+            alert(data.message || 'Error adding cast member');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding cast member');
+    });
+}
+
+// Update cast member
+function updateCastMember(event) {
+    event.preventDefault();
+    
+    const castId = document.getElementById('edit-cast-id').value;
+    const formData = {
+        name: document.getElementById('edit-cast-name').value,
+        character: document.getElementById('edit-cast-character').value,
+        profile_path: document.getElementById('edit-cast-profile').value,
+        order: document.getElementById('edit-cast-order').value,
+    };
+    
+    fetch(`/admin/contents/${contentId}/cast/${castId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentCast = data.cast || [];
+            renderCast();
+            hideEditCastModal();
+        } else {
+            alert(data.message || 'Error updating cast member');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating cast member');
+    });
+}
+
+// Delete cast member
+function deleteCastMember(castId) {
+    if (!confirm('Are you sure you want to delete this cast member?')) {
+        return;
+    }
+    
+    fetch(`/admin/contents/${contentId}/cast/${castId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            currentCast = data.cast || [];
+            renderCast();
+        } else {
+            alert(data.message || 'Error deleting cast member');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting cast member');
+    });
+}
+
+// Show edit cast modal
+function showEditCastModal(castId) {
+    const member = currentCast.find(m => m.id === castId);
+    if (!member) return;
+    
+    document.getElementById('edit-cast-id').value = member.id;
+    document.getElementById('edit-cast-name').value = member.name || '';
+    document.getElementById('edit-cast-character').value = member.character || '';
+    document.getElementById('edit-cast-profile').value = member.profile_path || '';
+    document.getElementById('edit-cast-order').value = member.order || 0;
+    
+    document.getElementById('edit-cast-modal').classList.remove('hidden');
+}
+
+// Hide modals
+function showAddCastModal() {
+    document.getElementById('add-cast-modal').classList.remove('hidden');
+}
+
+function hideAddCastModal() {
+    document.getElementById('add-cast-modal').classList.add('hidden');
+    document.getElementById('add-cast-form').reset();
+}
+
+function hideEditCastModal() {
+    document.getElementById('edit-cast-modal').classList.add('hidden');
+    document.getElementById('edit-cast-form').reset();
+}
+
+// Load cast when cast tab is clicked
+const originalSwitchTab = window.switchTab;
+window.switchTab = function(tab) {
+    originalSwitchTab(tab);
+    if (tab === 'cast') {
+        loadCast();
+    }
+};
+
 // Tab switching
 function switchTab(tab) {
     document.querySelectorAll('.tab-panel').forEach(panel => {
@@ -456,6 +788,11 @@ function switchTab(tab) {
     const activeTab = document.getElementById('tab-' + tab);
     activeTab.classList.remove('text-gray-600', 'border-transparent', 'dark:!text-text-secondary');
     activeTab.classList.add('text-accent', 'border-accent');
+    
+    // Load cast when cast tab is opened
+    if (tab === 'cast') {
+        loadCast();
+    }
 }
 
 // Server modals

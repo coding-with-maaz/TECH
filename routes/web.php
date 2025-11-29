@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EpisodeController;
 use App\Http\Controllers\Admin\EpisodeServerController;
 use App\Http\Controllers\Admin\ServerController;
+use App\Http\Controllers\Admin\CastController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -49,21 +50,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
     Route::post('contents/tmdb/import', [ContentController::class, 'importFromTmdb'])->name('contents.tmdb.import');
     
-    // Content server management routes
-    Route::prefix('contents/{content}')->group(function () {
-        Route::post('servers', [ContentController::class, 'addServer'])->name('contents.servers.store');
-        Route::put('servers/update', [ContentController::class, 'updateServer'])->name('contents.servers.update');
-        Route::delete('servers/delete', [ContentController::class, 'deleteServer'])->name('contents.servers.destroy');
-        
-        // Episode management routes
-        Route::resource('episodes', EpisodeController::class)->except(['show']);
-        
-                // Episode server routes
-                Route::prefix('episodes/{episode}')->group(function () {
-                    Route::get('servers', [EpisodeServerController::class, 'index'])->name('episodes.servers.index');
-                    Route::post('servers', [EpisodeServerController::class, 'store'])->name('episodes.servers.store');
-                    Route::put('servers/{server}', [EpisodeServerController::class, 'update'])->name('episodes.servers.update');
-                    Route::delete('servers/{server}', [EpisodeServerController::class, 'destroy'])->name('episodes.servers.destroy');
-                });
-    });
+        // Content server management routes
+        Route::prefix('contents/{content}')->group(function () {
+            Route::post('servers', [ContentController::class, 'addServer'])->name('contents.servers.store');
+            Route::put('servers/update', [ContentController::class, 'updateServer'])->name('contents.servers.update');
+            Route::delete('servers/delete', [ContentController::class, 'deleteServer'])->name('contents.servers.destroy');
+            
+            // Cast management routes
+            Route::get('cast', [CastController::class, 'index'])->name('contents.cast.index');
+            Route::post('cast', [CastController::class, 'store'])->name('contents.cast.store');
+            Route::put('cast/{castId}', [CastController::class, 'update'])->name('contents.cast.update');
+            Route::delete('cast/{castId}', [CastController::class, 'destroy'])->name('contents.cast.destroy');
+            Route::post('cast/reorder', [CastController::class, 'reorder'])->name('contents.cast.reorder');
+            
+            // Episode management routes
+            Route::resource('episodes', EpisodeController::class)->except(['show']);
+            
+                    // Episode server routes
+                    Route::prefix('episodes/{episode}')->group(function () {
+                        Route::get('servers', [EpisodeServerController::class, 'index'])->name('episodes.servers.index');
+                        Route::post('servers', [EpisodeServerController::class, 'store'])->name('episodes.servers.store');
+                        Route::put('servers/{server}', [EpisodeServerController::class, 'update'])->name('episodes.servers.update');
+                        Route::delete('servers/{server}', [EpisodeServerController::class, 'destroy'])->name('episodes.servers.destroy');
+                    });
+        });
 });

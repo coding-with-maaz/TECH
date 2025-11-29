@@ -263,8 +263,8 @@
     @endif
     @endif
 
-    <!-- Cast Section -->
-    @if(!empty($cast))
+    <!-- Cast Section - Only show for database content -->
+    @if(isset($isCustom) && $isCustom && !empty($cast))
     <div class="mb-8">
         <h3 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Cast</h3>
         <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -272,9 +272,24 @@
             <div class="min-w-[100px] text-center flex-shrink-0">
                 @php
                     $profilePath = !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
+                    $profileUrl = null;
+                    if ($profilePath) {
+                        if (isset($isCustom) && $isCustom) {
+                            // For database content, use the path directly (it's already a full URL)
+                            if (str_starts_with($profilePath, 'http')) {
+                                $profileUrl = $profilePath;
+                            } else {
+                                // If it's not a full URL, try TMDB service in case it's a TMDB path
+                                $profileUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
+                            }
+                        } else {
+                            // For TMDB content, use TMDB service
+                            $profileUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
+                        }
+                    }
                 @endphp
-                @if($profilePath)
-                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185') }}" 
+                @if($profileUrl)
+                <img src="{{ $profileUrl }}" 
                      alt="{{ $castMember['name'] ?? 'Unknown' }}" 
                      class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -287,7 +302,7 @@
                 </div>
                 @endif
                 <p class="text-sm font-medium text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castMember['name'] ?? 'Unknown' }}</p>
-                @if(isset($castMember['character']))
+                @if(!empty($castMember['character']))
                 <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                     {{ $castMember['character'] }}
                 </p>
