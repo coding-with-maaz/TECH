@@ -77,15 +77,17 @@ class PageController extends Controller
         $hasSeriesStatus = Schema::hasColumn('contents', 'series_status');
 
         // Get upcoming movies and TV shows from database only
-        $query = Content::published()
+        // Show content where series_status = 'upcoming' OR status = 'upcoming'
+        // Exclude drafts
+        $query = Content::where('status', '!=', 'draft')
             ->where(function($q) use ($hasSeriesStatus) {
-                // Filter by series_status = 'upcoming' if column exists
                 if ($hasSeriesStatus) {
+                    // Show content with series_status = 'upcoming' OR status = 'upcoming'
                     $q->where('series_status', 'upcoming')
-                      ->orWhere('release_date', '>', now());
+                      ->orWhere('status', 'upcoming');
                 } else {
-                    // If series_status column doesn't exist, just filter by future release dates
-                    $q->where('release_date', '>', now());
+                    // If series_status column doesn't exist, just check status
+                    $q->where('status', 'upcoming');
                 }
             })
             ->orderBy('sort_order', 'asc')
