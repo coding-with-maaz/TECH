@@ -14,7 +14,7 @@
             @php
                 $allUpcoming = [];
                 
-                // Add custom upcoming content
+                // Add database upcoming content only
                 if (!empty($customUpcoming)) {
                     foreach ($customUpcoming as $content) {
                         $allUpcoming[] = [
@@ -36,31 +36,6 @@
                         ];
                     }
                 }
-                
-                // Add TMDB upcoming movies
-                if (!empty($upcomingMovies)) {
-                    foreach ($upcomingMovies as $movie) {
-                        $allUpcoming[] = [
-                            'id' => $movie['id'],
-                            'name' => $movie['title'] ?? 'Unknown',
-                            'title' => $movie['title'] ?? 'Unknown',
-                            'release_date' => $movie['release_date'] ?? null,
-                            'backdrop_path' => $movie['backdrop_path'] ?? null,
-                            'poster_path' => $movie['poster_path'] ?? null,
-                            'is_custom' => false,
-                            'type' => 'movie',
-                            'rating' => $movie['vote_average'] ?? 0,
-                            'is_movie' => true,
-                        ];
-                    }
-                }
-                
-                // Sort by release date (soonest first)
-                usort($allUpcoming, function($a, $b) {
-                    $dateA = $a['release_date'] ?? $a['first_air_date'] ?? '9999-12-31';
-                    $dateB = $b['release_date'] ?? $b['first_air_date'] ?? '9999-12-31';
-                    return strcmp($dateA, $dateB);
-                });
             @endphp
 
             @if(!empty($allUpcoming))

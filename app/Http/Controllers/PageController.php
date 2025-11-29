@@ -76,7 +76,7 @@ class PageController extends Controller
         // Check if columns exist
         $hasSeriesStatus = Schema::hasColumn('contents', 'series_status');
 
-        // Get upcoming movies and TV shows with pagination
+        // Get upcoming movies and TV shows from database only
         $query = Content::published()
             ->where(function($q) use ($hasSeriesStatus) {
                 // Filter by series_status = 'upcoming' if column exists
@@ -91,16 +91,14 @@ class PageController extends Controller
             ->orderBy('sort_order', 'asc')
             ->orderBy('release_date', 'asc'); // Order by release date ascending (soonest first)
         
-        $customUpcomingPaginated = $query->paginate($perPage, ['*'], 'custom_page', $page);
-        $customUpcoming = $customUpcomingPaginated->items();
-        $customTotalPages = $customUpcomingPaginated->lastPage();
-        $customCurrentPage = $customUpcomingPaginated->currentPage();
+        // Get total count for pagination
+        $totalItems = $query->count();
+        $totalPages = max(1, ceil($totalItems / $perPage));
 
-        // Get upcoming movies from TMDB
-        $upcomingMovies = $this->tmdb->getUpcomingMovies($page);
-        $tmdbMovies = $upcomingMovies['results'] ?? [];
-        $tmdbTotalPages = $upcomingMovies['total_pages'] ?? 1;
-        $tmdbCurrentPage = $upcomingMovies['page'] ?? 1;
+        // Paginate upcoming content
+        $customUpcoming = $query->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
 
         // Get popular content based on views for sidebar
         $popularContent = Content::published()
@@ -109,15 +107,10 @@ class PageController extends Controller
             ->take(5)
             ->get();
 
-        // Use custom pagination if available, otherwise use TMDB pagination
-        $totalPages = $customTotalPages > 0 ? $customTotalPages : $tmdbTotalPages;
-        $currentPage = $page;
-
         return view('pages.upcoming', [
             'customUpcoming' => $customUpcoming,
-            'upcomingMovies' => $tmdbMovies,
             'popularContent' => $popularContent,
-            'currentPage' => $currentPage,
+            'currentPage' => $page,
             'totalPages' => $totalPages,
         ]);
     }
