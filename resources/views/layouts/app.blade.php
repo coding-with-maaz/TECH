@@ -638,13 +638,48 @@
             height: auto !important;
         }
         
-        /* Ensure card images have proper stacking context */
+        /* Ensure card images have proper stacking context and same size in dark mode */
         html.dark article .relative img,
         body.dark-mode article .relative img,
         html.dark article .aspect-video img,
         body.dark-mode article .aspect-video img {
             position: absolute !important;
             z-index: 1 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center !important;
+        }
+        
+        /* Ensure aspect-video container maintains exact same size in dark mode as light mode */
+        html.dark article .aspect-video,
+        body.dark-mode article .aspect-video {
+            width: 100% !important;
+            aspect-ratio: 16 / 9 !important;
+            min-height: 0 !important;
+            padding-bottom: 0 !important;
+            padding-top: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            max-width: 100% !important;
+        }
+        
+        /* Ensure article containers maintain same dimensions in dark mode */
+        html.dark article,
+        body.dark-mode article {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Ensure article links maintain same dimensions */
+        html.dark article > a,
+        body.dark-mode article > a {
+            width: 100% !important;
+            display: block !important;
         }
         
         /* Make overlay lighter in dark mode to show more of the image */
