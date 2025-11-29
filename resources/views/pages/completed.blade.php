@@ -27,6 +27,7 @@
                             'poster_path' => $content->poster_path,
                             'is_custom' => true,
                             'content_id' => $content->id,
+                            'content_type' => $content->content_type ?? 'custom',
                             'dubbing_language' => $content->dubbing_language,
                             'type' => $content->type,
                             'rating' => $content->rating ?? 0,
@@ -52,7 +53,27 @@
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                             @if($item['is_custom'] ?? false)
-                                <img src="{{ $item['backdrop_path'] ? (str_starts_with($item['backdrop_path'], 'http') ? $item['backdrop_path'] : asset('storage/' . $item['backdrop_path'])) : ($item['poster_path'] ? (str_starts_with($item['poster_path'], 'http') ? $item['poster_path'] : asset('storage/' . $item['poster_path'])) : 'https://via.placeholder.com/780x439?text=No+Image') }}" 
+                                @php
+                                    $imageUrl = null;
+                                    $backdropPath = !empty($item['backdrop_path']) ? $item['backdrop_path'] : null;
+                                    $posterPath = !empty($item['poster_path']) ? $item['poster_path'] : null;
+                                    $imagePath = $backdropPath ?? $posterPath;
+                                    
+                                    if ($imagePath) {
+                                        // Check if it's a TMDB path (starts with /) or content_type is tmdb
+                                        if (str_starts_with($imagePath, '/') || ($item['content_type'] ?? 'custom') === 'tmdb') {
+                                            // Use TMDB service for TMDB paths
+                                            $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
+                                        } elseif (str_starts_with($imagePath, 'http')) {
+                                            // Full URL
+                                            $imageUrl = $imagePath;
+                                        } else {
+                                            // Local storage
+                                            $imageUrl = asset('storage/' . $imagePath);
+                                        }
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
                                      alt="{{ $item['name'] }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">

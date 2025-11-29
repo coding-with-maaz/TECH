@@ -33,7 +33,23 @@
         <!-- Poster -->
         <div class="lg:col-span-1">
             @if(isset($isCustom) && $isCustom)
-                <img src="{{ $posterPath ? (str_starts_with($posterPath, 'http') ? $posterPath : asset('storage/' . $posterPath)) : 'https://via.placeholder.com/500x750?text=No+Image' }}" 
+                @php
+                    $posterUrl = null;
+                    if ($posterPath) {
+                        // Check if it's a TMDB path (starts with /) or content_type is tmdb
+                        if (str_starts_with($posterPath, '/') || ($content->content_type ?? 'custom') === 'tmdb') {
+                            // Use TMDB service for TMDB paths
+                            $posterUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w500');
+                        } elseif (str_starts_with($posterPath, 'http')) {
+                            // Full URL
+                            $posterUrl = $posterPath;
+                        } else {
+                            // Local storage
+                            $posterUrl = asset('storage/' . $posterPath);
+                        }
+                    }
+                @endphp
+                <img src="{{ $posterUrl ?? 'https://via.placeholder.com/500x750?text=No+Image' }}" 
                      alt="{{ $title }}" 
                      class="w-full rounded-xl shadow-2xl"
                      onerror="this.src='https://via.placeholder.com/500x750?text=No+Image'">
@@ -226,6 +242,7 @@
         </div>
         @endif
     </div>
+    @endif
     @endif
 
     <!-- Cast Section -->

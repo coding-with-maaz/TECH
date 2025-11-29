@@ -37,6 +37,7 @@
                             'backdrop_path' => $content->backdrop_path,
                             'poster_path' => $content->poster_path,
                             'is_custom' => true,
+                            'content_type' => $content->content_type ?? 'custom',
                             'content_id' => $content->id,
                             'dubbing_language' => $content->dubbing_language,
                             'type' => $content->type,
@@ -78,7 +79,27 @@
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                             @if($tvShow['is_custom'] ?? false)
-                                <img src="{{ $tvShow['backdrop_path'] ? (str_starts_with($tvShow['backdrop_path'], 'http') ? $tvShow['backdrop_path'] : asset('storage/' . $tvShow['backdrop_path'])) : ($tvShow['poster_path'] ? (str_starts_with($tvShow['poster_path'], 'http') ? $tvShow['poster_path'] : asset('storage/' . $tvShow['poster_path'])) : 'https://via.placeholder.com/780x439?text=No+Image') }}" 
+                                @php
+                                    $imageUrl = null;
+                                    $backdropPath = !empty($tvShow['backdrop_path']) ? $tvShow['backdrop_path'] : null;
+                                    $posterPath = !empty($tvShow['poster_path']) ? $tvShow['poster_path'] : null;
+                                    $imagePath = $backdropPath ?? $posterPath;
+                                    
+                                    if ($imagePath) {
+                                        // Check if it's a TMDB path (starts with /) or content_type is tmdb
+                                        if (str_starts_with($imagePath, '/') || ($tvShow['content_type'] ?? 'custom') === 'tmdb') {
+                                            // Use TMDB service for TMDB paths
+                                            $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
+                                        } elseif (str_starts_with($imagePath, 'http')) {
+                                            // Full URL
+                                            $imageUrl = $imagePath;
+                                        } else {
+                                            // Local storage
+                                            $imageUrl = asset('storage/' . $imagePath);
+                                        }
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
                                      alt="{{ $tvShow['name'] }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">

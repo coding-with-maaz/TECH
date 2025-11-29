@@ -129,10 +129,22 @@
                             @if($item['is_custom'] ?? false)
                                 @php
                                     $imageUrl = null;
-                                    if (!empty($item['backdrop'])) {
-                                        $imageUrl = str_starts_with($item['backdrop'], 'http') ? $item['backdrop'] : asset('storage/' . $item['backdrop']);
-                                    } elseif (!empty($item['poster'])) {
-                                        $imageUrl = str_starts_with($item['poster'], 'http') ? $item['poster'] : asset('storage/' . $item['poster']);
+                                    $backdropPath = !empty($item['backdrop']) ? $item['backdrop'] : null;
+                                    $posterPath = !empty($item['poster']) ? $item['poster'] : null;
+                                    $imagePath = $backdropPath ?? $posterPath;
+                                    
+                                    if ($imagePath) {
+                                        // Check if it's a TMDB path (starts with /) or content_type is tmdb
+                                        if (str_starts_with($imagePath, '/') || ($item['content_type'] ?? 'custom') === 'tmdb') {
+                                            // Use TMDB service for TMDB paths
+                                            $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
+                                        } elseif (str_starts_with($imagePath, 'http')) {
+                                            // Full URL
+                                            $imageUrl = $imagePath;
+                                        } else {
+                                            // Local storage
+                                            $imageUrl = asset('storage/' . $imagePath);
+                                        }
                                     }
                                 @endphp
                                 <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
@@ -140,7 +152,12 @@
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                             @else
-                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($item['backdrop'] ?? $item['poster'] ?? null, 'w780') }}" 
+                                @php
+                                    $backdropPath = !empty($item['backdrop']) ? $item['backdrop'] : null;
+                                    $posterPath = !empty($item['poster']) ? $item['poster'] : null;
+                                    $imagePath = $backdropPath ?? $posterPath;
+                                @endphp
+                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780') }}" 
                                      alt="{{ $item['title'] }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
@@ -163,7 +180,7 @@
                             <p class="text-gray-600 text-xs mb-1 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.4;">
                                 @if($item['is_custom'] ?? false)
                                     @php
-                                        $typeLabel = ucfirst(str_replace('_', ' ', $item['content_type'] ?? 'Movie'));
+                                        $typeLabel = ucfirst(str_replace('_', ' ', $item['content_type_name'] ?? $item['type'] ?? 'Movie'));
                                         $dubbing = $item['dubbing_language'] ? ucfirst($item['dubbing_language']) . ' Dubbed' : '';
                                     @endphp
                                     {{ $typeLabel }}@if($dubbing) - {{ $dubbing }}@endif

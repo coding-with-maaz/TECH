@@ -42,7 +42,8 @@ class HomeController extends Controller
                 'overview' => $content->description ?? '',
                 'is_custom' => true,
                 'content_id' => $content->id,
-                'content_type' => $content->type,
+                'content_type' => $content->content_type ?? 'custom', // Store the actual content_type (custom/tmdb)
+                'content_type_name' => $content->type, // Store the type name (movie/tv_show/etc)
                 'dubbing_language' => $content->dubbing_language,
             ];
         }

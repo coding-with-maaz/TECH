@@ -21,7 +21,12 @@
                 <a href="{{ route('movies.show', $movie['id']) }}" class="block">
                     <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                     <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
-                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($movie['backdrop_path'] ?? $movie['poster_path'] ?? null, 'w780') }}" 
+                        @php
+                            $backdropPath = !empty($movie['backdrop_path']) ? $movie['backdrop_path'] : null;
+                            $posterPath = !empty($movie['poster_path']) ? $movie['poster_path'] : null;
+                            $imagePath = $backdropPath ?? $posterPath;
+                        @endphp
+                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780') }}" 
                              alt="{{ $movie['title'] ?? 'Movie' }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                              onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
@@ -70,7 +75,12 @@
                 <a href="{{ route('tv-shows.show', $tvShow['id']) }}" class="block">
                     <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                     <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
-                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($tvShow['backdrop_path'] ?? $tvShow['poster_path'] ?? null, 'w780') }}" 
+                        @php
+                            $backdropPath = !empty($tvShow['backdrop_path']) ? $tvShow['backdrop_path'] : null;
+                            $posterPath = !empty($tvShow['poster_path']) ? $tvShow['poster_path'] : null;
+                            $imagePath = $backdropPath ?? $posterPath;
+                        @endphp
+                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780') }}" 
                              alt="{{ $tvShow['name'] ?? 'TV Show' }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                              onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">

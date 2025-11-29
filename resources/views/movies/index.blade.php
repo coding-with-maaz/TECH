@@ -46,6 +46,7 @@
                     'poster_path' => $content->poster_path,
                     'is_custom' => true,
                     'content_id' => $content->id,
+                    'content_type' => $content->content_type ?? 'custom', // Store the actual content_type (custom/tmdb)
                     'dubbing_language' => $content->dubbing_language,
                     'type' => $content->type,
                 ];
@@ -88,10 +89,22 @@
                     @if($movie['is_custom'] ?? false)
                         @php
                             $imageUrl = null;
-                            if (!empty($movie['backdrop_path'])) {
-                                $imageUrl = str_starts_with($movie['backdrop_path'], 'http') ? $movie['backdrop_path'] : asset('storage/' . $movie['backdrop_path']);
-                            } elseif (!empty($movie['poster_path'])) {
-                                $imageUrl = str_starts_with($movie['poster_path'], 'http') ? $movie['poster_path'] : asset('storage/' . $movie['poster_path']);
+                            $backdropPath = !empty($movie['backdrop_path']) ? $movie['backdrop_path'] : null;
+                            $posterPath = !empty($movie['poster_path']) ? $movie['poster_path'] : null;
+                            $imagePath = $backdropPath ?? $posterPath;
+                            
+                            if ($imagePath) {
+                                // Check if it's a TMDB path (starts with /) or content_type is tmdb
+                                if (str_starts_with($imagePath, '/') || ($movie['content_type'] ?? 'custom') === 'tmdb') {
+                                    // Use TMDB service for TMDB paths
+                                    $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
+                                } elseif (str_starts_with($imagePath, 'http')) {
+                                    // Full URL
+                                    $imageUrl = $imagePath;
+                                } else {
+                                    // Local storage
+                                    $imageUrl = asset('storage/' . $imagePath);
+                                }
                             }
                         @endphp
                         <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
@@ -99,7 +112,12 @@
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                              onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                     @else
-                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($movie['backdrop_path'] ?? $movie['poster_path'] ?? null, 'w780') }}" 
+                        @php
+                            $backdropPath = !empty($movie['backdrop_path']) ? $movie['backdrop_path'] : null;
+                            $posterPath = !empty($movie['poster_path']) ? $movie['poster_path'] : null;
+                            $imagePath = $backdropPath ?? $posterPath;
+                        @endphp
+                        <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780') }}" 
                              alt="{{ $movie['title'] ?? 'Movie' }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                              onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">

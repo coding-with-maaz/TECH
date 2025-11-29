@@ -159,11 +159,25 @@ class TmdbService
      */
     public function getImageUrl($path, $size = 'w500')
     {
-        if (!$path) {
-            return asset('images/placeholder.jpg');
+        if (empty($path)) {
+            // Return a proper placeholder URL that works
+            // Calculate dimensions based on size
+            $width = intval(str_replace(['w', 'h', 'original'], '', $size));
+            if ($width === 0) {
+                $width = 500; // Default width
+            }
+            // For backdrop images (16:9 aspect ratio)
+            $height = round($width * 0.5625);
+            return "https://via.placeholder.com/{$width}x{$height}?text=No+Image";
         }
         
-        return $this->imageBaseUrl . '/' . $size . $path;
+        // Remove leading slash if present (TMDB paths usually start with /)
+        $path = ltrim($path, '/');
+        
+        // Ensure imageBaseUrl ends without slash and path starts without slash
+        $baseUrl = rtrim($this->imageBaseUrl, '/');
+        
+        return $baseUrl . '/' . $size . '/' . $path;
     }
 
     /**
