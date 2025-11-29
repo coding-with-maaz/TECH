@@ -455,8 +455,22 @@ class ContentController extends Controller
             \Log::info('No TMDB cast data available for content ID: ' . $content->id);
         }
 
+        // Build success message with cast information
+        $castCount = 0;
+        if (isset($tmdbData['credits']['cast']) && is_array($tmdbData['credits']['cast'])) {
+            $castCount = min(count($tmdbData['credits']['cast']), 20);
+        }
+        
+        $successMessage = $existingContent 
+            ? 'Content updated from TMDB successfully.' 
+            : 'Content imported from TMDB successfully. Please add servers and download links.';
+        
+        if ($castCount > 0) {
+            $successMessage .= ' ' . $castCount . ' cast member(s) have been automatically added.';
+        }
+        
         return redirect()->route('admin.contents.edit', $content)
-            ->with('success', $existingContent ? 'Content updated from TMDB successfully.' : 'Content imported from TMDB successfully. Please add servers and download links.');
+            ->with('success', $successMessage);
     }
 
     /**
