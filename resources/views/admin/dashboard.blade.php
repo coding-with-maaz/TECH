@@ -225,6 +225,9 @@
                     <a href="{{ route('admin.servers.index') }}" class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Movie Server Management
                     </a>
+                    <a href="{{ route('admin.seo-pages.index') }}" class="block w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        SEO Pages Management
+                    </a>
                 </div>
             </div>
 

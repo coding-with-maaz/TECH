@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\EpisodeController;
 use App\Http\Controllers\Admin\EpisodeServerController;
 use App\Http\Controllers\Admin\ServerController;
 use App\Http\Controllers\Admin\CastController;
+use App\Http\Controllers\Admin\SeoPageController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -80,4 +81,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
                         Route::delete('servers/{server}', [EpisodeServerController::class, 'destroy'])->name('episodes.servers.destroy');
                     });
         });
+    
+    // SEO Pages Management
+    Route::resource('seo-pages', SeoPageController::class)->except(['show']);
 });

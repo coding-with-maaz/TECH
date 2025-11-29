@@ -4,7 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Nazaarabox - Movies & TV Shows')</title>
+    
+    @php
+        // Get SEO data from view composer
+        $seo = $seoPage ?? null;
+    @endphp
+    
+    @if($seo && $seo->meta_title)
+        <title>{{ $seo->meta_title }}</title>
+    @else
+        <title>@yield('title', 'Nazaarabox - Movies & TV Shows')</title>
+    @endif
+    
+    <!-- Meta Tags -->
+    @if($seo)
+        @if($seo->meta_description)
+        <meta name="description" content="{{ $seo->meta_description }}">
+        @endif
+        
+        @if($seo->meta_keywords)
+        <meta name="keywords" content="{{ $seo->meta_keywords }}">
+        @endif
+        
+        <!-- Open Graph Tags -->
+        @if($seo->og_title)
+        <meta property="og:title" content="{{ $seo->og_title }}">
+        @elseif($seo->meta_title)
+        <meta property="og:title" content="{{ $seo->meta_title }}">
+        @endif
+        
+        @if($seo->og_description)
+        <meta property="og:description" content="{{ $seo->og_description }}">
+        @elseif($seo->meta_description)
+        <meta property="og:description" content="{{ $seo->meta_description }}">
+        @endif
+        
+        @if($seo->og_image)
+        <meta property="og:image" content="{{ $seo->og_image }}">
+        @endif
+        
+        @if($seo->og_url)
+        <meta property="og:url" content="{{ $seo->og_url }}">
+        @else
+        <meta property="og:url" content="{{ url()->current() }}">
+        @endif
+        
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="Nazaarabox">
+        
+        <!-- Twitter Card Tags -->
+        @if($seo->twitter_card)
+        <meta name="twitter:card" content="{{ $seo->twitter_card }}">
+        @endif
+        
+        @if($seo->twitter_title)
+        <meta name="twitter:title" content="{{ $seo->twitter_title }}">
+        @elseif($seo->meta_title)
+        <meta name="twitter:title" content="{{ $seo->meta_title }}">
+        @endif
+        
+        @if($seo->twitter_description)
+        <meta name="twitter:description" content="{{ $seo->twitter_description }}">
+        @elseif($seo->meta_description)
+        <meta name="twitter:description" content="{{ $seo->meta_description }}">
+        @endif
+        
+        @if($seo->twitter_image)
+        <meta name="twitter:image" content="{{ $seo->twitter_image }}">
+        @endif
+        
+        <!-- Canonical URL -->
+        @if($seo->canonical_url)
+        <link rel="canonical" href="{{ $seo->canonical_url }}">
+        @else
+        <link rel="canonical" href="{{ url()->current() }}">
+        @endif
+        
+        <!-- Schema Markup (JSON-LD) -->
+        @if($seo->schema_markup)
+        <script type="application/ld+json">
+            {!! is_array($seo->schema_markup) ? json_encode($seo->schema_markup, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : $seo->schema_markup !!}
+        </script>
+        @endif
+    @else
+        <!-- Default meta tags if no SEO data -->
+        <meta name="description" content="Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.">
+        <link rel="canonical" href="{{ url()->current() }}">
+    @endif
     <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
