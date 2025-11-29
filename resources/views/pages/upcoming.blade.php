@@ -139,6 +139,32 @@
                 </article>
                 @endforeach
             </div>
+            
+            @if(isset($totalPages) && $totalPages > 1)
+            <div class="mt-8 flex justify-center items-center gap-2 flex-wrap">
+                @if($currentPage > 1)
+                <a href="{{ route('upcoming', ['page' => $currentPage - 1]) }}" 
+                   class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-900 transition-all dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                    Previous
+                </a>
+                @endif
+                
+                @for($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++)
+                <a href="{{ route('upcoming', ['page' => $i]) }}" 
+                   class="px-4 py-2 transition-all {{ $i === $currentPage ? 'bg-accent text-white dark:!bg-accent dark:!text-white' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: {{ $i === $currentPage ? '600' : '500' }};">
+                    {{ $i }}
+                </a>
+                @endfor
+                
+                @if($currentPage < $totalPages)
+                <a href="{{ route('upcoming', ['page' => $currentPage + 1]) }}" 
+                   class="px-4 py-2 bg-accent hover:bg-accent-light text-white font-semibold transition-all" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    NEXT >
+                </a>
+                @endif
+            </div>
+            @endif
+            
             @else
             <div class="text-center py-16">
                 <p class="text-gray-600 dark:!text-text-secondary text-lg md:text-xl" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
