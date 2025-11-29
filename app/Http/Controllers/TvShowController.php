@@ -85,13 +85,18 @@ class TvShowController extends Controller
             // Set episodes as a collection attribute
             $content->setRelation('episodes', $episodes);
             
-            // Get recommended movies for custom content
-            $recommendedMovies = $this->tmdb->getPopularMovies(1);
+            // Get recommended movies from database
+            $recommendedMovies = Content::published()
+                ->whereIn('type', ['movie', 'documentary', 'short_film'])
+                ->orderBy('views', 'desc')
+                ->orderBy('release_date', 'desc')
+                ->take(10)
+                ->get();
             
             return view('tv-shows.show', [
                 'content' => $content,
                 'isCustom' => true,
-                'recommendedMovies' => $recommendedMovies['results'] ?? [],
+                'recommendedMovies' => $recommendedMovies,
             ]);
         }
 
@@ -115,14 +120,19 @@ class TvShowController extends Controller
                     $customContent->setRelation('episodes', $episodes);
                 }
 
-                // Get recommended movies
-                $recommendedMovies = $this->tmdb->getPopularMovies(1);
+                // Get recommended movies from database
+                $recommendedMovies = Content::published()
+                    ->whereIn('type', ['movie', 'documentary', 'short_film'])
+                    ->orderBy('views', 'desc')
+                    ->orderBy('release_date', 'desc')
+                    ->take(10)
+                    ->get();
 
                 return view('tv-shows.show', [
                     'tvShow' => $tvShow,
                     'content' => $customContent,
                     'isCustom' => false,
-                    'recommendedMovies' => $recommendedMovies['results'] ?? [],
+                    'recommendedMovies' => $recommendedMovies,
                 ]);
             }
         }
