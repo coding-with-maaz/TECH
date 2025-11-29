@@ -57,7 +57,7 @@ class MovieController extends Controller
     public function show($slug)
     {
         // First, try to find custom content by slug
-        $content = Content::with('casts')
+        $content = Content::with('castMembers')
             ->whereIn('type', ['movie', 'documentary', 'short_film'])
             ->where(function($query) use ($slug) {
                 $query->where('slug', $slug)
@@ -115,7 +115,7 @@ class MovieController extends Controller
                     return ['name' => is_array($genre) ? ($genre['name'] ?? $genre) : $genre];
                 }, is_array($content->genres) ? $content->genres : []) : [],
                 'credits' => [
-                    'cast' => $content->casts->map(function($castMember) {
+                    'cast' => $content->castMembers->map(function($castMember) {
                         return [
                             'name' => $castMember->name,
                             'character' => $castMember->pivot->character ?? '',

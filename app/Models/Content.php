@@ -74,7 +74,7 @@ class Content extends Model
     /**
      * Get all cast members for this content
      */
-    public function casts(): BelongsToMany
+    public function castMembers(): BelongsToMany
     {
         return $this->belongsToMany(Cast::class, 'content_cast')
             ->withPivot('character', 'order')

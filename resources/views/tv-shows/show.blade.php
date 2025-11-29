@@ -18,7 +18,7 @@
         $type = ucfirst(str_replace('_', ' ', $content->type));
         $director = $content->director;
         $genres = $content->genres ?? [];
-        $cast = $content->casts ? $content->casts->map(function($castMember) {
+        $cast = $content->castMembers ? $content->castMembers->map(function($castMember) {
             return [
                 'name' => $castMember->name,
                 'character' => $castMember->pivot->character ?? '',

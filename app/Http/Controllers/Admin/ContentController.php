@@ -379,7 +379,7 @@ class ContentController extends Controller
             }
             
             // Sync cast attachments (this will remove old ones and add new ones)
-            $content->casts()->sync($castAttachments);
+            $content->castMembers()->sync($castAttachments);
         }
 
         return redirect()->route('admin.contents.edit', $content)
