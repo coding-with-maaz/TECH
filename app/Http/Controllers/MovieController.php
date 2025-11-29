@@ -57,7 +57,8 @@ class MovieController extends Controller
     public function show($slug)
     {
         // First, try to find custom content by slug
-        $content = Content::whereIn('type', ['movie', 'documentary', 'short_film'])
+        $content = Content::with('casts')
+            ->whereIn('type', ['movie', 'documentary', 'short_film'])
             ->where(function($query) use ($slug) {
                 $query->where('slug', $slug)
                       ->orWhere(function($q) use ($slug) {
@@ -114,16 +115,13 @@ class MovieController extends Controller
                     return ['name' => is_array($genre) ? ($genre['name'] ?? $genre) : $genre];
                 }, is_array($content->genres) ? $content->genres : []) : [],
                 'credits' => [
-                    'cast' => $content->cast ? array_map(function($castMember) {
-                        if (is_array($castMember)) {
-                            return [
-                                'name' => $castMember['name'] ?? $castMember,
-                                'character' => $castMember['character'] ?? '',
-                                'profile_path' => $castMember['profile_path'] ?? null,
-                            ];
-                        }
-                        return ['name' => $castMember, 'character' => '', 'profile_path' => null];
-                    }, is_array($content->cast) ? $content->cast : []) : [],
+                    'cast' => $content->casts->map(function($castMember) {
+                        return [
+                            'name' => $castMember->name,
+                            'character' => $castMember->pivot->character ?? '',
+                            'profile_path' => $castMember->profile_path,
+                        ];
+                    })->toArray(),
                 ],
                 'production_countries' => $content->country ? [['name' => $content->country]] : [],
                 'spoken_languages' => $content->language ? [['name' => $content->language]] : [],

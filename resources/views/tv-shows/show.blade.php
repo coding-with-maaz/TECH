@@ -18,7 +18,13 @@
         $type = ucfirst(str_replace('_', ' ', $content->type));
         $director = $content->director;
         $genres = $content->genres ?? [];
-        $cast = $content->cast ?? [];
+        $cast = $content->casts ? $content->casts->map(function($castMember) {
+            return [
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+            ];
+        })->toArray() : [];
         $description = $content->description;
         $posterPath = $content->poster_path;
         $episodes = $content->episodes ?? collect([]);

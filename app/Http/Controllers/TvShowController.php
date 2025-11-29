@@ -57,7 +57,8 @@ class TvShowController extends Controller
     public function show($slug)
     {
         // First, try to find custom content by slug
-        $content = Content::whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+        $content = Content::with('casts')
+            ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
             ->where(function($query) use ($slug) {
                 $query->where('slug', $slug)
                       ->orWhere(function($q) use ($slug) {

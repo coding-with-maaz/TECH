@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 class Content extends Model
@@ -70,6 +71,17 @@ class Content extends Model
     public function allEpisodes()
     {
         return $this->hasMany(Episode::class)->ordered();
+    }
+
+    /**
+     * Get all cast members for this content
+     */
+    public function casts(): BelongsToMany
+    {
+        return $this->belongsToMany(Cast::class, 'content_cast')
+            ->withPivot('character', 'order')
+            ->withTimestamps()
+            ->orderByPivot('order', 'asc');
     }
 
     /**

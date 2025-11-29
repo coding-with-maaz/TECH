@@ -58,6 +58,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             
             // Cast management routes
             Route::get('cast', [CastController::class, 'index'])->name('contents.cast.index');
+            Route::get('cast/search', [CastController::class, 'search'])->name('contents.cast.search');
             Route::post('cast', [CastController::class, 'store'])->name('contents.cast.store');
             Route::put('cast/{castId}', [CastController::class, 'update'])->name('contents.cast.update');
             Route::delete('cast/{castId}', [CastController::class, 'destroy'])->name('contents.cast.destroy');

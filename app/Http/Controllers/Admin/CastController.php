@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Content;
+use App\Models\Cast;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,12 +15,43 @@ class CastController extends Controller
      */
     public function index(Content $content)
     {
-        $cast = $content->cast ?? [];
-        return response()->json(['cast' => $cast]);
+        $cast = $content->casts()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        
+        // Transform to format expected by frontend
+        $castArray = $cast->map(function($castMember) {
+            return [
+                'id' => $castMember->id,
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+                'order' => $castMember->pivot->order ?? 0,
+            ];
+        })->toArray();
+        
+        return response()->json(['cast' => $castArray]);
     }
 
     /**
-     * Store a new cast member
+     * Search for existing cast members
+     */
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+        
+        if (empty($query)) {
+            return response()->json(['cast' => []]);
+        }
+        
+        $casts = Cast::where('name', 'like', '%' . $query . '%')
+            ->orderBy('name')
+            ->limit(10)
+            ->get();
+        
+        return response()->json(['cast' => $casts]);
+    }
+
+    /**
+     * Store a new cast member or link existing one
      */
     public function store(Request $request, Content $content)
     {
@@ -28,6 +60,7 @@ class CastController extends Controller
             'character' => 'nullable|string|max:255',
             'profile_path' => 'nullable|string|max:500',
             'order' => 'nullable|integer|min:0',
+            'cast_id' => 'nullable|integer|exists:casts,id', // If providing existing cast ID
         ]);
 
         if ($validator->fails()) {
@@ -37,42 +70,76 @@ class CastController extends Controller
             ], 422);
         }
 
-        $cast = $content->cast ?? [];
+        // Check if cast_id is provided (existing cast)
+        if ($request->cast_id) {
+            $cast = Cast::find($request->cast_id);
+            if (!$cast) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cast member not found.'
+                ], 404);
+            }
+        } else {
+            // Check if cast with same name already exists
+            $cast = Cast::where('name', $request->name)->first();
+            
+            // If doesn't exist, create new cast member
+            if (!$cast) {
+                $cast = Cast::create([
+                    'name' => $request->name,
+                    'profile_path' => $request->profile_path ?? null,
+                ]);
+            } else {
+                // Update profile_path if provided and current is empty
+                if ($request->profile_path && empty($cast->profile_path)) {
+                    $cast->update(['profile_path' => $request->profile_path]);
+                }
+            }
+        }
+
+        // Check if cast is already attached to this content
+        $existingPivot = $content->casts()->where('casts.id', $cast->id)->first();
         
-        $newCastMember = [
-            'id' => uniqid('cast_', true),
-            'name' => $request->name,
+        if ($existingPivot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cast member is already added to this content.'
+            ], 422);
+        }
+
+        // Attach cast to content with character and order
+        $order = $request->order ?? ($content->casts()->count());
+        $content->casts()->attach($cast->id, [
             'character' => $request->character ?? '',
-            'profile_path' => $request->profile_path ?? null,
-            'order' => $request->order ?? count($cast),
-        ];
+            'order' => $order,
+        ]);
 
-        $cast[] = $newCastMember;
-        
-        // Sort by order
-        usort($cast, function($a, $b) {
-            return ($a['order'] ?? 999) - ($b['order'] ?? 999);
-        });
-
-        $content->cast = $cast;
-        $content->save();
+        // Get updated cast list
+        $castList = $content->casts()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castArray = $castList->map(function($castMember) {
+            return [
+                'id' => $castMember->id,
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+                'order' => $castMember->pivot->order ?? 0,
+            ];
+        })->toArray();
 
         return response()->json([
             'success' => true,
             'message' => 'Cast member added successfully.',
-            'cast' => $cast
+            'cast' => $castArray
         ]);
     }
 
     /**
-     * Update a cast member
+     * Update a cast member's role in content
      */
     public function update(Request $request, Content $content, $castId)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
             'character' => 'nullable|string|max:255',
-            'profile_path' => 'nullable|string|max:500',
             'order' => 'nullable|integer|min:0',
         ]);
 
@@ -83,73 +150,75 @@ class CastController extends Controller
             ], 422);
         }
 
-        $cast = $content->cast ?? [];
+        // Check if cast is attached to this content
+        $cast = $content->casts()->where('casts.id', $castId)->first();
         
-        $found = false;
-        foreach ($cast as $index => $member) {
-            if (isset($member['id']) && $member['id'] === $castId) {
-                $cast[$index]['name'] = $request->name;
-                $cast[$index]['character'] = $request->character ?? '';
-                $cast[$index]['profile_path'] = $request->profile_path ?? null;
-                $cast[$index]['order'] = $request->order ?? $member['order'] ?? $index;
-                $found = true;
-                break;
-            }
-        }
-
-        if (!$found) {
+        if (!$cast) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cast member not found.'
+                'message' => 'Cast member not found in this content.'
             ], 404);
         }
 
-        // Sort by order
-        usort($cast, function($a, $b) {
-            return ($a['order'] ?? 999) - ($b['order'] ?? 999);
-        });
+        // Update pivot data
+        $content->casts()->updateExistingPivot($castId, [
+            'character' => $request->character ?? '',
+            'order' => $request->order ?? $cast->pivot->order ?? 0,
+        ]);
 
-        $content->cast = $cast;
-        $content->save();
+        // Get updated cast list
+        $castList = $content->casts()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castArray = $castList->map(function($castMember) {
+            return [
+                'id' => $castMember->id,
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+                'order' => $castMember->pivot->order ?? 0,
+            ];
+        })->toArray();
 
         return response()->json([
             'success' => true,
             'message' => 'Cast member updated successfully.',
-            'cast' => $cast
+            'cast' => $castArray
         ]);
     }
 
     /**
-     * Delete a cast member
+     * Detach a cast member from content (doesn't delete the cast, just removes from this content)
      */
     public function destroy(Content $content, $castId)
     {
-        $cast = $content->cast ?? [];
+        // Check if cast is attached to this content
+        $cast = $content->casts()->where('casts.id', $castId)->first();
         
-        $found = false;
-        foreach ($cast as $index => $member) {
-            if (isset($member['id']) && $member['id'] === $castId) {
-                unset($cast[$index]);
-                $cast = array_values($cast); // Re-index array
-                $found = true;
-                break;
-            }
-        }
-
-        if (!$found) {
+        if (!$cast) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cast member not found.'
+                'message' => 'Cast member not found in this content.'
             ], 404);
         }
 
-        $content->cast = $cast;
-        $content->save();
+        // Detach cast from content (doesn't delete the cast member itself)
+        $content->casts()->detach($castId);
+
+        // Get updated cast list
+        $castList = $content->casts()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castArray = $castList->map(function($castMember) {
+            return [
+                'id' => $castMember->id,
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+                'order' => $castMember->pivot->order ?? 0,
+            ];
+        })->toArray();
 
         return response()->json([
             'success' => true,
-            'message' => 'Cast member deleted successfully.',
-            'cast' => $cast
+            'message' => 'Cast member removed from content successfully.',
+            'cast' => $castArray
         ]);
     }
 
@@ -160,7 +229,7 @@ class CastController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'cast_ids' => 'required|array',
-            'cast_ids.*' => 'required|string',
+            'cast_ids.*' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -170,40 +239,31 @@ class CastController extends Controller
             ], 422);
         }
 
-        $cast = $content->cast ?? [];
         $castIds = $request->cast_ids;
         
-        // Create a map of cast IDs to their data
-        $castMap = [];
-        foreach ($cast as $member) {
-            if (isset($member['id'])) {
-                $castMap[$member['id']] = $member;
-            }
-        }
-
-        // Reorder based on provided order
-        $reorderedCast = [];
+        // Update order for each cast member
         foreach ($castIds as $index => $castId) {
-            if (isset($castMap[$castId])) {
-                $castMap[$castId]['order'] = $index;
-                $reorderedCast[] = $castMap[$castId];
-            }
+            $content->casts()->updateExistingPivot($castId, [
+                'order' => $index,
+            ]);
         }
 
-        // Add any remaining cast members that weren't in the reorder list
-        foreach ($castMap as $castId => $member) {
-            if (!in_array($castId, $castIds)) {
-                $reorderedCast[] = $member;
-            }
-        }
-
-        $content->cast = $reorderedCast;
-        $content->save();
+        // Get updated cast list
+        $castList = $content->casts()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castArray = $castList->map(function($castMember) {
+            return [
+                'id' => $castMember->id,
+                'name' => $castMember->name,
+                'character' => $castMember->pivot->character ?? '',
+                'profile_path' => $castMember->profile_path,
+                'order' => $castMember->pivot->order ?? 0,
+            ];
+        })->toArray();
 
         return response()->json([
             'success' => true,
             'message' => 'Cast members reordered successfully.',
-            'cast' => $reorderedCast
+            'cast' => $castArray
         ]);
     }
 }
