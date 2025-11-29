@@ -125,7 +125,7 @@
                 <article class="group relative bg-white overflow-hidden cursor-pointer dark:!bg-bg-card transition-all duration-300">
                     <a href="{{ $item['type'] === 'movie' ? route('movies.show', $item['id']) : route('tv-shows.show', $item['id']) }}" class="block">
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
-                        <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
+                        <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800" style="background-color: transparent !important;">
                             @php
                                 $imageUrl = null;
                                 // Prioritize backdrop image (custom or TMDB), fallback to poster
@@ -150,11 +150,12 @@
                             <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
                                  alt="{{ $item['title'] }}" 
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                 style="display: block !important; visibility: visible !important; opacity: 1 !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"
                                  onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                             
                             <!-- Beautiful Title Overlay - Always Visible -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end">
-                                <div class="w-full p-4">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end pointer-events-none" style="z-index: 2;">
+                                <div class="w-full p-4 pointer-events-auto">
                                     <h3 class="text-xl font-bold text-white mb-1 line-clamp-2 group-hover:text-accent transition-colors duration-300" style="font-family: 'Poppins', sans-serif; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
                                         {{ $item['title'] }}
                                     </h3>

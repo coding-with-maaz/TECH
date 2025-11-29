@@ -419,9 +419,25 @@
             background-color: #1F1F1F !important;
         }
         
-        html.dark body article div,
-        body.dark-mode article div {
+        /* Apply dark background to article divs, but exclude image containers and their children */
+        html.dark body article > div:not(.aspect-video),
+        body.dark-mode article > div:not(.aspect-video),
+        html.dark body article div:not(.aspect-video):not(.aspect-video *) {
             background-color: #1F1F1F !important;
+        }
+        
+        /* Explicitly exclude image containers from dark background */
+        html.dark body article .aspect-video,
+        body.dark-mode article .aspect-video,
+        html.dark body article .aspect-video *,
+        body.dark-mode article .aspect-video * {
+            background-color: transparent !important;
+        }
+        
+        /* Keep the container background visible only for placeholder */
+        html.dark body article .aspect-video.bg-gray-200.dark\:bg-gray-800,
+        body.dark-mode article .aspect-video.bg-gray-200.dark\:bg-gray-800 {
+            background-color: rgba(31, 41, 55, 0.3) !important;
         }
         
         html.dark body article h2,
@@ -586,6 +602,60 @@
             background-color: #E50914 !important;
             color: #FFFFFF !important;
             border-color: #E50914 !important;
+        }
+        
+        /* Ensure image container divs don't hide images in dark mode */
+        html.dark article .aspect-video,
+        body.dark-mode article .aspect-video {
+            background-color: transparent !important;
+        }
+        
+        html.dark article .aspect-video.bg-gray-200,
+        body.dark-mode article .aspect-video.bg-gray-200,
+        html.dark article .aspect-video.dark\:bg-gray-800,
+        body.dark-mode article .aspect-video.dark\:bg-gray-800 {
+            background-color: rgba(31, 41, 55, 0.5) !important;
+        }
+        
+        /* Ensure images are always visible in dark mode */
+        html.dark article img,
+        body.dark-mode article img,
+        html.dark .aspect-video img,
+        body.dark-mode .aspect-video img,
+        html.dark article .aspect-video img,
+        body.dark-mode article .aspect-video img,
+        html.dark img[alt*="Movie"],
+        body.dark-mode img[alt*="Movie"],
+        html.dark img[alt*="TV Show"],
+        body.dark-mode img[alt*="TV Show"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            filter: none !important;
+            -webkit-filter: none !important;
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Ensure card images have proper stacking context */
+        html.dark article .relative img,
+        body.dark-mode article .relative img,
+        html.dark article .aspect-video img,
+        body.dark-mode article .aspect-video img {
+            position: relative !important;
+            z-index: 0 !important;
+        }
+        
+        /* Prevent overlay from hiding images - overlay should be semi-transparent */
+        html.dark article .absolute.inset-0.bg-gradient-to-t,
+        body.dark-mode article .absolute.inset-0.bg-gradient-to-t {
+            pointer-events: none !important;
+            mix-blend-mode: normal !important;
+        }
+        
+        html.dark article .absolute.inset-0 > div,
+        body.dark-mode article .absolute.inset-0 > div {
+            pointer-events: auto !important;
         }
     </style>
 </head>
