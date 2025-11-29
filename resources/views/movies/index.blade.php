@@ -57,16 +57,16 @@
                             $imagePath = $backdropPath ?? $posterPath;
                             
                             if ($imagePath) {
-                                // Check if it's a TMDB path (starts with /) or content_type is tmdb
-                                if (str_starts_with($imagePath, '/') || ($movie['content_type'] ?? 'custom') === 'tmdb') {
-                                    // Use TMDB service for TMDB paths
+                                // Check if it's TMDB content
+                                if (($movie['content_type'] ?? 'custom') === 'tmdb') {
+                                    // Use TMDB service for TMDB paths (paths starting with /)
                                     $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
-                                } elseif (str_starts_with($imagePath, 'http')) {
-                                    // Full URL
+                                } elseif (str_starts_with($imagePath, 'http') || str_starts_with($imagePath, '//')) {
+                                    // Full URL (external) - use directly
                                     $imageUrl = $imagePath;
                                 } else {
-                                    // Local storage
-                                    $imageUrl = asset('storage/' . $imagePath);
+                                    // Custom backdrop/poster - use path directly (already contains full URL)
+                                    $imageUrl = $imagePath;
                                 }
                             }
                         @endphp
@@ -185,12 +185,13 @@
                             $imageUrl = null;
                             
                             if ($posterPath) {
-                                if (str_starts_with($posterPath, '/') || ($movie->content_type ?? 'custom') === 'tmdb') {
+                                if (($movie->content_type ?? 'custom') === 'tmdb') {
                                     $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w185');
-                                } elseif (str_starts_with($posterPath, 'http')) {
+                                } elseif (str_starts_with($posterPath, 'http') || str_starts_with($posterPath, '//')) {
                                     $imageUrl = $posterPath;
                                 } else {
-                                    $imageUrl = asset('storage/' . $posterPath);
+                                    // Custom poster - use path directly (already contains full URL)
+                                    $imageUrl = $posterPath;
                                 }
                             }
                         @endphp

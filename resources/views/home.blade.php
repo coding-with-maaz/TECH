@@ -126,42 +126,31 @@
                     <a href="{{ $item['type'] === 'movie' ? route('movies.show', $item['id']) : route('tv-shows.show', $item['id']) }}" class="block">
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
-                            @if($item['is_custom'] ?? false)
-                                @php
-                                    $imageUrl = null;
-                                    $backdropPath = !empty($item['backdrop']) ? $item['backdrop'] : null;
-                                    $posterPath = !empty($item['poster']) ? $item['poster'] : null;
-                                    $imagePath = $backdropPath ?? $posterPath;
-                                    
-                                    if ($imagePath) {
-                                        // Check if it's a TMDB path (starts with /) or content_type is tmdb
-                                        if (str_starts_with($imagePath, '/') || ($item['content_type'] ?? 'custom') === 'tmdb') {
-                                            // Use TMDB service for TMDB paths
-                                            $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
-                                        } elseif (str_starts_with($imagePath, 'http')) {
-                                            // Full URL
-                                            $imageUrl = $imagePath;
-                                        } else {
-                                            // Local storage
-                                            $imageUrl = asset('storage/' . $imagePath);
-                                        }
+                            @php
+                                $imageUrl = null;
+                                // Prioritize backdrop image (custom or TMDB), fallback to poster
+                                $backdropPath = !empty($item['backdrop']) ? $item['backdrop'] : null;
+                                $posterPath = !empty($item['poster']) ? $item['poster'] : null;
+                                $imagePath = $backdropPath ?? $posterPath;
+                                
+                                if ($imagePath) {
+                                    // Check if it's TMDB content
+                                    if (($item['content_type'] ?? 'custom') === 'tmdb') {
+                                        // Use TMDB service for TMDB paths (paths starting with /)
+                                        $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780');
+                                    } elseif (str_starts_with($imagePath, 'http') || str_starts_with($imagePath, '//')) {
+                                        // Full URL (external) - use directly
+                                        $imageUrl = $imagePath;
+                                    } else {
+                                        // Custom backdrop/poster - use path directly (already contains full URL)
+                                        $imageUrl = $imagePath;
                                     }
-                                @endphp
-                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
-                                     alt="{{ $item['title'] }}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                                     onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
-                            @else
-                                @php
-                                    $backdropPath = !empty($item['backdrop']) ? $item['backdrop'] : null;
-                                    $posterPath = !empty($item['poster']) ? $item['poster'] : null;
-                                    $imagePath = $backdropPath ?? $posterPath;
-                                @endphp
-                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($imagePath, 'w780') }}" 
-                                     alt="{{ $item['title'] }}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                                     onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
-                            @endif
+                                }
+                            @endphp
+                            <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
+                                 alt="{{ $item['title'] }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                 onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                         </div>
                         
                         <!-- Card Content -->
@@ -290,12 +279,13 @@
                             $imageUrl = null;
                             
                             if ($posterPath) {
-                                if (str_starts_with($posterPath, '/') || ($item->content_type ?? 'custom') === 'tmdb') {
+                                if (($item->content_type ?? 'custom') === 'tmdb') {
                                     $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w185');
-                                } elseif (str_starts_with($posterPath, 'http')) {
+                                } elseif (str_starts_with($posterPath, 'http') || str_starts_with($posterPath, '//')) {
                                     $imageUrl = $posterPath;
                                 } else {
-                                    $imageUrl = asset('storage/' . $posterPath);
+                                    // Custom poster - use path directly (already contains full URL)
+                                    $imageUrl = $posterPath;
                                 }
                             }
                         @endphp
