@@ -73,6 +73,10 @@ class MovieController extends Controller
             ->first();
 
         if ($content) {
+            // Increment views when movie is viewed
+            $content->increment('views');
+            $content->refresh(); // Refresh to get updated views count
+            
             // Get recommended movies for custom content
             $recommendedMovies = $this->tmdb->getPopularMovies(1);
             
@@ -86,6 +90,7 @@ class MovieController extends Controller
                 'overview' => $content->description ?? '',
                 'poster_path' => $content->poster_path,
                 'backdrop_path' => $content->backdrop_path,
+                'views' => $content->views ?? 0,
                 'genres' => $content->genres ? array_map(function($genre) {
                     return ['name' => is_array($genre) ? ($genre['name'] ?? $genre) : $genre];
                 }, is_array($content->genres) ? $content->genres : []) : [],

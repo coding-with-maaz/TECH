@@ -11,6 +11,19 @@ use Illuminate\Http\Request;
 class EpisodeServerController extends Controller
 {
     /**
+     * Get servers for an episode (AJAX).
+     */
+    public function index(Content $content, Episode $episode)
+    {
+        $servers = $episode->servers()->orderBy('sort_order', 'asc')->get();
+        
+        return response()->json([
+            'success' => true,
+            'servers' => $servers,
+        ]);
+    }
+
+    /**
      * Store a newly created server for an episode.
      */
     public function store(Request $request, Content $content, Episode $episode)
@@ -27,7 +40,15 @@ class EpisodeServerController extends Controller
         $validated['episode_id'] = $episode->id;
         $validated['is_active'] = $request->has('is_active') ? true : false;
 
-        EpisodeServer::create($validated);
+        $server = EpisodeServer::create($validated);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Server added successfully.',
+                'server' => $server,
+            ]);
+        }
 
         return redirect()->route('admin.episodes.index', $content)
             ->with('success', 'Server added successfully.');
@@ -51,6 +72,14 @@ class EpisodeServerController extends Controller
 
         $server->update($validated);
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Server updated successfully.',
+                'server' => $server->fresh(),
+            ]);
+        }
+
         return redirect()->route('admin.episodes.index', $content)
             ->with('success', 'Server updated successfully.');
     }
@@ -58,9 +87,16 @@ class EpisodeServerController extends Controller
     /**
      * Remove the specified server.
      */
-    public function destroy(Content $content, Episode $episode, EpisodeServer $server)
+    public function destroy(Request $request, Content $content, Episode $episode, EpisodeServer $server)
     {
         $server->delete();
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Server deleted successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.episodes.index', $content)
             ->with('success', 'Server deleted successfully.');

@@ -11,6 +11,7 @@
     $duration = $movie['runtime'] ?? null;
     $budget = $movie['budget'] ?? null;
     $revenue = $movie['revenue'] ?? null;
+    $views = $movie['views'] ?? (isset($content) ? ($content->views ?? 0) : 0);
     $country = isset($movie['production_countries'][0]) ? $movie['production_countries'][0]['name'] : null;
     $language = isset($movie['spoken_languages'][0]) ? $movie['spoken_languages'][0]['name'] : null;
     $director = null;
@@ -86,6 +87,16 @@
                 <span class="text-gray-600 dark:!text-text-secondary">•</span>
                 <span class="text-gray-600 dark:!text-text-secondary">{{ floor($duration / 60) }}h {{ $duration % 60 }}m</span>
                 @endif
+                @if(isset($isCustom) && $isCustom && $views > 0)
+                <span class="text-gray-600 dark:!text-text-secondary">•</span>
+                <div class="flex items-center gap-1 text-gray-600 dark:!text-text-secondary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    <span class="font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ number_format($views) }} views</span>
+                </div>
+                @endif
             </div>
 
             @if(!empty($genres))
@@ -142,6 +153,13 @@
             <div>
                 <span class="font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Director:</span>
                 <span class="text-gray-600 dark:!text-text-secondary ml-2" style="font-family: 'Poppins', sans-serif; font-weight: 400;">{{ $director }}</span>
+            </div>
+            @endif
+            
+            @if(isset($isCustom) && $isCustom && $views > 0)
+            <div>
+                <span class="font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Views:</span>
+                <span class="text-gray-600 dark:!text-text-secondary ml-2" style="font-family: 'Poppins', sans-serif; font-weight: 400;">{{ number_format($views) }}</span>
             </div>
             @endif
             

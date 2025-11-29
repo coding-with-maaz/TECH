@@ -15,7 +15,7 @@ class EpisodeController extends Controller
      */
     public function index(Content $content)
     {
-        $episodes = $content->episodes()->orderBy('episode_number')->get();
+        $episodes = $content->episodes()->with('servers')->orderBy('episode_number')->get();
         return view('admin.episodes.index', compact('content', 'episodes'));
     }
 

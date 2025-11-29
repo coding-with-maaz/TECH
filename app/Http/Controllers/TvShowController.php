@@ -67,6 +67,10 @@ class TvShowController extends Controller
             ->first();
 
         if ($content) {
+            // Increment views when TV show is viewed
+            $content->increment('views');
+            $content->refresh(); // Refresh to get updated views count
+            
             // Load published episodes with servers
             $episodes = $content->episodes()
                 ->where('is_published', true)

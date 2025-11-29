@@ -58,11 +58,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Episode management routes
         Route::resource('episodes', EpisodeController::class)->except(['show']);
         
-        // Episode server routes
-        Route::prefix('episodes/{episode}')->group(function () {
-            Route::post('servers', [EpisodeServerController::class, 'store'])->name('episodes.servers.store');
-            Route::put('servers/{server}', [EpisodeServerController::class, 'update'])->name('episodes.servers.update');
-            Route::delete('servers/{server}', [EpisodeServerController::class, 'destroy'])->name('episodes.servers.destroy');
-        });
+                // Episode server routes
+                Route::prefix('episodes/{episode}')->group(function () {
+                    Route::get('servers', [EpisodeServerController::class, 'index'])->name('episodes.servers.index');
+                    Route::post('servers', [EpisodeServerController::class, 'store'])->name('episodes.servers.store');
+                    Route::put('servers/{server}', [EpisodeServerController::class, 'update'])->name('episodes.servers.update');
+                    Route::delete('servers/{server}', [EpisodeServerController::class, 'destroy'])->name('episodes.servers.destroy');
+                });
     });
 });
