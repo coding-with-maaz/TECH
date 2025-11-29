@@ -425,7 +425,25 @@ class ContentController extends Controller
             }
             
             // Sync all casts (TMDB casts + manually added casts)
-            $content->castMembers()->sync($allCastAttachments);
+            if (!empty($allCastAttachments)) {
+                try {
+                    $content->castMembers()->sync($allCastAttachments);
+                    // Refresh the content to ensure relationships are loaded
+                    $content->refresh();
+                    
+                    // Verify casts were synced (for debugging)
+                    $syncedCount = $content->castMembers()->count();
+                    \Log::info('Synced ' . $syncedCount . ' casts for content ID: ' . $content->id);
+                } catch (\Exception $e) {
+                    \Log::error('Error syncing casts for content ' . $content->id . ': ' . $e->getMessage());
+                    \Log::error('Stack trace: ' . $e->getTraceAsString());
+                    // Continue anyway - casts can be added manually later
+                }
+            } else {
+                \Log::warning('No cast attachments to sync for content ID: ' . $content->id);
+            }
+        } else {
+            \Log::info('No TMDB cast data available for content ID: ' . $content->id);
         }
 
         return redirect()->route('admin.contents.edit', $content)

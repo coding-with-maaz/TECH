@@ -591,20 +591,44 @@
 const contentId = {{ $content->id }};
 let currentCast = [];
 
+// Load cast automatically when cast tab is opened
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-load casts if coming from TMDB import (check URL or session)
+    // Casts will also load when tab is clicked
+});
+
 // Load cast on page load and when cast tab is opened
 function loadCast() {
+    // Show loading state
+    const castList = document.getElementById('cast-list');
+    if (castList) {
+        castList.innerHTML = '<div class="p-4 text-gray-500 dark:!text-text-secondary text-center">Loading cast members...</div>';
+    }
+    
     fetch(`/admin/contents/${contentId}/cast`, {
         headers: {
             'Accept': 'application/json',
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to load cast: ' + response.statusText);
+        }
+        return response.json();
+    })
     .then(data => {
         currentCast = data.cast || [];
+        console.log('Loaded casts:', currentCast.length);
         renderCast();
     })
     .catch(error => {
         console.error('Error loading cast:', error);
+        // Show error message to user
+        const castList = document.getElementById('cast-list');
+        const castEmpty = document.getElementById('cast-empty');
+        if (castList) {
+            castList.innerHTML = '<div class="p-4 text-red-500 dark:!text-red-400">Error loading cast members. Please refresh the page.</div>';
+        }
     });
 }
 
