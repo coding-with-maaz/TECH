@@ -146,26 +146,32 @@
     </div>
 
     <!-- Video Player Section for Custom Movies -->
-    @if(isset($isCustom) && $isCustom && isset($content) && $content->watch_link)
+    @if(isset($isCustom) && $isCustom && isset($content))
     @php
-        $servers = $content->servers ?? [];
-        // If no servers array but watch_link exists, create a default server
+        // Get normalized active servers
+        $servers = $content->getActiveServers();
+        
+        // If no servers but watch_link exists, create a default server
         if (empty($servers) && $content->watch_link) {
             $servers = [[
+                'id' => 'default',
                 'name' => 'Server 1',
                 'url' => $content->watch_link,
                 'quality' => 'HD',
-                'active' => true
+                'active' => true,
+                'sort_order' => 0
             ]];
         }
-        // Filter only active servers
-        $servers = array_filter($servers ?? [], function($server) {
-            return isset($server['active']) && $server['active'] === true;
-        });
-        // Get the first server as default
+        
+        // Get the first server as default for player
         $defaultServer = !empty($servers) ? reset($servers) : null;
         $currentServerUrl = $defaultServer['url'] ?? $content->watch_link ?? '';
+        
+        // Get all download links (from servers and content level)
+        $downloadLinks = $content->getAllDownloadLinks();
     @endphp
+    
+    @if(!empty($servers) || $content->watch_link)
     <div class="bg-white border border-gray-200 p-6 mb-8 dark:!bg-bg-card dark:!border-border-secondary rounded-lg">
         <h2 class="text-xl font-bold text-gray-900 mb-4 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Watch Movie</h2>
         
@@ -183,36 +189,39 @@
         </div>
 
         <!-- Server Selection -->
-        
         @if(count($servers) > 1)
         <div class="mb-4">
             <label class="block text-sm font-semibold text-gray-900 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Select Server:</label>
             <div class="flex flex-wrap gap-2">
                 @foreach($servers as $index => $server)
-                <button onclick="changeServer('{{ $server['url'] }}', this)" 
-                        class="server-btn px-4 py-2 rounded-lg transition-colors {{ $index === 0 ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:!bg-bg-card-hover dark:!text-text-secondary dark:!hover:bg-bg-card dark:!hover:text-white' }}"
-                        style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    {{ $server['name'] }} @if(isset($server['quality'])) - {{ $server['quality'] }} @endif
-                </button>
+                    @if(!empty($server['url']))
+                    <button onclick="changeServer('{{ $server['url'] }}', this)" 
+                            class="server-btn px-4 py-2 rounded-lg transition-colors {{ $index === 0 ? 'bg-accent text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:!bg-bg-card-hover dark:!text-text-secondary dark:!hover:bg-bg-card dark:!hover:text-white' }}"
+                            style="font-family: 'Poppins', sans-serif; font-weight: 500;">
+                        {{ $server['name'] ?? 'Server ' . ($index + 1) }}@if(!empty($server['quality'])) - {{ $server['quality'] }}@endif
+                    </button>
+                    @endif
                 @endforeach
             </div>
         </div>
         @endif
 
         <!-- Download Links -->
-        @if($content->download_link)
+        @if(!empty($downloadLinks))
         <div class="mt-4 pt-4 border-t border-gray-200 dark:!border-border-secondary">
             <h3 class="text-lg font-bold text-gray-900 mb-3 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Download</h3>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ $content->download_link }}" 
+                @foreach($downloadLinks as $download)
+                <a href="{{ $download['url'] }}" 
                    target="_blank" 
                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
                    style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
-                    Download Movie
+                    {{ $download['name'] }}
                 </a>
+                @endforeach
             </div>
         </div>
         @endif
@@ -337,11 +346,11 @@
     }
 </style>
 
-@if(isset($isCustom) && $isCustom && isset($content) && $content->watch_link)
+@if(isset($isCustom) && $isCustom && isset($content) && !empty($servers))
 <script>
     function changeServer(videoUrl, buttonElement) {
         const iframe = document.getElementById('moviePlayer');
-        if (iframe) {
+        if (iframe && videoUrl) {
             iframe.src = videoUrl;
             
             // Update active button styling

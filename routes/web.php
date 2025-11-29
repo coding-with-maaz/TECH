@@ -7,8 +7,10 @@ use App\Http\Controllers\TvShowController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\ContentController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EpisodeController;
 use App\Http\Controllers\Admin\EpisodeServerController;
+use App\Http\Controllers\Admin\ServerController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -28,10 +30,32 @@ Route::get('/upcoming', [PageController::class, 'upcoming'])->name('upcoming');
 
 // Admin routes for custom content management
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('contents', ContentController::class);
     
-    // Episode management routes
+    // Server Management routes (for movies)
+    Route::get('servers', [ServerController::class, 'index'])->name('servers.index');
+    Route::get('servers/{content}', [ServerController::class, 'show'])->name('servers.show');
+    Route::post('servers/{content}', [ServerController::class, 'store'])->name('servers.store');
+    Route::put('servers/{content}', [ServerController::class, 'update'])->name('servers.update');
+    Route::delete('servers/{content}', [ServerController::class, 'destroy'])->name('servers.destroy');
+    
+    // TMDB search and import routes
+    Route::get('contents/tmdb/search', [ContentController::class, 'searchTmdb'])->name('contents.tmdb.search');
+    Route::get('contents/tmdb/details', [ContentController::class, 'getTmdbDetails'])->name('contents.tmdb.details');
+    Route::get('contents/tmdb/import', function() {
+        return redirect()->route('admin.contents.create')
+            ->with('error', 'Invalid request. Please use the import form to import content from TMDB.');
+    });
+    Route::post('contents/tmdb/import', [ContentController::class, 'importFromTmdb'])->name('contents.tmdb.import');
+    
+    // Content server management routes
     Route::prefix('contents/{content}')->group(function () {
+        Route::post('servers', [ContentController::class, 'addServer'])->name('contents.servers.store');
+        Route::put('servers/update', [ContentController::class, 'updateServer'])->name('contents.servers.update');
+        Route::delete('servers/delete', [ContentController::class, 'deleteServer'])->name('contents.servers.destroy');
+        
+        // Episode management routes
         Route::resource('episodes', EpisodeController::class)->except(['show']);
         
         // Episode server routes

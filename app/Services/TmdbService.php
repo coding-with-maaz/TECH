@@ -128,6 +128,22 @@ class TmdbService
     }
 
     /**
+     * Search movies only
+     */
+    public function searchMovies($query, $page = 1)
+    {
+        return $this->request('/search/movie', ['query' => $query, 'page' => $page]);
+    }
+
+    /**
+     * Search TV shows only
+     */
+    public function searchTvShows($query, $page = 1)
+    {
+        return $this->request('/search/tv', ['query' => $query, 'page' => $page]);
+    }
+
+    /**
      * Get image URL
      * 
      * Available sizes:

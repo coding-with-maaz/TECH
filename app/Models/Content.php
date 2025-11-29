@@ -209,4 +209,74 @@ class Content extends Model
         
         return $content;
     }
+
+    /**
+     * Get normalized servers array with consistent structure
+     */
+    public function getNormalizedServers()
+    {
+        $servers = $this->servers ?? [];
+        $normalized = [];
+
+        foreach ($servers as $server) {
+            // Normalize old structures to new consistent structure
+            $normalized[] = [
+                'id' => $server['id'] ?? uniqid('server_', true),
+                'name' => $server['name'] ?? $server['server_name'] ?? 'Server',
+                'url' => $server['url'] ?? $server['watch_link'] ?? null,
+                'quality' => $server['quality'] ?? 'HD',
+                'download_link' => $server['download_link'] ?? null,
+                'sort_order' => $server['sort_order'] ?? 0,
+                'active' => $server['active'] ?? $server['is_active'] ?? true,
+            ];
+        }
+
+        // Sort by sort_order
+        usort($normalized, function($a, $b) {
+            return ($a['sort_order'] ?? 0) <=> ($b['sort_order'] ?? 0);
+        });
+
+        return $normalized;
+    }
+
+    /**
+     * Get active servers only
+     */
+    public function getActiveServers()
+    {
+        $servers = $this->getNormalizedServers();
+        return array_filter($servers, function($server) {
+            return ($server['active'] ?? true) === true;
+        });
+    }
+
+    /**
+     * Get all download links (from servers and content level)
+     */
+    public function getAllDownloadLinks()
+    {
+        $downloadLinks = [];
+        
+        // Get download links from servers
+        foreach ($this->getActiveServers() as $server) {
+            if (!empty($server['download_link'])) {
+                $downloadLinks[] = [
+                    'name' => $server['name'] . ' - ' . ($server['quality'] ?? 'HD'),
+                    'url' => $server['download_link'],
+                    'quality' => $server['quality'] ?? 'HD',
+                ];
+            }
+        }
+        
+        // Add content-level download link if exists
+        if (!empty($this->download_link)) {
+            $downloadLinks[] = [
+                'name' => 'Direct Download',
+                'url' => $this->download_link,
+                'quality' => 'HD',
+            ];
+        }
+        
+        return $downloadLinks;
+    }
 }

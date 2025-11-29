@@ -42,7 +42,7 @@
                     'slug' => $content->slug,
                     'title' => $content->title,
                     'release_date' => $content->release_date ? $content->release_date->format('Y-m-d') : null,
-                    'backdrop_path' => $content->backdrop_path,
+                    'backdrop_path' => $content->backdrop_path ?? $content->poster_path ?? null,
                     'poster_path' => $content->poster_path,
                     'is_custom' => true,
                     'content_id' => $content->id,
@@ -86,7 +86,15 @@
                 <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                 <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                     @if($movie['is_custom'] ?? false)
-                        <img src="{{ $movie['backdrop_path'] ? (str_starts_with($movie['backdrop_path'], 'http') ? $movie['backdrop_path'] : asset('storage/' . $movie['backdrop_path'])) : ($movie['poster_path'] ? (str_starts_with($movie['poster_path'], 'http') ? $movie['poster_path'] : asset('storage/' . $movie['poster_path'])) : 'https://via.placeholder.com/780x439?text=No+Image') }}" 
+                        @php
+                            $imageUrl = null;
+                            if (!empty($movie['backdrop_path'])) {
+                                $imageUrl = str_starts_with($movie['backdrop_path'], 'http') ? $movie['backdrop_path'] : asset('storage/' . $movie['backdrop_path']);
+                            } elseif (!empty($movie['poster_path'])) {
+                                $imageUrl = str_starts_with($movie['poster_path'], 'http') ? $movie['poster_path'] : asset('storage/' . $movie['poster_path']);
+                            }
+                        @endphp
+                        <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
                              alt="{{ $movie['title'] }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                              onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">

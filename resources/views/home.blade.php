@@ -127,12 +127,20 @@
                         <!-- Full Image - Backdrop Image with 16:9 Aspect Ratio -->
                         <div class="relative overflow-hidden w-full aspect-video bg-gray-200 dark:bg-gray-800">
                             @if($item['is_custom'] ?? false)
-                                <img src="{{ $item['backdrop'] ? (str_starts_with($item['backdrop'], 'http') ? $item['backdrop'] : asset('storage/' . $item['backdrop'])) : ($item['poster'] ? (str_starts_with($item['poster'], 'http') ? $item['poster'] : asset('storage/' . $item['poster'])) : 'https://via.placeholder.com/780x439?text=No+Image') }}" 
+                                @php
+                                    $imageUrl = null;
+                                    if (!empty($item['backdrop'])) {
+                                        $imageUrl = str_starts_with($item['backdrop'], 'http') ? $item['backdrop'] : asset('storage/' . $item['backdrop']);
+                                    } elseif (!empty($item['poster'])) {
+                                        $imageUrl = str_starts_with($item['poster'], 'http') ? $item['poster'] : asset('storage/' . $item['poster']);
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/780x439?text=No+Image' }}" 
                                      alt="{{ $item['title'] }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                             @else
-                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($item['backdrop'] ?? $item['poster'], 'w780') }}" 
+                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($item['backdrop'] ?? $item['poster'] ?? null, 'w780') }}" 
                                      alt="{{ $item['title'] }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                      onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
