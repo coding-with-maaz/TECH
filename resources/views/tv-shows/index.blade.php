@@ -7,18 +7,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content Area (2 columns on large screens) -->
         <div class="lg:col-span-2">
-            <!-- Filter Tabs -->
-            <div class="flex flex-wrap gap-3 mb-8">
-                <a href="{{ route('tv-shows.index', ['type' => 'popular']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'popular' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Popular
-                </a>
-                <a href="{{ route('tv-shows.index', ['type' => 'top_rated']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'top_rated' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Top Rated
-                </a>
-            </div>
-
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
                 TV Shows
             </h2>
@@ -45,27 +33,10 @@
                     }
                 }
                 
-                // Add TMDB TV shows
-                if (!empty($tvShows)) {
-                    foreach ($tvShows as $tvShow) {
-                        $allTvShows[] = [
-                            'id' => $tvShow['id'],
-                            'name' => $tvShow['name'] ?? 'Unknown',
-                            'first_air_date' => $tvShow['first_air_date'] ?? null,
-                            'backdrop_path' => $tvShow['backdrop_path'] ?? null,
-                            'poster_path' => $tvShow['poster_path'] ?? null,
-                            'is_custom' => false,
-                        ];
-                    }
-                }
-                
-                // Sort by date (newest first), custom content first if same date
+                // Sort by date (newest first)
                 usort($allTvShows, function($a, $b) {
                     $dateA = $a['first_air_date'] ?? '1970-01-01';
                     $dateB = $b['first_air_date'] ?? '1970-01-01';
-                    if ($dateA === $dateB) {
-                        return ($b['is_custom'] ?? false) <=> ($a['is_custom'] ?? false);
-                    }
                     return strcmp($dateB, $dateA);
                 });
             @endphp
@@ -153,21 +124,21 @@
             @if($totalPages > 1)
             <div class="mt-8 flex justify-center items-center gap-2 flex-wrap">
                 @if($currentPage > 1)
-                <a href="{{ route('tv-shows.index', ['type' => $type, 'page' => $currentPage - 1]) }}" 
+                <a href="{{ route('tv-shows.index', ['page' => $currentPage - 1]) }}" 
                    class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-900 transition-all dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
                     Previous
                 </a>
                 @endif
                 
                 @for($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++)
-                <a href="{{ route('tv-shows.index', ['type' => $type, 'page' => $i]) }}" 
+                <a href="{{ route('tv-shows.index', ['page' => $i]) }}" 
                    class="px-4 py-2 transition-all {{ $i === $currentPage ? 'bg-accent text-white dark:!bg-accent dark:!text-white' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: {{ $i === $currentPage ? '600' : '500' }};">
                     {{ $i }}
                 </a>
                 @endfor
                 
                 @if($currentPage < $totalPages)
-                <a href="{{ route('tv-shows.index', ['type' => $type, 'page' => $currentPage + 1]) }}" 
+                <a href="{{ route('tv-shows.index', ['page' => $currentPage + 1]) }}" 
                    class="px-4 py-2 bg-accent hover:bg-accent-light text-white font-semibold transition-all" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                     NEXT >
                 </a>

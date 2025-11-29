@@ -20,11 +20,11 @@ class HomeController extends Controller
         $page = (int)$request->get('page', 1);
         $perPage = 20; // Items per page
 
-        // Get all custom content (published only) - will be shown on first pages
+        // Get all custom content (published only) - sorted by latest updated/created
         $allCustomContent = Content::published()
+            ->orderBy('updated_at', 'desc') // Latest updated first
+            ->orderBy('created_at', 'desc') // Then latest created
             ->orderBy('sort_order', 'asc')
-            ->orderBy('release_date', 'desc')
-            ->orderBy('created_at', 'desc')
             ->get();
 
         // Convert custom content to array format
@@ -36,35 +36,44 @@ class HomeController extends Controller
                 'slug' => $content->slug,
                 'title' => $content->title,
                 'date' => $content->release_date ? $content->release_date->format('Y-m-d') : null,
+                'updated_at' => $content->updated_at ? $content->updated_at->format('Y-m-d H:i:s') : null,
+                'created_at' => $content->created_at ? $content->created_at->format('Y-m-d H:i:s') : null,
                 'rating' => $content->rating ?? 0,
                 'backdrop' => $content->backdrop_path ?? $content->poster_path ?? null,
                 'poster' => $content->poster_path ?? null,
                 'overview' => $content->description ?? '',
                 'is_custom' => true,
                 'content_id' => $content->id,
-                'content_type' => $content->content_type ?? 'custom', // Store the actual content_type (custom/tmdb)
-                'content_type_name' => $content->type, // Store the type name (movie/tv_show/etc)
+                'content_type' => $content->content_type ?? 'custom',
+                'content_type_name' => $content->type,
                 'dubbing_language' => $content->dubbing_language,
             ];
         }
 
-        // Only show custom content from database (no TMDB content)
-        $allContent = [];
+        // Sort by updated_at (latest updated first), then created_at (latest created first)
+        usort($customContentArray, function($a, $b) {
+            // First sort by updated_at (most recent first)
+            $updatedA = $a['updated_at'] ?? '1970-01-01 00:00:00';
+            $updatedB = $b['updated_at'] ?? '1970-01-01 00:00:00';
+            $updatedCompare = strcmp($updatedB, $updatedA);
+            
+            if ($updatedCompare !== 0) {
+                return $updatedCompare;
+            }
+            
+            // If updated_at is same, sort by created_at (most recent first)
+            $createdA = $a['created_at'] ?? '1970-01-01 00:00:00';
+            $createdB = $b['created_at'] ?? '1970-01-01 00:00:00';
+            return strcmp($createdB, $createdA);
+        });
 
-        // Paginate custom content
+        // Paginate custom content after sorting
         $totalContentCount = count($customContentArray);
         $totalPages = max(1, ceil($totalContentCount / $perPage));
         
         // Get items for current page
         $startIndex = ($page - 1) * $perPage;
         $allContent = array_slice($customContentArray, $startIndex, $perPage);
-
-        // Sort by date (newest first)
-        usort($allContent, function($a, $b) {
-            $dateA = $a['date'] ?? '1970-01-01';
-            $dateB = $b['date'] ?? '1970-01-01';
-            return strcmp($dateB, $dateA);
-        });
 
         // Get popular content based on views for sidebar
         $popularContent = Content::published()

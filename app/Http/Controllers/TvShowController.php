@@ -18,18 +18,22 @@ class TvShowController extends Controller
     public function index(Request $request)
     {
         $page = $request->get('page', 1);
-        $type = $request->get('type', 'popular');
+        $perPage = 20; // Items per page
 
-        $tvShows = match($type) {
-            'top_rated' => $this->tmdb->getTopRatedTvShows($page),
-            default => $this->tmdb->getPopularTvShows($page),
-        };
-
-        // Get custom TV show content
+        // Get only custom TV show content from database
         $customTvShows = Content::published()
             ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
-            ->orderBy('sort_order', 'asc')
-            ->orderBy('release_date', 'desc')
+            ->orderBy('updated_at', 'desc') // Latest updated first
+            ->orderBy('created_at', 'desc') // Then latest created
+            ->orderBy('sort_order', 'asc');
+
+        // Get total count for pagination
+        $totalTvShows = $customTvShows->count();
+        $totalPages = max(1, ceil($totalTvShows / $perPage));
+
+        // Paginate custom TV shows
+        $customTvShows = $customTvShows->skip(($page - 1) * $perPage)
+            ->take($perPage)
             ->get();
 
         // Get popular TV shows based on views for sidebar
@@ -41,12 +45,12 @@ class TvShowController extends Controller
             ->get();
 
         return view('tv-shows.index', [
-            'tvShows' => $tvShows['results'] ?? [],
+            'tvShows' => [],
             'customTvShows' => $customTvShows,
             'popularTvShows' => $popularTvShows,
-            'currentPage' => $tvShows['page'] ?? 1,
-            'totalPages' => $tvShows['total_pages'] ?? 1,
-            'type' => $type,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'type' => 'custom',
         ]);
     }
 
