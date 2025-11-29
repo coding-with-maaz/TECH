@@ -48,77 +48,36 @@ class HomeController extends Controller
             ];
         }
 
-        // Get TMDB content for current page
-        $popularMovies = $this->tmdb->getPopularMovies($page);
-        $popularTvShows = $this->tmdb->getPopularTvShows($page);
-        $tmdbMovies = $popularMovies['results'] ?? [];
-        $tmdbTvShows = $popularTvShows['results'] ?? [];
-        $tmdbTotalPages = max($popularMovies['total_pages'] ?? 1, $popularTvShows['total_pages'] ?? 1);
-
-        // Combine content for current page
+        // Only show custom content from database (no TMDB content)
         $allContent = [];
 
-        // Include custom content only on page 1
-        if ($page == 1) {
-            $allContent = $customContentArray;
-        }
+        // Paginate custom content
+        $totalContentCount = count($customContentArray);
+        $totalPages = max(1, ceil($totalContentCount / $perPage));
+        
+        // Get items for current page
+        $startIndex = ($page - 1) * $perPage;
+        $allContent = array_slice($customContentArray, $startIndex, $perPage);
 
-        // Add TMDB movies for current page
-        foreach ($tmdbMovies as $movie) {
-            $allContent[] = [
-                'type' => 'movie',
-                'id' => $movie['id'],
-                'title' => $movie['title'] ?? 'Unknown',
-                'date' => $movie['release_date'] ?? null,
-                'rating' => $movie['vote_average'] ?? 0,
-                'backdrop' => $movie['backdrop_path'] ?? $movie['poster_path'] ?? null,
-                'poster' => $movie['poster_path'] ?? null,
-                'overview' => $movie['overview'] ?? '',
-                'is_custom' => false,
-            ];
-        }
-
-        // Add TMDB TV shows for current page
-        foreach ($tmdbTvShows as $tvShow) {
-            $allContent[] = [
-                'type' => 'tv',
-                'id' => $tvShow['id'],
-                'title' => $tvShow['name'] ?? 'Unknown',
-                'date' => $tvShow['first_air_date'] ?? null,
-                'rating' => $tvShow['vote_average'] ?? 0,
-                'backdrop' => $tvShow['backdrop_path'] ?? $tvShow['poster_path'] ?? null,
-                'poster' => $tvShow['poster_path'] ?? null,
-                'overview' => $tvShow['overview'] ?? '',
-                'is_custom' => false,
-            ];
-        }
-
-        // Sort by date (newest first), custom content first if same date
+        // Sort by date (newest first)
         usort($allContent, function($a, $b) {
             $dateA = $a['date'] ?? '1970-01-01';
             $dateB = $b['date'] ?? '1970-01-01';
-            if ($dateA === $dateB) {
-                return ($b['is_custom'] ?? false) <=> ($a['is_custom'] ?? false);
-            }
             return strcmp($dateB, $dateA);
         });
 
-        // Limit to items per page (for page 1, we might have more items if custom + TMDB exceed perPage)
-        $allContent = array_slice($allContent, 0, $perPage);
-
-        // Calculate total pages (custom content pages + TMDB pages)
-        $customContentCount = count($customContentArray);
-        $customPages = max(1, ceil($customContentCount / $perPage));
-        $totalPages = $customPages + $tmdbTotalPages;
-
-        // Get top rated movies for sidebar
-        $topRatedMovies = $this->tmdb->getTopRatedMovies(1);
+        // Get popular content based on views for sidebar
+        $popularContent = Content::published()
+            ->orderBy('views', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->take(5)
+            ->get();
 
         return view('home', [
             'allContent' => $allContent,
             'currentPage' => $page,
             'totalPages' => max(1, $totalPages),
-            'topRatedMovies' => $topRatedMovies['results'] ?? [],
+            'popularContent' => $popularContent,
         ]);
     }
 }

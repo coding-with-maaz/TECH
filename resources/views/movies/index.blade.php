@@ -7,26 +7,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content Area (2 columns on large screens) -->
         <div class="lg:col-span-2">
-            <!-- Filter Tabs -->
-            <div class="flex flex-wrap gap-3 mb-8">
-                <a href="{{ route('movies.index', ['type' => 'popular']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'popular' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Popular
-                </a>
-                <a href="{{ route('movies.index', ['type' => 'top_rated']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'top_rated' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Top Rated
-                </a>
-                <a href="{{ route('movies.index', ['type' => 'now_playing']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'now_playing' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Now Playing
-                </a>
-                <a href="{{ route('movies.index', ['type' => 'upcoming']) }}" 
-                   class="px-4 py-2 border border-gray-300 transition-all {{ $type === 'upcoming' ? 'bg-accent text-white border-accent' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!border-border-primary dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
-                    Upcoming
-                </a>
-            </div>
-
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
                 Movies
             </h2>
@@ -53,27 +33,10 @@
             }
         }
         
-        // Add TMDB movies
-        if (!empty($movies)) {
-            foreach ($movies as $movie) {
-                $allMovies[] = [
-                    'id' => $movie['id'],
-                    'title' => $movie['title'] ?? 'Unknown',
-                    'release_date' => $movie['release_date'] ?? null,
-                    'backdrop_path' => $movie['backdrop_path'] ?? null,
-                    'poster_path' => $movie['poster_path'] ?? null,
-                    'is_custom' => false,
-                ];
-            }
-        }
-        
-        // Sort by date (newest first), custom content first if same date
+        // Sort by date (newest first)
         usort($allMovies, function($a, $b) {
             $dateA = $a['release_date'] ?? '1970-01-01';
             $dateB = $b['release_date'] ?? '1970-01-01';
-            if ($dateA === $dateB) {
-                return ($b['is_custom'] ?? false) <=> ($a['is_custom'] ?? false);
-            }
             return strcmp($dateB, $dateA);
         });
     @endphp
@@ -166,21 +129,21 @@
             @if($totalPages > 1)
             <div class="mt-8 flex justify-center items-center gap-2 flex-wrap">
         @if($currentPage > 1)
-        <a href="{{ route('movies.index', ['type' => $type, 'page' => $currentPage - 1]) }}" 
+        <a href="{{ route('movies.index', ['page' => $currentPage - 1]) }}" 
            class="px-4 py-2 bg-white hover:bg-gray-50 text-gray-900 transition-all dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white" style="font-family: 'Poppins', sans-serif; font-weight: 500;">
             Previous
         </a>
         @endif
         
         @for($i = max(1, $currentPage - 2); $i <= min($totalPages, $currentPage + 2); $i++)
-        <a href="{{ route('movies.index', ['type' => $type, 'page' => $i]) }}" 
+        <a href="{{ route('movies.index', ['page' => $i]) }}" 
            class="px-4 py-2 transition-all {{ $i === $currentPage ? 'bg-accent text-white dark:!bg-accent dark:!text-white' : 'bg-white hover:bg-gray-50 text-gray-900 dark:!bg-bg-card dark:!text-text-secondary dark:!hover:bg-bg-card-hover dark:!hover:text-white' }}" style="font-family: 'Poppins', sans-serif; font-weight: {{ $i === $currentPage ? '600' : '500' }};">
             {{ $i }}
         </a>
         @endfor
         
         @if($currentPage < $totalPages)
-        <a href="{{ route('movies.index', ['type' => $type, 'page' => $currentPage + 1]) }}" 
+        <a href="{{ route('movies.index', ['page' => $currentPage + 1]) }}" 
            class="px-4 py-2 bg-accent hover:bg-accent-light text-white font-semibold transition-all" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
             NEXT >
         </a>
@@ -214,29 +177,47 @@
             <div class="bg-white border border-gray-200 p-6 dark:!bg-bg-card dark:!border-border-secondary">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-200 pb-3 dark:!text-white dark:!border-border-primary" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Popular Now</h3>
                 <div class="space-y-4">
-                    @if(!empty($topRatedMovies))
-                        @foreach(array_slice($topRatedMovies, 0, 5) as $movie)
-                        <a href="{{ route('movies.show', $movie['id']) }}" class="flex gap-3 group hover:bg-gray-50 p-2 rounded-lg transition-all dark:!hover:bg-bg-card-hover">
+                    @if(!empty($popularMovies))
+                        @foreach($popularMovies as $movie)
+                        @php
+                            $movieId = $movie->slug ?? ('custom_' . $movie->id);
+                            $posterPath = $movie->poster_path;
+                            $imageUrl = null;
+                            
+                            if ($posterPath) {
+                                if (str_starts_with($posterPath, '/') || ($movie->content_type ?? 'custom') === 'tmdb') {
+                                    $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w185');
+                                } elseif (str_starts_with($posterPath, 'http')) {
+                                    $imageUrl = $posterPath;
+                                } else {
+                                    $imageUrl = asset('storage/' . $posterPath);
+                                }
+                            }
+                        @endphp
+                        <a href="{{ route('movies.show', $movieId) }}" class="flex gap-3 group hover:bg-gray-50 p-2 rounded-lg transition-all dark:!hover:bg-bg-card-hover">
                             <div class="flex-shrink-0 w-16 h-24 rounded overflow-hidden bg-gray-100 dark:!bg-bg-card-hover">
-                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($movie['poster_path'] ?? null, 'w185') }}" 
-                                     alt="{{ $movie['title'] }}" 
+                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/185x278?text=No+Image' }}" 
+                                     alt="{{ $movie->title }}" 
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                      onerror="this.src='https://via.placeholder.com/185x278?text=No+Image'">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-semibold text-gray-900 group-hover:text-accent transition-colors line-clamp-2 mb-1 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.4;">
-                                    {{ $movie['title'] ?? 'Unknown' }}
+                                    {{ $movie->title ?? 'Unknown' }}
                                 </h4>
                                 <p class="text-gray-600 text-xs mb-1 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                    {{ \Carbon\Carbon::parse($movie['release_date'] ?? '')->format('Y') ?? 'N/A' }}
+                                    {{ $movie->release_date ? $movie->release_date->format('Y') : 'N/A' }}
                                 </p>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-rating text-xs">★</span>
-                                    <span class="text-gray-900 text-xs font-semibold dark:!text-white">{{ number_format($movie['vote_average'] ?? 0, 1) }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-600 text-xs dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                        👁 {{ number_format($movie->views ?? 0) }} views
+                                    </span>
                                 </div>
                             </div>
                         </a>
                         @endforeach
+                    @else
+                        <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">No popular movies available.</p>
                     @endif
                 </div>
             </div>

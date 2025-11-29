@@ -201,29 +201,47 @@
             <div class="bg-white border border-gray-200 p-6 dark:!bg-bg-card dark:!border-border-secondary">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-200 pb-3 dark:!text-white dark:!border-border-primary" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Popular Now</h3>
                 <div class="space-y-4">
-                    @if(!empty($topRatedTvShows))
-                        @foreach(array_slice($topRatedTvShows, 0, 5) as $tvShow)
-                        <a href="{{ route('tv-shows.show', $tvShow['id']) }}" class="flex gap-3 group hover:bg-gray-50 p-2 rounded-lg transition-all dark:!hover:bg-bg-card-hover">
+                    @if(!empty($popularTvShows))
+                        @foreach($popularTvShows as $tvShow)
+                        @php
+                            $tvShowId = $tvShow->slug ?? ('custom_' . $tvShow->id);
+                            $posterPath = $tvShow->poster_path;
+                            $imageUrl = null;
+                            
+                            if ($posterPath) {
+                                if (str_starts_with($posterPath, '/') || ($tvShow->content_type ?? 'custom') === 'tmdb') {
+                                    $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w185');
+                                } elseif (str_starts_with($posterPath, 'http')) {
+                                    $imageUrl = $posterPath;
+                                } else {
+                                    $imageUrl = asset('storage/' . $posterPath);
+                                }
+                            }
+                        @endphp
+                        <a href="{{ route('tv-shows.show', $tvShowId) }}" class="flex gap-3 group hover:bg-gray-50 p-2 rounded-lg transition-all dark:!hover:bg-bg-card-hover">
                             <div class="flex-shrink-0 w-16 h-24 rounded overflow-hidden bg-gray-100 dark:!bg-bg-card-hover">
-                                <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($tvShow['poster_path'] ?? null, 'w185') }}" 
-                                     alt="{{ $tvShow['name'] }}" 
+                                <img src="{{ $imageUrl ?? 'https://via.placeholder.com/185x278?text=No+Image' }}" 
+                                     alt="{{ $tvShow->title }}" 
                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                      onerror="this.src='https://via.placeholder.com/185x278?text=No+Image'">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-sm font-semibold text-gray-900 group-hover:text-accent transition-colors line-clamp-2 mb-1 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600; line-height: 1.4;">
-                                    {{ $tvShow['name'] ?? 'Unknown' }}
+                                    {{ $tvShow->title ?? 'Unknown' }}
                                 </h4>
                                 <p class="text-gray-600 text-xs mb-1 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                    {{ \Carbon\Carbon::parse($tvShow['first_air_date'] ?? '')->format('Y') ?? 'N/A' }}
+                                    {{ $tvShow->release_date ? $tvShow->release_date->format('Y') : 'N/A' }}
                                 </p>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-rating text-xs">★</span>
-                                    <span class="text-gray-900 text-xs font-semibold dark:!text-white">{{ number_format($tvShow['vote_average'] ?? 0, 1) }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-600 text-xs dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                        👁 {{ number_format($tvShow->views ?? 0) }} views
+                                    </span>
                                 </div>
                             </div>
                         </a>
                         @endforeach
+                    @else
+                        <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">No popular TV shows available.</p>
                     @endif
                 </div>
             </div>

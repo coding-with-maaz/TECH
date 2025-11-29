@@ -18,32 +18,39 @@ class MovieController extends Controller
     public function index(Request $request)
     {
         $page = $request->get('page', 1);
-        $type = $request->get('type', 'popular');
+        $perPage = 20; // Items per page
 
-        $movies = match($type) {
-            'top_rated' => $this->tmdb->getTopRatedMovies($page),
-            'now_playing' => $this->tmdb->getNowPlayingMovies($page),
-            'upcoming' => $this->tmdb->getUpcomingMovies($page),
-            default => $this->tmdb->getPopularMovies($page),
-        };
-
-        // Get custom movie content
+        // Get only custom movie content from database
         $customMovies = Content::published()
             ->whereIn('type', ['movie', 'documentary', 'short_film'])
             ->orderBy('sort_order', 'asc')
             ->orderBy('release_date', 'desc')
+            ->orderBy('created_at', 'desc');
+
+        // Get total count for pagination
+        $totalMovies = $customMovies->count();
+        $totalPages = max(1, ceil($totalMovies / $perPage));
+
+        // Paginate custom movies
+        $customMovies = $customMovies->skip(($page - 1) * $perPage)
+            ->take($perPage)
             ->get();
 
-        // Get top rated movies for sidebar
-        $topRatedMovies = $this->tmdb->getTopRatedMovies(1);
+        // Get popular movies based on views for sidebar
+        $popularMovies = Content::published()
+            ->whereIn('type', ['movie', 'documentary', 'short_film'])
+            ->orderBy('views', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->take(5)
+            ->get();
 
         return view('movies.index', [
-            'movies' => $movies['results'] ?? [],
+            'movies' => [],
             'customMovies' => $customMovies,
-            'topRatedMovies' => $topRatedMovies['results'] ?? [],
-            'currentPage' => $movies['page'] ?? 1,
-            'totalPages' => $movies['total_pages'] ?? 1,
-            'type' => $type,
+            'popularMovies' => $popularMovies,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'type' => 'custom', // Changed from dynamic type
         ]);
     }
 

@@ -32,13 +32,18 @@ class TvShowController extends Controller
             ->orderBy('release_date', 'desc')
             ->get();
 
-        // Get top rated TV shows for sidebar
-        $topRatedTvShows = $this->tmdb->getTopRatedTvShows(1);
+        // Get popular TV shows based on views for sidebar
+        $popularTvShows = Content::published()
+            ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+            ->orderBy('views', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->take(5)
+            ->get();
 
         return view('tv-shows.index', [
             'tvShows' => $tvShows['results'] ?? [],
             'customTvShows' => $customTvShows,
-            'topRatedTvShows' => $topRatedTvShows['results'] ?? [],
+            'popularTvShows' => $popularTvShows,
             'currentPage' => $tvShows['page'] ?? 1,
             'totalPages' => $tvShows['total_pages'] ?? 1,
             'type' => $type,

@@ -55,12 +55,16 @@ class PageController extends Controller
         
         $customCompleted = $query->get();
 
-        // Get top rated TV shows for sidebar
-        $topRatedTvShows = $this->tmdb->getTopRatedTvShows(1);
+        // Get popular content based on views for sidebar
+        $popularContent = Content::published()
+            ->orderBy('views', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->take(5)
+            ->get();
 
         return view('pages.completed', [
             'customCompleted' => $customCompleted,
-            'topRatedTvShows' => $topRatedTvShows['results'] ?? [],
+            'popularContent' => $popularContent,
         ]);
     }
 
@@ -98,8 +102,12 @@ class PageController extends Controller
         $tmdbTotalPages = $upcomingMovies['total_pages'] ?? 1;
         $tmdbCurrentPage = $upcomingMovies['page'] ?? 1;
 
-        // Get top rated TV shows for sidebar
-        $topRatedTvShows = $this->tmdb->getTopRatedTvShows(1);
+        // Get popular content based on views for sidebar
+        $popularContent = Content::published()
+            ->orderBy('views', 'desc')
+            ->orderBy('release_date', 'desc')
+            ->take(5)
+            ->get();
 
         // Use custom pagination if available, otherwise use TMDB pagination
         $totalPages = $customTotalPages > 0 ? $customTotalPages : $tmdbTotalPages;
@@ -108,7 +116,7 @@ class PageController extends Controller
         return view('pages.upcoming', [
             'customUpcoming' => $customUpcoming,
             'upcomingMovies' => $tmdbMovies,
-            'topRatedTvShows' => $topRatedTvShows['results'] ?? [],
+            'popularContent' => $popularContent,
             'currentPage' => $currentPage,
             'totalPages' => $totalPages,
         ]);
