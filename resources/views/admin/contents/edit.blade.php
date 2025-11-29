@@ -754,13 +754,23 @@ function addCastMember(event) {
             currentCast = data.cast || [];
             renderCast();
             hideAddCastModal();
+            // Show success message
+            if (typeof showNotification === 'function') {
+                showNotification(data.message || 'Cast member added successfully!', 'success');
+            }
         } else {
-            alert(data.message || 'Error adding cast member');
+            // Show error message with details
+            let errorMsg = data.message || 'Error adding cast member';
+            if (data.errors) {
+                const errorList = Object.values(data.errors).flat().join('\n');
+                errorMsg = errorMsg + '\n' + errorList;
+            }
+            alert(errorMsg);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error adding cast member');
+        alert('Error adding cast member. Please check your connection and try again.');
     });
 }
 

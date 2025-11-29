@@ -363,9 +363,10 @@ class ContentController extends Controller
                     }
                 }
                 
-                // Check if cast member already exists
+                // Check if cast member already exists in database (prevent duplicates)
+                // Use firstOrCreate to find existing cast by name or create new one
                 $cast = Cast::firstOrCreate(
-                    ['name' => $actorName],
+                    ['name' => trim($actorName)],
                     ['profile_path' => $fullProfilePath]
                 );
                 

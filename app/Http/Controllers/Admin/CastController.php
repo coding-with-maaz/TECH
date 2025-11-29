@@ -80,7 +80,7 @@ class CastController extends Controller
     public function store(Request $request, Content $content)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|min:1',
             'character' => 'nullable|string|max:255',
             'profile_path' => 'nullable|string|max:500',
             'order' => 'nullable|integer|min:0',
@@ -94,7 +94,7 @@ class CastController extends Controller
             ], 422);
         }
 
-        // Check if cast_id is provided (existing cast)
+        // Check if cast_id is provided (existing cast from database)
         if ($request->cast_id) {
             $cast = Cast::find($request->cast_id);
             if (!$cast) {
@@ -104,13 +104,13 @@ class CastController extends Controller
                 ], 404);
             }
         } else {
-            // Check if cast with same name already exists
+            // Check if cast with same name already exists in database (prevent duplicates)
             $cast = Cast::where('name', $request->name)->first();
             
-            // If doesn't exist, create new cast member
+            // If doesn't exist, create new cast member in database
             if (!$cast) {
                 $cast = Cast::create([
-                    'name' => $request->name,
+                    'name' => trim($request->name),
                     'profile_path' => $request->profile_path ?? null,
                 ]);
             } else {
@@ -121,13 +121,13 @@ class CastController extends Controller
             }
         }
 
-        // Check if cast is already attached to this content
+        // Check if cast is already attached to this content (prevent duplicate attachments)
         $existingPivot = $content->castMembers()->where('casts.id', $cast->id)->first();
         
         if ($existingPivot) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cast member is already added to this content.'
+                'message' => 'This cast member is already added to this content. Please select a different cast member or edit the existing one.'
             ], 422);
         }
 
