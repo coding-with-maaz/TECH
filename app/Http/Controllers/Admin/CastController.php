@@ -19,10 +19,14 @@ class CastController extends Controller
     }
     /**
      * Get cast members for a content
+     * Note: Route model binding uses ID for admin routes (not slug)
      */
-    public function index(Content $content)
+    public function index($content)
     {
-        $cast = $content->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        // Resolve content by ID (since admin routes use ID, not slug)
+        $contentModel = Content::findOrFail($content);
+        
+        $cast = $contentModel->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
         
         // Transform to format expected by frontend
         $castArray = $cast->map(function($castMember) {
@@ -83,8 +87,11 @@ class CastController extends Controller
      * 
      * This prevents duplicate cast records and ensures all casts are stored in database
      */
-    public function store(Request $request, Content $content)
+    public function store(Request $request, $content)
     {
+        // Resolve content by ID (since admin routes use ID, not slug)
+        $contentModel = Content::findOrFail($content);
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|min:1',
             'character' => 'nullable|string|max:255',
@@ -131,7 +138,7 @@ class CastController extends Controller
 
         // Step 2: Attach cast to content (include cast in this movie/TV show)
         // Check if cast is already attached to this content (prevent duplicate attachments)
-        $existingPivot = $content->castMembers()->where('casts.id', $cast->id)->first();
+        $existingPivot = $contentModel->castMembers()->where('casts.id', $cast->id)->first();
         
         if ($existingPivot) {
             return response()->json([
@@ -141,14 +148,14 @@ class CastController extends Controller
         }
 
         // Include/attach cast to content with character and order
-        $order = $request->order ?? ($content->castMembers()->count());
-        $content->castMembers()->attach($cast->id, [
+        $order = $request->order ?? ($contentModel->castMembers()->count());
+        $contentModel->castMembers()->attach($cast->id, [
             'character' => $request->character ?? '',
             'order' => $order,
         ]);
 
         // Get updated cast list
-        $castList = $content->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castList = $contentModel->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
         $castArray = $castList->map(function($castMember) {
             return [
                 'id' => $castMember->id,
@@ -169,8 +176,11 @@ class CastController extends Controller
     /**
      * Update a cast member's role in content
      */
-    public function update(Request $request, Content $content, $castId)
+    public function update(Request $request, $content, $castId)
     {
+        // Resolve content by ID (since admin routes use ID, not slug)
+        $contentModel = Content::findOrFail($content);
+        
         $validator = Validator::make($request->all(), [
             'character' => 'nullable|string|max:255',
             'order' => 'nullable|integer|min:0',
@@ -184,7 +194,7 @@ class CastController extends Controller
         }
 
         // Check if cast is attached to this content
-        $cast = $content->castMembers()->where('casts.id', $castId)->first();
+        $cast = $contentModel->castMembers()->where('casts.id', $castId)->first();
         
         if (!$cast) {
             return response()->json([
@@ -194,13 +204,13 @@ class CastController extends Controller
         }
 
         // Update pivot data
-        $content->castMembers()->updateExistingPivot($castId, [
+        $contentModel->castMembers()->updateExistingPivot($castId, [
             'character' => $request->character ?? '',
             'order' => $request->order ?? $cast->pivot->order ?? 0,
         ]);
 
         // Get updated cast list
-        $castList = $content->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castList = $contentModel->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
         $castArray = $castList->map(function($castMember) {
             return [
                 'id' => $castMember->id,
@@ -221,10 +231,13 @@ class CastController extends Controller
     /**
      * Detach a cast member from content (doesn't delete the cast, just removes from this content)
      */
-    public function destroy(Content $content, $castId)
+    public function destroy($content, $castId)
     {
+        // Resolve content by ID (since admin routes use ID, not slug)
+        $contentModel = Content::findOrFail($content);
+        
         // Check if cast is attached to this content
-        $cast = $content->castMembers()->where('casts.id', $castId)->first();
+        $cast = $contentModel->castMembers()->where('casts.id', $castId)->first();
         
         if (!$cast) {
             return response()->json([
@@ -234,10 +247,10 @@ class CastController extends Controller
         }
 
         // Detach cast from content (doesn't delete the cast member itself)
-        $content->castMembers()->detach($castId);
+        $contentModel->castMembers()->detach($castId);
 
         // Get updated cast list
-        $castList = $content->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castList = $contentModel->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
         $castArray = $castList->map(function($castMember) {
             return [
                 'id' => $castMember->id,
@@ -258,8 +271,11 @@ class CastController extends Controller
     /**
      * Reorder cast members
      */
-    public function reorder(Request $request, Content $content)
+    public function reorder(Request $request, $content)
     {
+        // Resolve content by ID (since admin routes use ID, not slug)
+        $contentModel = Content::findOrFail($content);
+        
         $validator = Validator::make($request->all(), [
             'cast_ids' => 'required|array',
             'cast_ids.*' => 'required|integer',
@@ -276,13 +292,13 @@ class CastController extends Controller
         
         // Update order for each cast member
         foreach ($castIds as $index => $castId) {
-            $content->castMembers()->updateExistingPivot($castId, [
+            $contentModel->castMembers()->updateExistingPivot($castId, [
                 'order' => $index,
             ]);
         }
 
         // Get updated cast list
-        $castList = $content->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
+        $castList = $contentModel->castMembers()->withPivot('character', 'order')->orderByPivot('order', 'asc')->get();
         $castArray = $castList->map(function($castMember) {
             return [
                 'id' => $castMember->id,

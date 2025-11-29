@@ -56,7 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('servers/update', [ContentController::class, 'updateServer'])->name('contents.servers.update');
             Route::delete('servers/delete', [ContentController::class, 'deleteServer'])->name('contents.servers.destroy');
             
-            // Cast management routes
+            // Cast management routes (using ID for route model binding)
             Route::get('cast', [CastController::class, 'index'])->name('contents.cast.index');
             Route::get('cast/search', [CastController::class, 'search'])->name('contents.cast.search');
             Route::post('cast', [CastController::class, 'store'])->name('contents.cast.store');
