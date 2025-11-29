@@ -351,8 +351,8 @@
         </div>
     </div>
 
-    <!-- Cast Section - Only show for database content -->
-    @if(isset($isCustom) && $isCustom && !empty($cast))
+    <!-- Cast Section - Show for both custom and TMDB content -->
+    @if(!empty($cast))
     <div class="mb-8">
         <h3 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Cast</h3>
         <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -366,15 +366,14 @@
                     $profilePath = is_array($castMember) && !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
                     $profileImageUrl = null;
                     if ($profilePath) {
-                        // For database content, check if it's a full URL or use directly
+                        // Check if it's a full URL
                         if (str_starts_with($profilePath, 'http')) {
-                            // Full URL
                             $profileImageUrl = $profilePath;
-                        } elseif (str_starts_with($profilePath, '/') || ($content->content_type ?? 'custom') === 'tmdb') {
-                            // TMDB path - use TMDB service
+                        } elseif (str_starts_with($profilePath, '/')) {
+                            // TMDB path (starts with /) - use TMDB service
                             $profileImageUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
                         } else {
-                            // Use the path directly (assumed to be a full URL or relative path)
+                            // Custom path - try to use directly or fallback to TMDB service
                             $profileImageUrl = $profilePath;
                         }
                     }

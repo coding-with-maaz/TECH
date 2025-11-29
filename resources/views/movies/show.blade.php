@@ -263,8 +263,8 @@
     @endif
     @endif
 
-    <!-- Cast Section - Only show for database content -->
-    @if(isset($isCustom) && $isCustom && !empty($cast))
+    <!-- Cast Section - Show for both custom and TMDB content -->
+    @if(!empty($cast))
     <div class="mb-8">
         <h3 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">Cast</h3>
         <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -274,17 +274,15 @@
                     $profilePath = !empty($castMember['profile_path']) ? $castMember['profile_path'] : null;
                     $profileUrl = null;
                     if ($profilePath) {
-                        if (isset($isCustom) && $isCustom) {
-                            // For database content, use the path directly (it's already a full URL)
-                            if (str_starts_with($profilePath, 'http')) {
-                                $profileUrl = $profilePath;
-                            } else {
-                                // If it's not a full URL, try TMDB service in case it's a TMDB path
-                                $profileUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
-                            }
-                        } else {
-                            // For TMDB content, use TMDB service
+                        // Check if it's a full URL
+                        if (str_starts_with($profilePath, 'http')) {
+                            $profileUrl = $profilePath;
+                        } elseif (str_starts_with($profilePath, '/')) {
+                            // TMDB path (starts with /) - use TMDB service
                             $profileUrl = app(\App\Services\TmdbService::class)->getImageUrl($profilePath, 'w185');
+                        } else {
+                            // Custom path - try to use directly or fallback to TMDB service
+                            $profileUrl = $profilePath;
                         }
                     }
                 @endphp
