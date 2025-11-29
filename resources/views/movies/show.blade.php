@@ -324,12 +324,34 @@
         </h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
             @foreach(array_slice($movie['recommendations']['results'], 0, 10) as $recommended)
-            <a href="{{ route('movies.show', $recommended['id']) }}" 
+            @php
+                $movieId = $recommended['id'] ?? 'unknown';
+                $movieTitle = $recommended['title'] ?? 'Unknown';
+                $posterPath = $recommended['poster_path'] ?? null;
+                $releaseDate = $recommended['release_date'] ?? null;
+                $rating = $recommended['vote_average'] ?? 0;
+                $isCustom = $recommended['is_custom'] ?? false;
+                $contentType = $recommended['content_type'] ?? 'custom';
+                
+                // Get image URL - handle both database and TMDB content
+                $imageUrl = null;
+                if ($posterPath) {
+                    if (str_starts_with($posterPath, 'http')) {
+                        $imageUrl = $posterPath;
+                    } elseif ($contentType === 'tmdb') {
+                        $imageUrl = app(\App\Services\TmdbService::class)->getImageUrl($posterPath, 'w342');
+                    } else {
+                        // Database movie with custom image
+                        $imageUrl = $posterPath;
+                    }
+                }
+            @endphp
+            <a href="{{ route('movies.show', $movieId) }}" 
                class="group relative bg-white dark:!bg-bg-card rounded-xl overflow-hidden border border-gray-200 dark:!border-border-primary hover:border-accent/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-accent/20 cursor-pointer">
                 <!-- Image Container -->
                 <div class="relative overflow-hidden aspect-[2/3] bg-gray-100 dark:!bg-bg-card-hover">
-                    <img src="{{ app(\App\Services\TmdbService::class)->getImageUrl($recommended['poster_path'] ?? null, 'w342') }}" 
-                         alt="{{ $recommended['title'] ?? 'Movie' }}" 
+                    <img src="{{ $imageUrl ?? 'https://via.placeholder.com/300x450?text=No+Image' }}" 
+                         alt="{{ $movieTitle }}" 
                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                          onerror="this.src='https://via.placeholder.com/300x450?text=No+Image'">
                     
@@ -339,7 +361,7 @@
                     <!-- Rating Badge -->
                     <div class="absolute top-2 right-2 bg-black/80 dark:!bg-black/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1 border border-accent/30">
                         <span class="text-yellow-500 text-xs">★</span>
-                        <span class="text-white text-xs font-bold">{{ number_format($recommended['vote_average'] ?? 0, 1) }}</span>
+                        <span class="text-white text-xs font-bold">{{ number_format($rating, 1) }}</span>
                     </div>
                     
                     <!-- Hover Overlay with Info -->
@@ -355,15 +377,19 @@
                 <!-- Card Content -->
                 <div class="p-3 md:p-4 bg-white dark:!bg-bg-card border-t border-gray-100 dark:!border-border-secondary">
                     <h3 class="text-sm md:text-base font-bold text-gray-900 dark:!text-white mb-2 line-clamp-2 group-hover:text-accent transition-colors duration-300 leading-tight" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                        {{ $recommended['title'] ?? 'Unknown' }}
+                        {{ $movieTitle }}
                     </h3>
                     <div class="flex items-center justify-between">
+                        @if($releaseDate)
                         <span class="text-gray-600 dark:!text-text-secondary text-xs md:text-sm font-medium" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                            {{ \Carbon\Carbon::parse($recommended['release_date'] ?? '')->format('Y') ?? 'N/A' }}
+                            {{ \Carbon\Carbon::parse($releaseDate)->format('Y') }}
                         </span>
+                        @else
+                        <span class="text-gray-600 dark:!text-text-secondary text-xs md:text-sm font-medium" style="font-family: 'Poppins', sans-serif; font-weight: 400;">N/A</span>
+                        @endif
                         <div class="flex items-center gap-1.5 bg-gray-100 dark:!bg-bg-card-hover rounded-full px-2 py-1">
                             <span class="text-yellow-500 text-xs">★</span>
-                            <span class="font-bold text-gray-900 dark:!text-white text-xs" style="font-family: 'Poppins', sans-serif; font-weight: 700;">{{ number_format($recommended['vote_average'] ?? 0, 1) }}</span>
+                            <span class="font-bold text-gray-900 dark:!text-white text-xs" style="font-family: 'Poppins', sans-serif; font-weight: 700;">{{ number_format($rating, 1) }}</span>
                         </div>
                     </div>
                 </div>

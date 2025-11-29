@@ -77,8 +77,27 @@ class MovieController extends Controller
             $content->increment('views');
             $content->refresh(); // Refresh to get updated views count
             
-            // Get recommended movies for custom content
-            $recommendedMovies = $this->tmdb->getPopularMovies(1);
+            // Get recommended movies from database
+            $recommendedMovies = Content::published()
+                ->whereIn('type', ['movie', 'documentary', 'short_film'])
+                ->where('id', '!=', $content->id) // Exclude current movie
+                ->orderBy('views', 'desc')
+                ->orderBy('release_date', 'desc')
+                ->take(10)
+                ->get();
+            
+            // Convert to array format for compatibility with view
+            $recommendedMoviesArray = $recommendedMovies->map(function($movie) {
+                return [
+                    'id' => $movie->slug ?? ('custom_' . $movie->id),
+                    'title' => $movie->title,
+                    'release_date' => $movie->release_date ? $movie->release_date->format('Y-m-d') : null,
+                    'poster_path' => $movie->poster_path,
+                    'vote_average' => $movie->rating ?? 0,
+                    'is_custom' => true,
+                    'content_type' => $movie->content_type ?? 'custom',
+                ];
+            })->toArray();
             
             // Prepare movie data from custom content
             $movieData = [
@@ -109,7 +128,7 @@ class MovieController extends Controller
                 'production_countries' => $content->country ? [['name' => $content->country]] : [],
                 'spoken_languages' => $content->language ? [['name' => $content->language]] : [],
                 'videos' => ['results' => []],
-                'recommendations' => ['results' => $recommendedMovies['results'] ?? []],
+                'recommendations' => ['results' => $recommendedMoviesArray],
             ];
 
             // Add director to crew
@@ -132,6 +151,30 @@ class MovieController extends Controller
             $movie = $this->tmdb->getMovieDetails($slug);
 
             if ($movie) {
+                // Get recommended movies from database instead of TMDB
+                $recommendedMovies = Content::published()
+                    ->whereIn('type', ['movie', 'documentary', 'short_film'])
+                    ->orderBy('views', 'desc')
+                    ->orderBy('release_date', 'desc')
+                    ->take(10)
+                    ->get();
+                
+                // Convert to array format for compatibility
+                $recommendedMoviesArray = $recommendedMovies->map(function($movieItem) {
+                    return [
+                        'id' => $movieItem->slug ?? ('custom_' . $movieItem->id),
+                        'title' => $movieItem->title,
+                        'release_date' => $movieItem->release_date ? $movieItem->release_date->format('Y-m-d') : null,
+                        'poster_path' => $movieItem->poster_path,
+                        'vote_average' => $movieItem->rating ?? 0,
+                        'is_custom' => true,
+                        'content_type' => $movieItem->content_type ?? 'custom',
+                    ];
+                })->toArray();
+                
+                // Replace TMDB recommendations with database recommendations
+                $movie['recommendations'] = ['results' => $recommendedMoviesArray];
+                
                 return view('movies.show', [
                     'movie' => $movie,
                     'isCustom' => false,
