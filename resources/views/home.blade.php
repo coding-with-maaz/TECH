@@ -57,11 +57,61 @@
         </div>
     
     <!-- Bottom Wave -->
-    <div class="absolute bottom-0 left-0 right-0 w-full" style="pointer-events: none; z-index: 10;">
+    <div class="absolute bottom-0 left-0 right-0 w-full wave-separator" style="pointer-events: none; z-index: 10;">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" class="w-full" style="height: 100px; display: block;">
-            <path d="M0,120 L0,90 C120,70 240,50 360,60 C480,70 600,50 720,60 C840,70 960,50 1080,60 C1200,70 1320,50 1440,60 L1440,120 Z" fill="#FFFFFF"></path>
+            <defs>
+                <!-- Beautiful shadow filter with glow for dark mode -->
+                <filter id="waveShadowGlow" x="-50%" y="-150%" width="200%" height="400%">
+                    <!-- Outer red glow -->
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur1"/>
+                    <feOffset dx="0" dy="-12" result="offset1"/>
+                    <feFlood flood-color="#E50914" flood-opacity="0.6"/>
+                    <feComposite in2="offset1" operator="in" result="glow1"/>
+                    
+                    <!-- Middle glow layer -->
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur2"/>
+                    <feOffset dx="0" dy="-8" result="offset2"/>
+                    <feFlood flood-color="#E50914" flood-opacity="0.8"/>
+                    <feComposite in2="offset2" operator="in" result="glow2"/>
+                    
+                    <!-- Inner shadow for depth -->
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur3"/>
+                    <feOffset dx="0" dy="-4" result="offset3"/>
+                    <feFlood flood-color="#000000" flood-opacity="0.4"/>
+                    <feComposite in2="offset3" operator="in" result="shadow1"/>
+                    
+                    <!-- Merge all effects -->
+                    <feMerge>
+                        <feMergeNode in="glow1"/>
+                        <feMergeNode in="glow2"/>
+                        <feMergeNode in="shadow1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Wave path - color changes with dark mode -->
+            <path id="wavePath" d="M0,120 L0,90 C120,70 240,50 360,60 C480,70 600,50 720,60 C840,70 960,50 1080,60 C1200,70 1320,50 1440,60 L1440,120 Z" fill="#FFFFFF"></path>
         </svg>
     </div>
+    
+    <style>
+        /* Light mode: white wave */
+        .wave-separator #wavePath {
+            fill: #FFFFFF;
+            transition: fill 0.3s ease;
+        }
+        
+        /* Dark mode: red wave with beautiful shadow and glow */
+        html.dark .wave-separator #wavePath {
+            fill: #E50914;
+            filter: url(#waveShadowGlow);
+        }
+        
+        /* Additional CSS glow effect for extra beauty in dark mode */
+        html.dark .wave-separator {
+            filter: drop-shadow(0 -10px 30px rgba(229, 9, 20, 0.5)) drop-shadow(0 -5px 15px rgba(229, 9, 20, 0.3));
+        }
+    </style>
 </section>
 
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
