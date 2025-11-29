@@ -23,6 +23,16 @@
             </section>
 
             <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-4" style="font-weight: 700;">Content Removal Request</h2>
+                <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
+                    If you want to remove any post from nazaarabox.cam, please contact us with the necessary information.
+                </p>
+                <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
+                    <strong>Email:</strong> <a href="mailto:drtoolofficial@gmail.com" class="text-accent hover:text-accent-light underline" style="font-weight: 600;">drtoolofficial@gmail.com</a>
+                </p>
+            </section>
+
+            <section>
                 <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-4" style="font-weight: 700;">Privacy Policy</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
                     This privacy policy is intended to inform you about the types of information gathered by nazaarabox.cam when you visit nazaarabox.cam
