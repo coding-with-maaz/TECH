@@ -78,6 +78,27 @@
                                  style="display: block !important; visibility: visible !important; opacity: 1 !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"
                                  onerror="this.src='https://via.placeholder.com/780x439?text=No+Image'">
                             
+                            @php
+                                $contentTypes = \App\Models\Content::getContentTypes();
+                                $contentTypeKey = $item['type'] ?? 'tv_show';
+                                $contentTypeName = $contentTypes[$contentTypeKey] ?? ucfirst(str_replace('_', ' ', $contentTypeKey));
+                                $dubbingLanguage = $item['dubbing_language'] ?? null;
+                            @endphp
+                            
+                            <!-- Content Type Badge - Top Left -->
+                            @if(!empty($contentTypeName))
+                            <div class="absolute top-2 left-2 bg-accent text-white px-3 py-1 rounded-full text-xs font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600; z-index: 3; backdrop-filter: blur(4px); background-color: rgba(229, 9, 20, 0.9);">
+                                {{ $contentTypeName }}
+                            </div>
+                            @endif
+                            
+                            <!-- Dubbing Language Badge - Top Right -->
+                            @if(!empty($dubbingLanguage))
+                            <div class="absolute top-2 right-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600; z-index: 3; backdrop-filter: blur(4px); background-color: rgba(37, 99, 235, 0.9);">
+                                {{ ucfirst($dubbingLanguage) }}
+                            </div>
+                            @endif
+                            
                             <!-- Beautiful Title Overlay - Always Visible -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end pointer-events-none" style="z-index: 2;">
                                 <div class="w-full p-4 pointer-events-auto">
