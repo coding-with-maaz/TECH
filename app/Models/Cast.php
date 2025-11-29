@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Cast extends Model
 {
@@ -12,6 +13,7 @@ class Cast extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'profile_path',
         'biography',
         'birthday',
@@ -21,6 +23,52 @@ class Cast extends Model
     protected $casts = [
         'birthday' => 'date',
     ];
+
+    /**
+     * Boot the model and generate slug automatically.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($cast) {
+            if (empty($cast->slug)) {
+                $cast->slug = $cast->generateUniqueSlug();
+            }
+        });
+
+        static::updating(function ($cast) {
+            if ($cast->isDirty('name') && empty($cast->slug)) {
+                $cast->slug = $cast->generateUniqueSlug();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug from the name.
+     */
+    public function generateUniqueSlug()
+    {
+        $slug = Str::slug($this->name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        // Check for existing slugs including soft-deleted ones (to avoid conflicts)
+        while (static::withTrashed()->where('slug', $slug)->where('id', '!=', $this->id ?? 0)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     /**
      * Get all content (movies/TV shows) this cast member is in

@@ -117,6 +117,8 @@ class MovieController extends Controller
                 'credits' => [
                     'cast' => $content->castMembers->map(function($castMember) {
                         return [
+                            'id' => $castMember->id,
+                            'slug' => $castMember->slug,
                             'name' => $castMember->name,
                             'character' => $castMember->pivot->character ?? '',
                             'profile_path' => $castMember->profile_path,

@@ -285,26 +285,32 @@
                             $profileUrl = $profilePath;
                         }
                     }
+                    
+                    // Check if we have cast slug for linking (database casts only)
+                    $castSlug = $castMember['slug'] ?? null;
+                    $castId = $castMember['id'] ?? null;
                 @endphp
-                @if($profileUrl)
-                <img src="{{ $profileUrl }}" 
-                     alt="{{ $castMember['name'] ?? 'Unknown' }}" 
-                     class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 items-center justify-center hidden mx-auto">
-                    <span class="text-gray-400 text-xs">No Photo</span>
-                </div>
-                @else
-                <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 flex items-center justify-center mx-auto">
-                    <span class="text-gray-400 text-xs">No Photo</span>
-                </div>
-                @endif
-                <p class="text-sm font-medium text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castMember['name'] ?? 'Unknown' }}</p>
-                @if(!empty($castMember['character']))
-                <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    {{ $castMember['character'] }}
-                </p>
-                @endif
+                <a href="{{ ($castSlug || $castId) ? route('cast.show', $castSlug ?? $castId) : '#' }}" class="block {{ !($castSlug || $castId) ? 'cursor-default' : 'hover:opacity-90 transition-opacity' }}">
+                    @if($profileUrl)
+                    <img src="{{ $profileUrl }}" 
+                         alt="{{ $castMember['name'] ?? 'Unknown' }}" 
+                         class="w-20 h-28 md:w-24 md:h-36 object-cover rounded-lg mb-2 shadow-lg mx-auto"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 items-center justify-center hidden mx-auto">
+                        <span class="text-gray-400 text-xs">No Photo</span>
+                    </div>
+                    @else
+                    <div class="w-20 h-28 md:w-24 md:h-36 bg-gray-200 dark:bg-gray-800 rounded-lg mb-2 flex items-center justify-center mx-auto">
+                        <span class="text-gray-400 text-xs">No Photo</span>
+                    </div>
+                    @endif
+                    <p class="text-sm font-medium text-gray-900 dark:!text-white {{ ($castSlug || $castId) ? 'hover:text-accent transition-colors' : '' }}" style="font-family: 'Poppins', sans-serif; font-weight: 600;">{{ $castMember['name'] ?? 'Unknown' }}</p>
+                    @if(!empty($castMember['character']))
+                    <p class="text-xs text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        {{ $castMember['character'] }}
+                    </p>
+                    @endif
+                </a>
             </div>
             @endforeach
         </div>

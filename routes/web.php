@@ -6,6 +6,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\TvShowController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\CastController as PublicCastController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EpisodeController;
@@ -22,6 +23,9 @@ Route::get('/tv-shows', [TvShowController::class, 'index'])->name('tv-shows.inde
 Route::get('/tv-shows/{slug}', [TvShowController::class, 'show'])->name('tv-shows.show');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+// Cast detail page
+Route::get('/cast/{slug}', [PublicCastController::class, 'show'])->name('cast.show');
 
 // Static pages
 Route::get('/dmca', [PageController::class, 'dmca'])->name('dmca');
