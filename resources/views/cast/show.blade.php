@@ -140,7 +140,7 @@
             @endphp
             <article class="group cursor-pointer">
                 <a href="{{ route($routeName, $itemId) }}" class="block">
-                    <div class="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-[2/3] mb-2" style="background-color: transparent !important;">
+                    <div class="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-[2/3]" style="background-color: transparent !important;">
                         @if($posterUrl)
                         <img src="{{ $posterUrl }}" 
                              alt="{{ $movie->title }}" 
@@ -167,8 +167,8 @@
                         </div>
                         @endif
                         
-                        <!-- Title Overlay with Character -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="z-index: 2;">
+                        <!-- Title Overlay with Character - Always Visible -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end pointer-events-none" style="z-index: 2;">
                             <div class="w-full p-2 pointer-events-auto">
                                 <h3 class="text-[10px] font-bold text-white mb-0.5 line-clamp-2" style="font-family: 'Poppins', sans-serif; font-weight: 800; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
                                     {{ $movie->title }}
@@ -232,7 +232,7 @@
             @endphp
             <article class="group cursor-pointer">
                 <a href="{{ route($routeName, $itemId) }}" class="block">
-                    <div class="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-[2/3] mb-2" style="background-color: transparent !important;">
+                    <div class="relative overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-800 aspect-[2/3]" style="background-color: transparent !important;">
                         @if($posterUrl)
                         <img src="{{ $posterUrl }}" 
                              alt="{{ $tvShow->title }}" 
