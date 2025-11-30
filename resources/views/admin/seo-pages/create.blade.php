@@ -32,13 +32,11 @@
             </label>
             <select name="page_key" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                 <option value="">Select a page...</option>
-                @if(!empty($availablePages))
-                    @foreach($availablePages as $key => $name)
-                    <option value="{{ $key }}" {{ old('page_key') === $key ? 'selected' : '' }}>{{ $name }} ({{ $key }})</option>
-                    @endforeach
-                @else
+                @forelse($availablePages as $key => $name)
+                    <option value="{{ $key }}" @if(old('page_key') === $key) selected @endif>{{ $name }} ({{ $key }})</option>
+                @empty
                     <option value="" disabled>All pages already have SEO configured</option>
-                @endif
+                @endforelse
             </select>
             @error('page_key')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -117,8 +115,8 @@
                     <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Twitter Card Type</label>
                     <select name="twitter_card" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                         <option value="">Select type...</option>
-                        <option value="summary" {{ old('twitter_card') === 'summary' ? 'selected' : '' }}>Summary</option>
-                        <option value="summary_large_image" {{ old('twitter_card') === 'summary_large_image' ? 'selected' : '' }}>Summary Large Image</option>
+                        <option value="summary" @if(old('twitter_card') === 'summary') selected @endif>Summary</option>
+                        <option value="summary_large_image" @if(old('twitter_card') === 'summary_large_image') selected @endif>Summary Large Image</option>
                     </select>
                 </div>
                 
