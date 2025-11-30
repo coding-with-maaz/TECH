@@ -205,6 +205,25 @@
         <meta name="description" content="Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.">
         <link rel="canonical" href="{{ url()->current() }}">
     @endif
+    
+    <!-- Dynamic Schema Markup (Auto-generated) -->
+    @if(isset($dynamicSchema) && is_array($dynamicSchema) && count($dynamicSchema) > 0)
+        @foreach($dynamicSchema as $schema)
+        <script type="application/ld+json">
+            {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+        </script>
+        @endforeach
+    @endif
+    
+    <!-- Additional SEO Enhancements -->
+    <meta name="theme-color" content="#E50914">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
     <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

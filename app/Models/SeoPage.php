@@ -71,24 +71,84 @@ class SeoPage extends Model
     }
 
     /**
-     * Get all available page keys
+     * Get all available page keys by automatically detecting public routes
      */
     public static function getAvailablePageKeys()
     {
-        return [
-            'home' => 'Home Page',
-            'movies.index' => 'Movies List Page',
-            'movies.show' => 'Movie Detail Page',
-            'tv-shows.index' => 'TV Shows List Page',
-            'tv-shows.show' => 'TV Show Detail Page',
-            'cast.index' => 'Cast List Page',
-            'cast.show' => 'Cast Detail Page',
-            'search' => 'Search Page',
-            'dmca' => 'DMCA Page',
-            'about' => 'About Us Page',
-            'completed' => 'Completed TV Shows Page',
-            'upcoming' => 'Upcoming Page',
+        $routes = \Illuminate\Support\Facades\Route::getRoutes();
+        $publicPages = [];
+        
+        foreach ($routes as $route) {
+            $routeName = $route->getName();
+            
+            // Skip admin routes and routes without names
+            if (!$routeName || str_starts_with($routeName, 'admin.')) {
+                continue;
+            }
+            
+            // Skip API routes
+            if (str_starts_with($routeName, 'api.')) {
+                continue;
+            }
+            
+            // Generate friendly page name from route name
+            $pageName = self::generatePageName($routeName);
+            $publicPages[$routeName] = $pageName;
+        }
+        
+        // Sort by page name for better organization
+        asort($publicPages);
+        
+        return $publicPages;
+    }
+    
+    /**
+     * Generate a friendly page name from route name
+     */
+    protected static function generatePageName(string $routeName): string
+    {
+        // Convert route name to readable format
+        $name = str_replace(['.', '-', '_'], ' ', $routeName);
+        $name = ucwords($name);
+        
+        // Special cases for better naming
+        $replacements = [
+            'Movies Index' => 'Movies List Page',
+            'Movies Show' => 'Movie Detail Page',
+            'Tv Shows Index' => 'TV Shows List Page',
+            'Tv Shows Show' => 'TV Show Detail Page',
+            'Cast Index' => 'Cast List Page',
+            'Cast Show' => 'Cast Detail Page',
+            'Dmca' => 'DMCA Page',
+            'About' => 'About Us Page',
+            'Completed' => 'Completed TV Shows Page',
+            'Upcoming' => 'Upcoming Content Page',
+            'Search' => 'Search Page',
+            'Home' => 'Home Page',
         ];
+        
+        return $replacements[$name] ?? $name . ' Page';
+    }
+    
+    /**
+     * Get all public route names (excluding admin)
+     */
+    public static function getPublicRouteNames(): array
+    {
+        $routes = \Illuminate\Support\Facades\Route::getRoutes();
+        $publicRoutes = [];
+        
+        foreach ($routes as $route) {
+            $routeName = $route->getName();
+            
+            if (!$routeName || str_starts_with($routeName, 'admin.') || str_starts_with($routeName, 'api.')) {
+                continue;
+            }
+            
+            $publicRoutes[] = $routeName;
+        }
+        
+        return $publicRoutes;
     }
 }
 

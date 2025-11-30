@@ -24,27 +24,19 @@ class SeoPageController extends Controller
      */
     public function create()
     {
-        $availablePages = SeoPage::getAvailablePageKeys();
+        $allAvailablePages = SeoPage::getAvailablePageKeys();
         $existingPageKeys = SeoPage::pluck('page_key')->toArray();
-        $availablePages = array_diff_key($availablePages, array_flip($existingPageKeys));
+        $availablePages = array_diff_key($allAvailablePages, array_flip($existingPageKeys));
         
         // Ensure $availablePages is always an array
         if (!is_array($availablePages)) {
             $availablePages = [];
         }
         
-        // Build options HTML in controller
-        $pageOptions = '<option value="">Select a page...</option>';
-        foreach ($availablePages as $key => $name) {
-            $selected = old('page_key') === $key ? 'selected' : '';
-            $pageOptions .= '<option value="' . htmlspecialchars($key) . '" ' . $selected . '>' . htmlspecialchars($name) . ' (' . htmlspecialchars($key) . ')</option>';
-        }
-        
-        if (empty($availablePages)) {
-            $pageOptions .= '<option value="" disabled>All pages already have SEO configured</option>';
-        }
-        
-        return view('admin.seo-pages.create', ['pageOptions' => $pageOptions]);
+        return view('admin.seo-pages.create', [
+            'availablePages' => $availablePages,
+            'allAvailablePages' => $allAvailablePages,
+        ]);
     }
 
     /**
@@ -53,6 +45,12 @@ class SeoPageController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateSeoData($request);
+        
+        // Auto-populate page_name from page_key if not provided
+        if (empty($validated['page_name']) && !empty($validated['page_key'])) {
+            $availablePages = SeoPage::getAvailablePageKeys();
+            $validated['page_name'] = $availablePages[$validated['page_key']] ?? $validated['page_key'];
+        }
         
         SeoPage::create($validated);
 
@@ -65,7 +63,42 @@ class SeoPageController extends Controller
      */
     public function edit(SeoPage $seoPage)
     {
-        return view('admin.seo-pages.edit', compact('seoPage'));
+        // Format JSON fields for display in textareas
+        // old() values take precedence (from validation errors), otherwise format database values
+        $schemaValue = old('schema_markup');
+        if (is_null($schemaValue)) {
+            if ($seoPage->schema_markup) {
+                $schemaValue = is_array($seoPage->schema_markup) 
+                    ? json_encode($seoPage->schema_markup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) 
+                    : $seoPage->schema_markup;
+            } else {
+                $schemaValue = '';
+            }
+        }
+        
+        $breadcrumbValue = old('breadcrumb_schema');
+        if (is_null($breadcrumbValue)) {
+            if ($seoPage->breadcrumb_schema) {
+                $breadcrumbValue = is_array($seoPage->breadcrumb_schema) 
+                    ? json_encode($seoPage->breadcrumb_schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) 
+                    : $seoPage->breadcrumb_schema;
+            } else {
+                $breadcrumbValue = '';
+            }
+        }
+        
+        $hreflangValue = old('hreflang_tags');
+        if (is_null($hreflangValue)) {
+            if ($seoPage->hreflang_tags) {
+                $hreflangValue = is_array($seoPage->hreflang_tags) 
+                    ? json_encode($seoPage->hreflang_tags, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) 
+                    : $seoPage->hreflang_tags;
+            } else {
+                $hreflangValue = '';
+            }
+        }
+        
+        return view('admin.seo-pages.edit', compact('seoPage', 'schemaValue', 'breadcrumbValue', 'hreflangValue'));
     }
 
     /**
