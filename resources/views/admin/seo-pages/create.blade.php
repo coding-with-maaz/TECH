@@ -30,21 +30,14 @@
             <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                 Page Key <span class="text-red-500">*</span>
             </label>
-            @php
-                $hasPages = isset($availablePages) && is_array($availablePages) && count($availablePages) > 0;
-            @endphp
             <select name="page_key" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                 <option value="">Select a page...</option>
-                @if($hasPages)
-                    @foreach($availablePages as $key => $name)
-                        <option value="{{ $key }}" {{ old('page_key') === $key ? 'selected' : '' }}>{{ $name }} ({{ $key }})</option>
-                    @endforeach
-                @else
-                    <option value="" disabled>All pages already have SEO configured</option>
-                @endif
+                @foreach($availablePages ?? [] as $key => $name)
+                    <option value="{{ $key }}" {{ old('page_key') === $key ? 'selected' : '' }}>{{ $name }} ({{ $key }})</option>
+                @endforeach
             </select>
             @error('page_key')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
 
@@ -55,7 +48,7 @@
             </label>
             <input type="text" name="page_name" value="{{ old('page_name') }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
             @error('page_name')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
 
@@ -180,4 +173,3 @@
     </form>
 </div>
 @endsection
-
