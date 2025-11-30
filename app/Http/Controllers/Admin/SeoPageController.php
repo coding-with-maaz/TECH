@@ -33,7 +33,18 @@ class SeoPageController extends Controller
             $availablePages = [];
         }
         
-        return view('admin.seo-pages.create', compact('availablePages'));
+        // Build options HTML in controller
+        $pageOptions = '<option value="">Select a page...</option>';
+        foreach ($availablePages as $key => $name) {
+            $selected = old('page_key') === $key ? 'selected' : '';
+            $pageOptions .= '<option value="' . htmlspecialchars($key) . '" ' . $selected . '>' . htmlspecialchars($name) . ' (' . htmlspecialchars($key) . ')</option>';
+        }
+        
+        if (empty($availablePages)) {
+            $pageOptions .= '<option value="" disabled>All pages already have SEO configured</option>';
+        }
+        
+        return view('admin.seo-pages.create', ['pageOptions' => $pageOptions]);
     }
 
     /**
