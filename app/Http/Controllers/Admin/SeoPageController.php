@@ -28,6 +28,11 @@ class SeoPageController extends Controller
         $existingPageKeys = SeoPage::pluck('page_key')->toArray();
         $availablePages = array_diff_key($availablePages, array_flip($existingPageKeys));
         
+        // Ensure $availablePages is always an array
+        if (!is_array($availablePages)) {
+            $availablePages = [];
+        }
+        
         return view('admin.seo-pages.create', compact('availablePages'));
     }
 
