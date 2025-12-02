@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Content;
-use App\Models\Cast;
-use App\Models\Episode;
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -27,10 +27,9 @@ class SitemapService
         return Cache::remember('sitemap_all_urls', $this->cacheDuration, function () {
             return [
                 'static' => $this->getStaticPages(),
-                'movies' => $this->getMoviesUrls(),
-                'tv_shows' => $this->getTvShowsUrls(),
-                'cast' => $this->getCastUrls(),
-                'episodes' => $this->getEpisodesUrls(),
+                'articles' => $this->getArticlesUrls(),
+                'categories' => $this->getCategoriesUrls(),
+                'tags' => $this->getTagsUrls(),
             ];
         });
     }
@@ -48,20 +47,14 @@ class SitemapService
                 'priority' => '1.0',
             ],
             [
-                'loc' => route('movies.index'),
-                'lastmod' => $this->getContentLastModified('movie'),
+                'loc' => route('articles.index'),
+                'lastmod' => $this->getArticlesLastModified(),
                 'changefreq' => 'daily',
                 'priority' => '0.9',
             ],
             [
-                'loc' => route('tv-shows.index'),
-                'lastmod' => $this->getContentLastModified('tv_show'),
-                'changefreq' => 'daily',
-                'priority' => '0.9',
-            ],
-            [
-                'loc' => route('cast.index'),
-                'lastmod' => $this->getCastLastModified(),
+                'loc' => route('categories.index'),
+                'lastmod' => $this->getCategoriesLastModified(),
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
             ],
@@ -78,16 +71,22 @@ class SitemapService
                 'priority' => '0.3',
             ],
             [
-                'loc' => route('completed'),
-                'lastmod' => $this->getContentLastModified('tv_show', 'completed'),
-                'changefreq' => 'weekly',
-                'priority' => '0.7',
+                'loc' => route('contact'),
+                'lastmod' => $this->getSiteLastModified(),
+                'changefreq' => 'monthly',
+                'priority' => '0.5',
             ],
             [
-                'loc' => route('upcoming'),
-                'lastmod' => $this->getContentLastModified(null, 'upcoming'),
-                'changefreq' => 'daily',
-                'priority' => '0.8',
+                'loc' => route('privacy'),
+                'lastmod' => $this->getSiteLastModified(),
+                'changefreq' => 'yearly',
+                'priority' => '0.3',
+            ],
+            [
+                'loc' => route('terms'),
+                'lastmod' => $this->getSiteLastModified(),
+                'changefreq' => 'yearly',
+                'priority' => '0.3',
             ],
         ];
 
@@ -95,23 +94,22 @@ class SitemapService
     }
 
     /**
-     * Get all movie URLs
+     * Get all article URLs
      */
-    public function getMoviesUrls(): array
+    public function getArticlesUrls(): array
     {
-        $movies = Content::published()
-            ->whereIn('type', ['movie', 'documentary', 'short_film'])
+        $articles = Article::published()
             ->whereNotNull('slug')
             ->orderBy('updated_at', 'desc')
             ->get();
 
         $urls = [];
-        foreach ($movies as $movie) {
+        foreach ($articles as $article) {
             $urls[] = [
-                'loc' => route('movies.show', $movie->slug),
-                'lastmod' => $this->formatDate($movie->updated_at),
-                'changefreq' => $this->getContentChangeFreq($movie),
-                'priority' => $this->getContentPriority($movie),
+                'loc' => route('articles.show', $article->slug),
+                'lastmod' => $this->formatDate($article->updated_at),
+                'changefreq' => $this->getArticleChangeFreq($article),
+                'priority' => $this->getArticlePriority($article),
             ];
         }
 
@@ -119,23 +117,22 @@ class SitemapService
     }
 
     /**
-     * Get all TV show URLs
+     * Get all category URLs
      */
-    public function getTvShowsUrls(): array
+    public function getCategoriesUrls(): array
     {
-        $tvShows = Content::published()
-            ->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])
+        $categories = Category::where('is_active', true)
             ->whereNotNull('slug')
             ->orderBy('updated_at', 'desc')
             ->get();
 
         $urls = [];
-        foreach ($tvShows as $tvShow) {
+        foreach ($categories as $category) {
             $urls[] = [
-                'loc' => route('tv-shows.show', $tvShow->slug),
-                'lastmod' => $this->formatDate($tvShow->updated_at),
-                'changefreq' => $this->getContentChangeFreq($tvShow),
-                'priority' => $this->getContentPriority($tvShow),
+                'loc' => route('categories.show', $category->slug),
+                'lastmod' => $this->formatDate($category->updated_at),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
             ];
         }
 
@@ -143,64 +140,26 @@ class SitemapService
     }
 
     /**
-     * Get all cast member URLs
+     * Get all tag URLs
      */
-    public function getCastUrls(): array
+    public function getTagsUrls(): array
     {
-        $casts = Cast::whereNotNull('slug')
+        $tags = Tag::whereNotNull('slug')
+            ->has('articles')
             ->orderBy('updated_at', 'desc')
             ->get();
 
         $urls = [];
-        foreach ($casts as $cast) {
+        foreach ($tags as $tag) {
             $urls[] = [
-                'loc' => route('cast.show', $cast->slug),
-                'lastmod' => $this->formatDate($cast->updated_at),
-                'changefreq' => 'monthly',
+                'loc' => route('tags.show', $tag->slug),
+                'lastmod' => $this->formatDate($tag->updated_at),
+                'changefreq' => 'weekly',
                 'priority' => '0.6',
             ];
         }
 
         return $urls;
-    }
-
-    /**
-     * Get all episode URLs
-     */
-    public function getEpisodesUrls(): array
-    {
-        $episodes = Episode::published()
-            ->whereHas('content', function ($query) {
-                $query->published();
-            })
-            ->whereNotNull('slug')
-            ->with('content:id,slug,type')
-            ->orderBy('updated_at', 'desc')
-            ->get();
-
-        $urls = [];
-        foreach ($episodes as $episode) {
-            if ($episode->content) {
-                $urls[] = [
-                    'loc' => $this->buildEpisodeUrl($episode),
-                    'lastmod' => $this->formatDate($episode->updated_at),
-                    'changefreq' => 'weekly',
-                    'priority' => '0.7',
-                ];
-            }
-        }
-
-        return $urls;
-    }
-
-    /**
-     * Build episode URL (if you have episode routes)
-     */
-    protected function buildEpisodeUrl(Episode $episode): string
-    {
-        // For now, link to TV show page
-        // You can modify this if you have episode detail pages
-        return route('tv-shows.show', $episode->content->slug);
     }
 
     /**
@@ -214,20 +173,16 @@ class SitemapService
                 'lastmod' => $this->getSiteLastModified(),
             ],
             [
-                'loc' => route('sitemap.movies'),
-                'lastmod' => $this->getContentLastModified('movie'),
+                'loc' => route('sitemap.articles'),
+                'lastmod' => $this->getArticlesLastModified(),
             ],
             [
-                'loc' => route('sitemap.tv-shows'),
-                'lastmod' => $this->getContentLastModified('tv_show'),
+                'loc' => route('sitemap.categories'),
+                'lastmod' => $this->getCategoriesLastModified(),
             ],
             [
-                'loc' => route('sitemap.cast'),
-                'lastmod' => $this->getCastLastModified(),
-            ],
-            [
-                'loc' => route('sitemap.episodes'),
-                'lastmod' => $this->getEpisodesLastModified(),
+                'loc' => route('sitemap.tags'),
+                'lastmod' => $this->getTagsLastModified(),
             ],
         ];
     }
@@ -239,10 +194,9 @@ class SitemapService
     {
         return match ($type) {
             'static' => $this->getStaticPages(),
-            'movies' => $this->getMoviesUrls(),
-            'tv-shows' => $this->getTvShowsUrls(),
-            'cast' => $this->getCastUrls(),
-            'episodes' => $this->getEpisodesUrls(),
+            'articles' => $this->getArticlesUrls(),
+            'categories' => $this->getCategoriesUrls(),
+            'tags' => $this->getTagsUrls(),
             default => [],
         };
     }
@@ -255,25 +209,24 @@ class SitemapService
         $all = $this->getAllUrls();
         return array_merge(
             $all['static'],
-            $all['movies'],
-            $all['tv_shows'],
-            $all['cast'],
-            $all['episodes']
+            $all['articles'],
+            $all['categories'],
+            $all['tags']
         );
     }
 
     /**
-     * Get content change frequency based on content attributes
+     * Get article change frequency based on article attributes
      */
-    protected function getContentChangeFreq(Content $content): string
+    protected function getArticleChangeFreq(Article $article): string
     {
-        // Featured content changes more frequently
-        if ($content->is_featured) {
+        // Featured articles change more frequently
+        if ($article->is_featured) {
             return 'daily';
         }
 
-        // Recent content changes more frequently
-        if ($content->release_date && $content->release_date->gt(now()->subMonths(3))) {
+        // Recent articles change more frequently
+        if ($article->published_at && $article->published_at->gt(now()->subMonths(3))) {
             return 'weekly';
         }
 
@@ -281,22 +234,22 @@ class SitemapService
     }
 
     /**
-     * Get content priority based on content attributes
+     * Get article priority based on article attributes
      */
-    protected function getContentPriority(Content $content): string
+    protected function getArticlePriority(Article $article): string
     {
-        // Featured content has higher priority
-        if ($content->is_featured) {
+        // Featured articles have higher priority
+        if ($article->is_featured) {
             return '0.9';
         }
 
-        // Popular content (high views) has higher priority
-        if ($content->views > 1000) {
+        // Popular articles (high views) have higher priority
+        if ($article->views > 1000) {
             return '0.8';
         }
 
-        // Recent content has higher priority
-        if ($content->release_date && $content->release_date->gt(now()->subMonths(6))) {
+        // Recent articles have higher priority
+        if ($article->published_at && $article->published_at->gt(now()->subMonths(6))) {
             return '0.7';
         }
 
@@ -324,52 +277,35 @@ class SitemapService
     }
 
     /**
-     * Get content last modified date
+     * Get articles last modified date
      */
-    protected function getContentLastModified(?string $type = null, ?string $status = null): string
+    protected function getArticlesLastModified(): string
     {
-        $query = Content::published();
-        
-        if ($type) {
-            if (in_array($type, ['movie', 'documentary', 'short_film'])) {
-                $query->whereIn('type', ['movie', 'documentary', 'short_film']);
-            } else {
-                $query->whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show']);
-            }
-        }
-
-        if ($status === 'completed') {
-            $query->where('series_status', 'completed');
-        } elseif ($status === 'upcoming') {
-            $query->where(function($q) {
-                $q->where('series_status', 'upcoming')
-                  ->orWhere('status', 'upcoming');
-            });
-        }
-
-        $latest = $query->orderBy('updated_at', 'desc')->first();
+        $latest = Article::published()
+            ->orderBy('updated_at', 'desc')
+            ->first();
         
         return $latest ? $this->formatDate($latest->updated_at) : $this->getSiteLastModified();
     }
 
     /**
-     * Get cast last modified date
+     * Get categories last modified date
      */
-    protected function getCastLastModified(): string
+    protected function getCategoriesLastModified(): string
     {
-        $latest = Cast::orderBy('updated_at', 'desc')->first();
+        $latest = Category::where('is_active', true)
+            ->orderBy('updated_at', 'desc')
+            ->first();
+        
         return $latest ? $this->formatDate($latest->updated_at) : $this->getSiteLastModified();
     }
 
     /**
-     * Get episodes last modified date
+     * Get tags last modified date
      */
-    protected function getEpisodesLastModified(): string
+    protected function getTagsLastModified(): string
     {
-        $latest = Episode::published()
-            ->whereHas('content', function ($query) {
-                $query->published();
-            })
+        $latest = Tag::has('articles')
             ->orderBy('updated_at', 'desc')
             ->first();
         

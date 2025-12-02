@@ -1,23 +1,27 @@
-# Nazaarabox - Movies & TV Shows Website
+# TechBlog - Technology Blog Platform
 
-A modern Laravel-based website for browsing movies and TV shows using The Movie Database (TMDB) API.
+A modern Laravel-based technology blog platform for publishing articles, tutorials, and tech news with categories, tags, and SEO optimization.
 
 ## Features
 
-- 🎬 Browse popular, top-rated, now playing, and upcoming movies
-- 📺 Explore popular and top-rated TV shows
-- 🔍 Search for movies and TV shows
+- 📝 Article management with rich content editor
+- 🏷️ Category and tag system for content organization
+- 👤 Author management and attribution
+- 💬 Comment system with reply support
+- 🔍 Full-text search functionality
 - 📱 Responsive design with modern UI using Tailwind CSS
-- 🎨 Beautiful dark theme with Netflix-style red accent
-- ⚡ Fast API responses with caching
-- 🎯 SEO optimized
+- 🎨 Beautiful dark theme with modern styling
+- ⚡ Fast performance with intelligent caching
+- 🎯 Comprehensive SEO optimization
+- 📊 Reading time calculation
+- ⭐ Featured articles support
 
 ## Requirements
 
 - PHP >= 8.2
 - Composer
 - Laravel 12.x
-- TMDB API Key and Access Token
+- Database (MySQL, PostgreSQL, or SQLite)
 
 ## Installation
 
@@ -42,10 +46,16 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-5. Configure your TMDB API credentials in `.env`:
+5. Configure your database in `.env`:
 ```env
-TMDB_API_KEY=your_api_key_here
-TMDB_ACCESS_TOKEN=your_access_token_here
+DB_CONNECTION=sqlite
+# Or use MySQL/PostgreSQL
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=techblog
+# DB_USERNAME=root
+# DB_PASSWORD=
 ```
 
 6. Run migrations:
@@ -62,12 +72,11 @@ Visit `http://localhost:8000` in your browser.
 
 ## Configuration
 
-The TMDB API credentials are configured in `config/services.php`:
+The application configuration is in `config/app.php`:
 
-- `TMDB_API_KEY`: Your TMDB API key
-- `TMDB_ACCESS_TOKEN`: Your TMDB access token
-- `TMDB_BASE_URL`: TMDB API base URL (default: https://api.themoviedb.org/3)
-- `TMDB_IMAGE_BASE_URL`: TMDB image base URL (default: https://image.tmdb.org/t/p)
+- `APP_NAME`: Your blog name
+- `APP_URL`: Your blog URL
+- Database configuration in `.env` file
 
 ## Project Structure
 
@@ -76,11 +85,23 @@ app/
 ├── Http/
 │   └── Controllers/
 │       ├── HomeController.php      # Home page controller
-│       ├── MovieController.php     # Movies listing and details
-│       ├── TvShowController.php    # TV shows listing and details
-│       └── SearchController.php    # Search functionality
+│       ├── ArticleController.php   # Articles listing and details
+│       ├── CategoryController.php  # Categories listing and articles
+│       ├── TagController.php       # Tags listing and articles
+│       ├── SearchController.php    # Search functionality
+│       └── Admin/
+│           ├── ArticleController.php  # Article management
+│           ├── CategoryController.php # Category management
+│           └── TagController.php      # Tag management
+├── Models/
+│   ├── Article.php                 # Article model
+│   ├── Category.php                # Category model
+│   ├── Tag.php                     # Tag model
+│   └── Comment.php                 # Comment model
 └── Services/
-    └── TmdbService.php             # TMDB API service class
+    ├── ArticleService.php          # Article business logic
+    ├── SeoService.php              # SEO management
+    └── SitemapService.php          # Sitemap generation
 
 resources/
 ├── css/
@@ -90,12 +111,15 @@ resources/
     ├── layouts/
     │   └── app.blade.php          # Main layout with Tailwind CSS
     ├── home.blade.php             # Home page
-    ├── movies/
-    │   ├── index.blade.php        # Movies listing
-    │   └── show.blade.php         # Movie details
-    ├── tv-shows/
-    │   ├── index.blade.php        # TV shows listing
-    │   └── show.blade.php         # TV show details
+    ├── articles/
+    │   ├── index.blade.php        # Articles listing
+    │   └── show.blade.php         # Article details
+    ├── categories/
+    │   ├── index.blade.php        # Categories listing
+    │   └── show.blade.php         # Category articles
+    ├── tags/
+    │   ├── index.blade.php        # Tags listing
+    │   └── show.blade.php         # Tag articles
     └── search/
         └── index.blade.php        # Search results
 
@@ -105,38 +129,89 @@ routes/
 
 ## Routes
 
-- `/` - Home page with featured content
-- `/movies` - Movies listing (with filters: popular, top_rated, now_playing, upcoming)
-- `/movies/{id}` - Movie details page
-- `/tv-shows` - TV shows listing (with filters: popular, top_rated)
-- `/tv-shows/{id}` - TV show details page
-- `/search?q={query}` - Search for movies and TV shows
+- `/` - Home page with latest articles
+- `/articles` - Articles listing with pagination
+- `/articles/{slug}` - Article detail page
+- `/categories` - Categories listing
+- `/categories/{slug}` - Articles in a category
+- `/tags` - Tags listing
+- `/tags/{slug}` - Articles with a tag
+- `/search?q={query}` - Search for articles
+- `/about` - About page
+- `/contact` - Contact page
+- `/privacy` - Privacy policy
+- `/terms` - Terms of service
 
-## API Caching
+## Caching
 
-The application uses Laravel's cache system to cache TMDB API responses for 1 hour (3600 seconds) to improve performance and reduce API calls.
+The application uses Laravel's cache system to cache:
+- Article listings and popular articles (30-60 minutes)
+- Category and tag data (1 hour)
+- Sitemap generation (1 hour)
+- All caches automatically clear when content is updated
 
 ## Technologies Used
 
 - **Laravel 12** - PHP framework
-- **TMDB API** - Movie and TV show data
-- **Tailwind CSS** - Utility-first CSS framework (via CDN)
+- **Tailwind CSS 4.0** - Utility-first CSS framework
 - **Blade** - Templating engine
-- **CSS3** - Custom theme with dark neutral + red accent
+- **Vite** - Build tool and asset bundler
+- **SQLite/MySQL/PostgreSQL** - Database support
 
 ## Design Features
 
 - Dark theme with professional color scheme
-- Netflix-style red accent color (#E50914)
+- Modern, clean design
 - Responsive grid layouts
 - Smooth hover animations
-- Card-based UI with proper aspect ratios
+- Card-based article UI
 - Modern typography and spacing
+- Reading time indicators
+- Category and tag badges
 
 ## License
 
 This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-## Credits
+## Admin Panel
 
-- Movie and TV show data provided by [The Movie Database (TMDB)](https://www.themoviedb.org/)
+Access the admin panel at `/admin` to:
+- Manage articles (create, edit, delete, publish)
+- Manage categories
+- Manage tags
+- Configure SEO for public pages
+- View dashboard statistics
+
+## Features in Detail
+
+### Articles
+- Rich content editor support
+- Featured image upload
+- Category assignment
+- Multiple tag support
+- Reading time auto-calculation
+- View counter
+- Published/Draft/Scheduled status
+- Featured article flagging
+- Comment system integration
+
+### Categories
+- Hierarchical organization
+- Custom colors and images
+- Active/inactive status
+- Sort ordering
+- Article count tracking
+
+### Tags
+- Flexible tagging system
+- Auto-slug generation
+- Article count tracking
+- Search functionality
+
+### SEO
+- Comprehensive meta tags
+- Open Graph support
+- Twitter Card support
+- Schema.org structured data
+- XML sitemap generation
+- Admin-managed SEO for all pages

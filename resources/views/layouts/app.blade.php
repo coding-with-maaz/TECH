@@ -13,14 +13,17 @@
         $routeName = request()->route()?->getName();
         $pageKeyMap = [
             'home' => 'home',
-            'movies.index' => 'movies.index',
-            'tv-shows.index' => 'tv-shows.index',
-            'cast.index' => 'cast.index',
+            'articles.index' => 'articles.index',
+            'articles.show' => 'articles.show',
+            'categories.index' => 'categories.index',
+            'categories.show' => 'categories.show',
+            'tags.index' => 'tags.index',
+            'tags.show' => 'tags.show',
             'search' => 'search',
             'about' => 'about',
-            'dmca' => 'dmca',
-            'completed' => 'completed',
-            'upcoming' => 'upcoming',
+            'contact' => 'contact',
+            'privacy' => 'privacy',
+            'terms' => 'terms',
         ];
         
         $detectedPageKey = $pageKeyMap[$routeName] ?? null;
@@ -45,11 +48,11 @@
     @endphp
     
     <!-- Primary Meta Tags -->
-    <title>{{ $seo['title'] ?? 'Nazaarabox - Movies & TV Shows' }}</title>
-    <meta name="title" content="{{ $seo['title'] ?? 'Nazaarabox - Movies & TV Shows' }}">
-    <meta name="description" content="{{ $seo['description'] ?? 'Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.' }}">
-    <meta name="keywords" content="{{ $seo['keywords'] ?? 'movies, tv shows, streaming, download, watch online, entertainment' }}">
-    <meta name="author" content="{{ $seo['author'] ?? 'Nazaarabox' }}">
+    <title>{{ $seo['title'] ?? 'Tech Blog - Articles & Tutorials' }}</title>
+    <meta name="title" content="{{ $seo['title'] ?? 'Tech Blog - Articles & Tutorials' }}">
+    <meta name="description" content="{{ $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
+    <meta name="keywords" content="{{ $seo['keywords'] ?? 'tech blog, programming, tutorials, technology, articles, web development, software' }}">
+    <meta name="author" content="{{ $seo['author'] ?? 'Tech Blog' }}">
     <meta name="robots" content="{{ $seo['robots'] ?? 'index, follow' }}">
     <meta name="language" content="{{ $seo['locale'] ?? 'en' }}">
     <meta name="revisit-after" content="7 days">
@@ -81,10 +84,10 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="{{ $seo['twitter_card'] ?? 'summary_large_image' }}">
     <meta name="twitter:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaarabox - Movies & TV Shows' }}">
-    <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $seo['description'] ?? 'Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.' }}">
+    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Tech Blog - Articles & Tutorials' }}">
+    <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta name="twitter:image" content="{{ $seo['twitter_image'] ?? $seo['image'] ?? asset('favicon.ico') }}">
-    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaarabox' }}">
+    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Tech Blog' }}">
     @if($seoService->getTwitterHandle())
     <meta name="twitter:site" content="{{ $seoService->getTwitterHandle() }}">
     <meta name="twitter:creator" content="{{ $seoService->getTwitterHandle() }}">
@@ -95,7 +98,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <meta name="application-name" content="Nazaarabox">
+    <meta name="application-name" content="Tech Blog">
     <meta name="msapplication-TileColor" content="#E50914">
     <meta name="msapplication-config" content="{{ asset('browserconfig.xml') }}">
     
@@ -110,8 +113,6 @@
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://image.tmdb.org">
-    <link rel="dns-prefetch" href="https://api.themoviedb.org">
     
     <!-- Structured Data (JSON-LD) -->
     @if(!empty($seo['schema']))

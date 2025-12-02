@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Content;
-use App\Models\Episode;
-use Illuminate\Http\Request;
+use App\Models\Article;
+use App\Models\Category;
+use App\Models\Tag;
+use App\Models\Comment;
+use App\Models\User;
+use App\Models\NewsletterSubscription;
+use App\Models\ContactMessage;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -16,83 +20,96 @@ class DashboardController extends Controller
     public function index()
     {
         // Total statistics
-        $totalContent = Content::count();
-        $totalMovies = Content::whereIn('type', ['movie', 'documentary', 'short_film'])->count();
-        $totalTvShows = Content::whereIn('type', ['tv_show', 'web_series', 'anime', 'reality_show', 'talk_show'])->count();
-        $totalEpisodes = Episode::count();
+        $totalArticles = Article::count();
+        $totalCategories = Category::count();
+        $totalTags = Tag::count();
+        $totalComments = Comment::count();
+        $totalUsers = User::count();
         
-        // Status breakdown
-        $publishedContent = Content::where('status', 'published')->count();
-        $draftContent = Content::where('status', 'draft')->count();
-        $upcomingContent = Content::where('status', 'upcoming')->count();
-        
-        // Content type breakdown
-        $tmdbContent = Content::where('content_type', 'tmdb')->count();
-        $customContent = Content::where('content_type', 'custom')->count();
+        // Article status breakdown
+        $publishedArticles = Article::where('status', 'published')->count();
+        $draftArticles = Article::where('status', 'draft')->count();
+        $scheduledArticles = Article::where('status', 'scheduled')->count();
         
         // Total views
-        $totalViews = Content::sum('views') ?? 0;
+        $totalViews = Article::sum('views') ?? 0;
         
-        // Featured content count
-        $featuredContent = Content::where('is_featured', true)->count();
+        // Featured articles count
+        $featuredArticles = Article::where('is_featured', true)->count();
         
-        // Recent content (last 10)
-        $recentContent = Content::orderBy('created_at', 'desc')->limit(10)->get();
+        // Recent articles (last 10)
+        $recentArticles = Article::with(['category', 'author'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
         
-        // Content by type breakdown
-        $contentByType = Content::select('type', DB::raw('count(*) as count'))
-            ->groupBy('type')
-            ->get()
-            ->pluck('count', 'type')
-            ->toArray();
+        // Articles by category breakdown
+        $articlesByCategory = Category::withCount('articles')
+            ->having('articles_count', '>', 0)
+            ->orderBy('articles_count', 'desc')
+            ->get();
         
-        // Recent episodes
-        $recentEpisodes = Episode::with('content')
+        // Recent comments
+        $recentComments = Comment::with(['article', 'user'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
         
-        // Content with most views
-        $topViewedContent = Content::where('views', '>', 0)
+        // Articles with most views
+        $topViewedArticles = Article::where('views', '>', 0)
             ->orderBy('views', 'desc')
             ->limit(5)
             ->get();
         
-        // Content added this month
-        $thisMonthContent = Content::whereMonth('created_at', now()->month)
+        // Articles added this month
+        $thisMonthArticles = Article::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
         
-        // Content added this week
-        $thisWeekContent = Content::whereBetween('created_at', [
+        // Articles added this week
+        $thisWeekArticles = Article::whereBetween('created_at', [
             now()->startOfWeek(),
             now()->endOfWeek()
         ])->count();
         
-        // Episodes added this month
-        $thisMonthEpisodes = Episode::whereMonth('created_at', now()->month)
+        // Comments this month
+        $thisMonthComments = Comment::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
+        
+        // Newsletter subscriptions
+        $totalSubscriptions = NewsletterSubscription::where('is_active', true)->count();
+        $newSubscriptionsThisMonth = NewsletterSubscription::where('is_active', true)
+            ->whereMonth('subscribed_at', now()->month)
+            ->whereYear('subscribed_at', now()->year)
+            ->count();
+        
+        // Contact messages
+        $unreadMessages = ContactMessage::where('status', 'unread')->count();
+        $totalMessages = ContactMessage::count();
 
         return view('admin.dashboard', compact(
-            'totalContent',
-            'totalMovies',
-            'totalTvShows',
-            'totalEpisodes',
-            'publishedContent',
-            'draftContent',
-            'upcomingContent',
-            'tmdbContent',
-            'customContent',
+            'totalArticles',
+            'totalCategories',
+            'totalTags',
+            'totalComments',
+            'totalUsers',
+            'publishedArticles',
+            'draftArticles',
+            'scheduledArticles',
             'totalViews',
-            'featuredContent',
-            'recentContent',
-            'contentByType',
-            'recentEpisodes',
-            'topViewedContent',
-            'thisMonthContent',
-            'thisWeekContent',
-            'thisMonthEpisodes'
+            'featuredArticles',
+            'recentArticles',
+            'articlesByCategory',
+            'recentComments',
+            'topViewedArticles',
+            'thisMonthArticles',
+            'thisWeekArticles',
+            'thisMonthComments',
+            'totalSubscriptions',
+            'newSubscriptionsThisMonth',
+            'unreadMessages',
+            'totalMessages'
         ));
     }
 }

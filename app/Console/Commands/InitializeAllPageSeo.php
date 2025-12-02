@@ -78,7 +78,7 @@ class InitializeAllPageSeo extends Command
     protected function createPageSeo(string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaarabox');
+        $siteName = config('app.name', 'Tech Blog');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
         PageSeo::create($defaults);
@@ -90,7 +90,7 @@ class InitializeAllPageSeo extends Command
     protected function updatePageSeo(PageSeo $pageSeo, string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaarabox');
+        $siteName = config('app.name', 'Tech Blog');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
         // Only update fields that are empty
@@ -124,15 +124,15 @@ class InitializeAllPageSeo extends Command
 
         $pageSpecificDefaults = [
             'home' => [
-                'meta_title' => "{$siteName} - Watch Movies & TV Shows Online",
-                'meta_description' => 'Discover and watch thousands of movies and TV shows online. Browse popular content, top-rated titles, and latest releases. Download and stream in high quality.',
-                'meta_keywords' => 'movies, tv shows, streaming, watch online, download movies, entertainment, latest movies, popular tv shows',
-                'og_title' => "{$siteName} - Watch Movies & TV Shows Online",
-                'og_description' => 'Discover and watch thousands of movies and TV shows online. Browse popular content, top-rated titles, and latest releases.',
+                'meta_title' => "{$siteName} - Latest Technology News & Tutorials",
+                'meta_description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights. Learn from expert articles and tutorials.',
+                'meta_keywords' => 'technology, programming, web development, tutorials, tech news, coding, software development, AI, machine learning',
+                'og_title' => "{$siteName} - Latest Technology News & Tutorials",
+                'og_description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights.',
                 'og_image' => asset('favicon.ico'),
                 'og_url' => $siteUrl,
-                'twitter_title' => "{$siteName} - Watch Movies & TV Shows Online",
-                'twitter_description' => 'Discover and watch thousands of movies and TV shows online. Browse popular content, top-rated titles, and latest releases.',
+                'twitter_title' => "{$siteName} - Latest Technology News & Tutorials",
+                'twitter_description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights.',
                 'twitter_image' => asset('favicon.ico'),
                 'schema_markup' => json_encode([
                     '@context' => 'https://schema.org',
@@ -149,103 +149,104 @@ class InitializeAllPageSeo extends Command
                     ]
                 ], JSON_PRETTY_PRINT),
             ],
-            'movies.index' => [
-                'meta_title' => "Movies - Browse All Movies | {$siteName}",
-                'meta_description' => 'Browse our complete collection of movies. Find action, drama, comedy, thriller, horror movies and more. Watch and download movies in high quality.',
-                'meta_keywords' => 'movies, watch movies, download movies, latest movies, popular movies, action movies, drama movies, comedy movies',
-                'og_title' => "Movies - Browse All Movies | {$siteName}",
-                'og_description' => 'Browse our complete collection of movies. Find action, drama, comedy, thriller, horror movies and more.',
+            'articles.index' => [
+                'meta_title' => "Articles - Browse All Tech Articles | {$siteName}",
+                'meta_description' => 'Browse our complete collection of technology articles, tutorials, and guides. Learn programming, web development, and stay updated with tech trends.',
+                'meta_keywords' => 'tech articles, programming tutorials, web development guides, technology news, coding tutorials',
+                'og_title' => "Articles - Browse All Tech Articles | {$siteName}",
+                'og_description' => 'Browse our complete collection of technology articles, tutorials, and guides.',
                 'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/movies',
-                'twitter_title' => "Movies - Browse All Movies | {$siteName}",
-                'twitter_description' => 'Browse our complete collection of movies. Find action, drama, comedy, thriller, horror movies and more.',
+                'og_url' => $siteUrl . '/articles',
+                'twitter_title' => "Articles - Browse All Tech Articles | {$siteName}",
+                'twitter_description' => 'Browse our complete collection of technology articles, tutorials, and guides.',
                 'twitter_image' => asset('favicon.ico'),
             ],
-            'tv-shows.index' => [
-                'meta_title' => "TV Shows - Browse All TV Series | {$siteName}",
-                'meta_description' => 'Browse our complete collection of TV shows and series. Find drama, comedy, action, thriller series and more. Watch and download TV shows in high quality.',
-                'meta_keywords' => 'tv shows, tv series, watch tv shows, download tv shows, drama series, comedy series, latest tv shows',
-                'og_title' => "TV Shows - Browse All TV Series | {$siteName}",
-                'og_description' => 'Browse our complete collection of TV shows and series. Find drama, comedy, action, thriller series and more.',
+            'categories.index' => [
+                'meta_title' => "Categories - Browse Tech Categories | {$siteName}",
+                'meta_description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more technology topics.',
+                'meta_keywords' => 'tech categories, programming categories, web development, AI, machine learning, tutorials',
+                'og_title' => "Categories - Browse Tech Categories | {$siteName}",
+                'og_description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more.',
                 'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/tv-shows',
-                'twitter_title' => "TV Shows - Browse All TV Series | {$siteName}",
-                'twitter_description' => 'Browse our complete collection of TV shows and series. Find drama, comedy, action, thriller series and more.',
+                'og_url' => $siteUrl . '/categories',
+                'twitter_title' => "Categories - Browse Tech Categories | {$siteName}",
+                'twitter_description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more.',
                 'twitter_image' => asset('favicon.ico'),
             ],
-            'cast.index' => [
-                'meta_title' => "Cast & Actors - Browse All Actors | {$siteName}",
-                'meta_description' => 'Browse our collection of actors and cast members. Discover popular actors, their movies and TV shows, biographies and more.',
-                'meta_keywords' => 'actors, cast, celebrities, movie stars, tv actors, popular actors, actor profiles',
-                'og_title' => "Cast & Actors - Browse All Actors | {$siteName}",
-                'og_description' => 'Browse our collection of actors and cast members. Discover popular actors, their movies and TV shows.',
+            'tags.index' => [
+                'meta_title' => "Tags - Browse All Tags | {$siteName}",
+                'meta_description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
+                'meta_keywords' => 'tags, tech tags, programming tags, technology topics',
+                'og_title' => "Tags - Browse All Tags | {$siteName}",
+                'og_description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
                 'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/cast',
-                'twitter_title' => "Cast & Actors - Browse All Actors | {$siteName}",
-                'twitter_description' => 'Browse our collection of actors and cast members. Discover popular actors, their movies and TV shows.',
+                'og_url' => $siteUrl . '/tags',
+                'twitter_title' => "Tags - Browse All Tags | {$siteName}",
+                'twitter_description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
                 'twitter_image' => asset('favicon.ico'),
             ],
             'search' => [
-                'meta_title' => "Search Movies & TV Shows | {$siteName}",
-                'meta_description' => 'Search for your favorite movies and TV shows. Find exactly what you\'re looking for with our powerful search feature.',
-                'meta_keywords' => 'search movies, search tv shows, find movies, movie search, tv show search',
-                'og_title' => "Search Movies & TV Shows | {$siteName}",
-                'og_description' => 'Search for your favorite movies and TV shows. Find exactly what you\'re looking for.',
+                'meta_title' => "Search Articles | {$siteName}",
+                'meta_description' => 'Search for technology articles, tutorials, and guides. Find exactly what you\'re looking for with our powerful search feature.',
+                'meta_keywords' => 'search articles, search tutorials, find tech articles, article search',
+                'og_title' => "Search Articles | {$siteName}",
+                'og_description' => 'Search for technology articles, tutorials, and guides. Find exactly what you\'re looking for.',
                 'og_image' => asset('favicon.ico'),
                 'og_url' => $siteUrl . '/search',
-                'twitter_title' => "Search Movies & TV Shows | {$siteName}",
-                'twitter_description' => 'Search for your favorite movies and TV shows. Find exactly what you\'re looking for.',
+                'twitter_title' => "Search Articles | {$siteName}",
+                'twitter_description' => 'Search for technology articles, tutorials, and guides. Find exactly what you\'re looking for.',
                 'twitter_image' => asset('favicon.ico'),
                 'meta_robots' => 'noindex, follow',
             ],
             'about' => [
                 'meta_title' => "About Us | {$siteName}",
-                'meta_description' => "Learn more about {$siteName}. Discover our mission, values, and commitment to providing quality entertainment content.",
-                'meta_keywords' => 'about us, company information, mission, values',
+                'meta_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
+                'meta_keywords' => 'about us, company information, mission, values, tech blog',
                 'og_title' => "About Us | {$siteName}",
-                'og_description' => "Learn more about {$siteName}. Discover our mission and values.",
+                'og_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
                 'og_image' => asset('favicon.ico'),
                 'og_url' => $siteUrl . '/about',
                 'twitter_title' => "About Us | {$siteName}",
-                'twitter_description' => "Learn more about {$siteName}. Discover our mission and values.",
+                'twitter_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
                 'twitter_image' => asset('favicon.ico'),
             ],
-            'dmca' => [
-                'meta_title' => "DMCA Policy | {$siteName}",
-                'meta_description' => "Read our DMCA policy and learn how to submit a copyright infringement notice. We respect intellectual property rights.",
-                'meta_keywords' => 'dmca, copyright, policy, intellectual property, takedown notice',
-                'og_title' => "DMCA Policy | {$siteName}",
-                'og_description' => "Read our DMCA policy and learn how to submit a copyright infringement notice.",
+            'contact' => [
+                'meta_title' => "Contact Us | {$siteName}",
+                'meta_description' => "Get in touch with {$siteName}. We'd love to hear from you. Send us your questions, feedback, or suggestions.",
+                'meta_keywords' => 'contact, contact us, get in touch, support, feedback',
+                'og_title' => "Contact Us | {$siteName}",
+                'og_description' => "Get in touch with {$siteName}. We'd love to hear from you.",
                 'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/dmca',
-                'twitter_title' => "DMCA Policy | {$siteName}",
-                'twitter_description' => "Read our DMCA policy and learn how to submit a copyright infringement notice.",
+                'og_url' => $siteUrl . '/contact',
+                'twitter_title' => "Contact Us | {$siteName}",
+                'twitter_description' => "Get in touch with {$siteName}. We'd love to hear from you.",
+                'twitter_image' => asset('favicon.ico'),
+            ],
+            'privacy' => [
+                'meta_title' => "Privacy Policy | {$siteName}",
+                'meta_description' => "Read our privacy policy to understand how we collect, use, and protect your personal information.",
+                'meta_keywords' => 'privacy policy, data protection, privacy, personal information',
+                'og_title' => "Privacy Policy | {$siteName}",
+                'og_description' => "Read our privacy policy to understand how we collect, use, and protect your personal information.",
+                'og_image' => asset('favicon.ico'),
+                'og_url' => $siteUrl . '/privacy',
+                'twitter_title' => "Privacy Policy | {$siteName}",
+                'twitter_description' => "Read our privacy policy to understand how we collect, use, and protect your personal information.",
                 'twitter_image' => asset('favicon.ico'),
                 'meta_robots' => 'noindex, follow',
             ],
-            'completed' => [
-                'meta_title' => "Completed TV Shows & Series | {$siteName}",
-                'meta_description' => 'Browse our collection of completed TV shows and series. Find finished series with all episodes available.',
-                'meta_keywords' => 'completed tv shows, finished series, completed series, all episodes available',
-                'og_title' => "Completed TV Shows & Series | {$siteName}",
-                'og_description' => 'Browse our collection of completed TV shows and series. Find finished series with all episodes available.',
+            'terms' => [
+                'meta_title' => "Terms of Service | {$siteName}",
+                'meta_description' => "Read our terms of service to understand the rules and guidelines for using our website.",
+                'meta_keywords' => 'terms of service, terms and conditions, usage policy, terms',
+                'og_title' => "Terms of Service | {$siteName}",
+                'og_description' => "Read our terms of service to understand the rules and guidelines for using our website.",
                 'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/completed',
-                'twitter_title' => "Completed TV Shows & Series | {$siteName}",
-                'twitter_description' => 'Browse our collection of completed TV shows and series. Find finished series with all episodes available.',
+                'og_url' => $siteUrl . '/terms',
+                'twitter_title' => "Terms of Service | {$siteName}",
+                'twitter_description' => "Read our terms of service to understand the rules and guidelines for using our website.",
                 'twitter_image' => asset('favicon.ico'),
-            ],
-            'upcoming' => [
-                'meta_title' => "Upcoming Movies & TV Shows | {$siteName}",
-                'meta_description' => 'Discover upcoming movies and TV shows. Stay updated with the latest releases and upcoming content.',
-                'meta_keywords' => 'upcoming movies, upcoming tv shows, latest releases, new releases, coming soon',
-                'og_title' => "Upcoming Movies & TV Shows | {$siteName}",
-                'og_description' => 'Discover upcoming movies and TV shows. Stay updated with the latest releases.',
-                'og_image' => asset('favicon.ico'),
-                'og_url' => $siteUrl . '/upcoming',
-                'twitter_title' => "Upcoming Movies & TV Shows | {$siteName}",
-                'twitter_description' => 'Discover upcoming movies and TV shows. Stay updated with the latest releases.',
-                'twitter_image' => asset('favicon.ico'),
+                'meta_robots' => 'noindex, follow',
             ],
         ];
 
@@ -262,14 +263,14 @@ class InitializeAllPageSeo extends Command
     {
         $paths = [
             'home' => '/',
-            'movies.index' => '/movies',
-            'tv-shows.index' => '/tv-shows',
-            'cast.index' => '/cast',
+            'articles.index' => '/articles',
+            'categories.index' => '/categories',
+            'tags.index' => '/tags',
             'search' => '/search',
             'about' => '/about',
-            'dmca' => '/dmca',
-            'completed' => '/completed',
-            'upcoming' => '/upcoming',
+            'contact' => '/contact',
+            'privacy' => '/privacy',
+            'terms' => '/terms',
         ];
 
         return $paths[$pageKey] ?? '/';

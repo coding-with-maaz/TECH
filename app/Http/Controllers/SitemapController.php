@@ -63,35 +63,27 @@ class SitemapController extends Controller
     }
 
     /**
-     * Generate movies sitemap
+     * Generate articles sitemap
      */
-    public function movies(): Response
+    public function articles(): Response
     {
-        return $this->byType('movies');
+        return $this->byType('articles');
     }
 
     /**
-     * Generate TV shows sitemap
+     * Generate categories sitemap
      */
-    public function tvShows(): Response
+    public function categories(): Response
     {
-        return $this->byType('tv-shows');
+        return $this->byType('categories');
     }
 
     /**
-     * Generate cast sitemap
+     * Generate tags sitemap
      */
-    public function cast(): Response
+    public function tags(): Response
     {
-        return $this->byType('cast');
-    }
-
-    /**
-     * Generate episodes sitemap
-     */
-    public function episodes(): Response
-    {
-        return $this->byType('episodes');
+        return $this->byType('tags');
     }
 }
 

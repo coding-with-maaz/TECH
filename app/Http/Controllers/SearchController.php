@@ -2,54 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Content;
-use App\Services\TmdbService;
+use App\Services\ArticleService;
 use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-    protected $tmdb;
-    protected $seo;
+    protected $articleService;
+    protected $seoService;
 
-    public function __construct(TmdbService $tmdb, SeoService $seo)
+    public function __construct(ArticleService $articleService, SeoService $seoService)
     {
-        $this->tmdb = $tmdb;
-        $this->seo = $seo;
+        $this->articleService = $articleService;
+        $this->seoService = $seoService;
     }
 
     public function search(Request $request)
     {
         $query = $request->get('q');
-        $page = $request->get('page', 1);
-
-        // Get popular content based on views for sidebar
-        $popularContent = Content::published()
-            ->orderBy('views', 'desc')
-            ->orderBy('release_date', 'desc')
-            ->take(5)
-            ->get();
 
         if (!$query) {
             return view('search.index', [
-                'movies' => [],
-                'tvShows' => [],
+                'articles' => collect([]),
                 'query' => '',
-                'popularContent' => $popularContent,
-                'seo' => $this->seo->forSearch(),
+                'categories' => $this->articleService->getCategoriesWithCounts(),
+                'popularTags' => $this->articleService->getPopularTags(10),
+                'seo' => $this->seoService->forSearch(),
             ]);
         }
 
-        $results = $this->tmdb->search($query, $page);
+        $articles = $this->articleService->searchArticles($query, 15);
+        $categories = $this->articleService->getCategoriesWithCounts();
+        $popularTags = $this->articleService->getPopularTags(10);
 
         return view('search.index', [
-            'movies' => $results['movies']['results'] ?? [],
-            'tvShows' => $results['tv_shows']['results'] ?? [],
+            'articles' => $articles,
             'query' => $query,
-            'currentPage' => $results['movies']['page'] ?? 1,
-            'totalPages' => $results['movies']['total_pages'] ?? 1,
-            'popularContent' => $popularContent,
-            'seo' => $this->seo->forSearch($query),
+            'categories' => $categories,
+            'popularTags' => $popularTags,
+            'seo' => $this->seoService->forSearch($query),
         ]);
     }
 }

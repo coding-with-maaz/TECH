@@ -12,7 +12,7 @@ class SchemaHelper
         $defaults = [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => $data['name'] ?? 'Nazaarabox',
+            'name' => $data['name'] ?? 'Tech Blog',
             'url' => $data['url'] ?? url('/'),
             'logo' => $data['logo'] ?? url('/images/logo.png'),
             'sameAs' => $data['social_links'] ?? [],
@@ -37,7 +37,7 @@ class SchemaHelper
         return array_merge([
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
-            'name' => $data['name'] ?? 'Nazaarabox',
+            'name' => $data['name'] ?? 'Tech Blog',
             'url' => $data['url'] ?? url('/'),
             'potentialAction' => [
                 '@type' => 'SearchAction',
@@ -72,155 +72,6 @@ class SchemaHelper
         ];
     }
 
-    /**
-     * Generate Movie schema
-     */
-    public static function movie(array $data): array
-    {
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Movie',
-            'name' => $data['name'] ?? '',
-            'image' => $data['image'] ?? '',
-            'description' => $data['description'] ?? '',
-            'url' => $data['url'] ?? '',
-        ];
-
-        if (isset($data['director'])) {
-            $schema['director'] = [
-                '@type' => 'Person',
-                'name' => $data['director'],
-            ];
-        }
-
-        if (isset($data['date_published'])) {
-            $schema['datePublished'] = $data['date_published'];
-        }
-
-        if (isset($data['duration'])) {
-            $schema['duration'] = 'PT' . $data['duration'] . 'M';
-        }
-
-        if (isset($data['aggregate_rating'])) {
-            $schema['aggregateRating'] = [
-                '@type' => 'AggregateRating',
-                'ratingValue' => $data['aggregate_rating']['value'] ?? 0,
-                'ratingCount' => $data['aggregate_rating']['count'] ?? 0,
-            ];
-        }
-
-        if (isset($data['genre'])) {
-            $schema['genre'] = is_array($data['genre']) ? $data['genre'] : [$data['genre']];
-        }
-
-        if (isset($data['actor'])) {
-            $actors = is_array($data['actor']) ? $data['actor'] : [$data['actor']];
-            $schema['actor'] = array_map(function($actor) {
-                return [
-                    '@type' => 'Person',
-                    'name' => is_array($actor) ? $actor['name'] : $actor,
-                ];
-            }, $actors);
-        }
-
-        return $schema;
-    }
-
-    /**
-     * Generate TVSeries schema
-     */
-    public static function tvSeries(array $data): array
-    {
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'TVSeries',
-            'name' => $data['name'] ?? '',
-            'image' => $data['image'] ?? '',
-            'description' => $data['description'] ?? '',
-            'url' => $data['url'] ?? '',
-        ];
-
-        if (isset($data['number_of_seasons'])) {
-            $schema['numberOfSeasons'] = $data['number_of_seasons'];
-        }
-
-        if (isset($data['number_of_episodes'])) {
-            $schema['numberOfEpisodes'] = $data['number_of_episodes'];
-        }
-
-        if (isset($data['start_date'])) {
-            $schema['startDate'] = $data['start_date'];
-        }
-
-        if (isset($data['end_date'])) {
-            $schema['endDate'] = $data['end_date'];
-        }
-
-        if (isset($data['actor'])) {
-            $actors = is_array($data['actor']) ? $data['actor'] : [$data['actor']];
-            $schema['actor'] = array_map(function($actor) {
-                return [
-                    '@type' => 'Person',
-                    'name' => is_array($actor) ? $actor['name'] : $actor,
-                ];
-            }, $actors);
-        }
-
-        return $schema;
-    }
-
-    /**
-     * Generate VideoObject schema
-     */
-    public static function videoObject(array $data): array
-    {
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'VideoObject',
-            'name' => $data['name'] ?? '',
-            'description' => $data['description'] ?? '',
-            'thumbnailUrl' => $data['thumbnail'] ?? '',
-            'uploadDate' => $data['upload_date'] ?? date('c'),
-            'contentUrl' => $data['content_url'] ?? '',
-        ];
-
-        if (isset($data['duration'])) {
-            $schema['duration'] = 'PT' . $data['duration'] . 'S';
-        }
-
-        return $schema;
-    }
-
-    /**
-     * Generate Person schema
-     */
-    public static function person(array $data): array
-    {
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Person',
-            'name' => $data['name'] ?? '',
-            'image' => $data['image'] ?? '',
-            'description' => $data['description'] ?? '',
-        ];
-
-        if (isset($data['birth_date'])) {
-            $schema['birthDate'] = $data['birth_date'];
-        }
-
-        if (isset($data['birth_place'])) {
-            $schema['birthPlace'] = [
-                '@type' => 'Place',
-                'name' => $data['birth_place'],
-            ];
-        }
-
-        if (isset($data['job_title'])) {
-            $schema['jobTitle'] = $data['job_title'];
-        }
-
-        return $schema;
-    }
 
     /**
      * Generate CollectionPage schema
@@ -234,6 +85,80 @@ class SchemaHelper
             'url' => $data['url'] ?? '',
             'description' => $data['description'] ?? '',
         ];
+    }
+
+    /**
+     * Generate Article schema
+     */
+    public static function article(array $data): array
+    {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $data['headline'] ?? $data['name'] ?? '',
+            'image' => $data['image'] ?? '',
+            'description' => $data['description'] ?? '',
+            'url' => $data['url'] ?? '',
+            'datePublished' => $data['date_published'] ?? date('c'),
+            'dateModified' => $data['date_modified'] ?? date('c'),
+        ];
+
+        if (isset($data['author'])) {
+            $schema['author'] = [
+                '@type' => 'Person',
+                'name' => is_array($data['author']) ? ($data['author']['name'] ?? '') : $data['author'],
+            ];
+        }
+
+        if (isset($data['publisher'])) {
+            $schema['publisher'] = [
+                '@type' => 'Organization',
+                'name' => is_array($data['publisher']) ? ($data['publisher']['name'] ?? '') : $data['publisher'],
+            ];
+        }
+
+        if (isset($data['category'])) {
+            $schema['articleSection'] = is_array($data['category']) ? ($data['category']['name'] ?? '') : $data['category'];
+        }
+
+        if (isset($data['keywords'])) {
+            $schema['keywords'] = is_array($data['keywords']) ? implode(', ', $data['keywords']) : $data['keywords'];
+        }
+
+        return $schema;
+    }
+
+    /**
+     * Generate BlogPosting schema
+     */
+    public static function blogPosting(array $data): array
+    {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $data['headline'] ?? $data['name'] ?? '',
+            'image' => $data['image'] ?? '',
+            'description' => $data['description'] ?? '',
+            'url' => $data['url'] ?? '',
+            'datePublished' => $data['date_published'] ?? date('c'),
+            'dateModified' => $data['date_modified'] ?? date('c'),
+        ];
+
+        if (isset($data['author'])) {
+            $schema['author'] = [
+                '@type' => 'Person',
+                'name' => is_array($data['author']) ? ($data['author']['name'] ?? '') : $data['author'],
+            ];
+        }
+
+        if (isset($data['publisher'])) {
+            $schema['publisher'] = [
+                '@type' => 'Organization',
+                'name' => is_array($data['publisher']) ? ($data['publisher']['name'] ?? '') : $data['publisher'],
+            ];
+        }
+
+        return $schema;
     }
 }
 

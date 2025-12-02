@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - Nazaarabox')
+@section('title', 'About Us - Tech Blog')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -12,27 +12,27 @@
         <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 md:p-8 space-y-6" style="font-family: 'Poppins', sans-serif;">
             <section>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    FREE Download Korean / Chinese dramas & Anime in Hindi or English dub on our website. and We use an annoying advertisement to keep this site running; forgive us for it.
+                    Welcome to our tech blog! We are passionate about technology, programming, and sharing knowledge with the developer community. Our mission is to provide high-quality articles, tutorials, and insights about the latest trends in technology, web development, programming languages, and software engineering.
                 </p>
             </section>
 
             <section>
-                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">English</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">What We Do</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    We do not dub any drama Hindi or English which comes on OTT. We upload them on our site for Free.
+                    We publish in-depth articles, step-by-step tutorials, and practical guides covering a wide range of technology topics. From beginner-friendly introductions to advanced programming concepts, we aim to help developers at all levels improve their skills and stay updated with the latest industry trends.
                 </p>
             </section>
 
             <section>
-                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Hindi</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Our Mission</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    Hum koi drama Hindi ya English dub nahi karte jo OTT per aata hai unhen hi Free mein upload karte hain.
+                    Our goal is to create a comprehensive resource for developers, tech enthusiasts, and anyone interested in learning about technology. We believe in making technical knowledge accessible and understandable for everyone.
                 </p>
             </section>
 
             <section>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    This site does not store any files on its server. All contents are provided by non-affiliated third parties. If you are the copyright owner and want us to remove content from website check out our <a href="{{ route('dmca') }}" class="text-accent hover:text-accent-light underline" style="font-weight: 600;">DMCA Page</a>.
+                    Have questions or suggestions? We'd love to hear from you! Feel free to <a href="{{ route('contact') }}" class="text-accent hover:text-accent-light underline" style="font-weight: 600;">contact us</a> with your feedback, article ideas, or any inquiries.
                 </p>
             </section>
         </div>

@@ -4,24 +4,23 @@ namespace App\Services;
 
 use App\Helpers\SchemaHelper;
 use App\Models\PageSeo;
-use App\Services\TmdbService;
+use App\Models\Article;
+use App\Models\Category;
 
 class SeoService
 {
-    protected $tmdb;
     protected $siteName;
     protected $siteUrl;
     protected $defaultImage;
     protected $twitterHandle;
     protected $facebookAppId;
 
-    public function __construct(TmdbService $tmdb)
+    public function __construct()
     {
-        $this->tmdb = $tmdb;
-        $this->siteName = config('app.name', 'Nazaarabox');
+        $this->siteName = config('app.name', 'TechBlog');
         $this->siteUrl = config('app.url', url('/'));
         $this->defaultImage = asset('favicon.ico');
-        $this->twitterHandle = '@nazaarabox'; // Update with your Twitter handle
+        $this->twitterHandle = '@techblog'; // Update with your Twitter handle
         $this->facebookAppId = ''; // Add your Facebook App ID if available
     }
 
@@ -41,8 +40,8 @@ class SeoService
         }
 
         $title = $data['title'] ?? $this->siteName;
-        $description = $data['description'] ?? 'Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.';
-        $keywords = $data['keywords'] ?? 'movies, tv shows, streaming, download, watch online, entertainment';
+        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights. Stay updated with the latest trends in programming, web development, AI, and more.';
+        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development';
         $image = $data['image'] ?? $this->defaultImage;
         $url = $data['url'] ?? url()->current();
         $type = $data['type'] ?? 'website';
@@ -176,9 +175,9 @@ class SeoService
     public function forHome(): array
     {
         return $this->generate([
-            'title' => 'Nazaarabox - Watch Movies & TV Shows Online',
-            'description' => 'Discover and watch thousands of movies and TV shows online. Browse popular content, top-rated titles, and latest releases. Download and stream in high quality.',
-            'keywords' => 'movies, tv shows, streaming, watch online, download movies, entertainment, latest movies, popular tv shows',
+            'title' => 'TechBlog - Latest Technology News & Tutorials',
+            'description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights. Learn from expert articles and tutorials.',
+            'keywords' => 'technology, programming, web development, tutorials, tech news, coding, software development, AI, machine learning',
             'type' => 'website',
             'schema' => [
                 SchemaHelper::website([
@@ -195,220 +194,135 @@ class SeoService
     }
 
     /**
-     * Generate SEO for movies listing page
+     * Generate SEO for articles listing page
      */
-    public function forMoviesIndex(): array
+    public function forArticlesIndex(): array
     {
         return $this->generate([
-            'title' => 'Movies - Browse All Movies | Nazaarabox',
-            'description' => 'Browse our complete collection of movies. Find action, drama, comedy, thriller, and more. Watch and download movies in high quality.',
-            'keywords' => 'movies, watch movies, download movies, action movies, drama movies, comedy movies, latest movies',
+            'title' => 'Articles - Browse All Tech Articles | TechBlog',
+            'description' => 'Browse our complete collection of technology articles, tutorials, and guides. Learn programming, web development, and stay updated with tech trends.',
+            'keywords' => 'tech articles, programming tutorials, web development guides, technology news, coding tutorials',
             'type' => 'website',
             'schema' => [
                 SchemaHelper::collectionPage([
-                    'name' => 'Movies',
-                    'url' => route('movies.index'),
-                    'description' => 'Browse our complete collection of movies',
+                    'name' => 'Articles',
+                    'url' => route('articles.index'),
+                    'description' => 'Browse our complete collection of technology articles',
                 ]),
             ],
-        ], 'movies.index');
+        ], 'articles.index');
     }
 
     /**
-     * Generate SEO for a movie detail page
+     * Generate SEO for an article detail page
      */
-    public function forMovie($movie, $content = null): array
+    public function forArticle(Article $article): array
     {
-        $title = $movie['title'] ?? $movie['original_title'] ?? 'Movie';
-        $description = $movie['overview'] ?? $movie['description'] ?? "Watch {$title} online. Download and stream in high quality.";
-        $releaseDate = $movie['release_date'] ?? ($content?->release_date?->format('Y-m-d'));
-        $rating = $movie['vote_average'] ?? $movie['rating'] ?? 0;
-        $duration = $movie['runtime'] ?? $content?->duration;
-        $director = $movie['director'] ?? ($content?->director ?? null);
+        $title = $article->title;
+        $description = $article->excerpt ?: substr(strip_tags($article->content), 0, 160);
+        $publishedDate = $article->published_at ? $article->published_at->format('Y-m-d') : $article->created_at->format('Y-m-d');
+        $modifiedDate = $article->updated_at->format('Y-m-d');
         
         // Get image
-        $image = $this->getImageUrl($movie['backdrop_path'] ?? $movie['poster_path'] ?? $content?->backdrop_path ?? $content?->poster_path, 'w1280');
+        $image = $article->featured_image 
+            ? (filter_var($article->featured_image, FILTER_VALIDATE_URL) ? $article->featured_image : url($article->featured_image))
+            : $this->defaultImage;
         
-        // Get genres
-        $genres = [];
-        if (isset($movie['genres']) && is_array($movie['genres'])) {
-            $genres = array_map(function($g) {
-                return is_array($g) ? ($g['name'] ?? '') : $g;
-            }, $movie['genres']);
-        } elseif ($content?->genres) {
-            $genres = is_array($content->genres) ? $content->genres : [$content->genres];
-        }
+        // Get category
+        $category = $article->category ? $article->category->name : null;
         
-        // Get actors
-        $actors = [];
-        if (isset($movie['credits']['cast'])) {
-            $actors = array_slice(array_map(function($actor) {
-                return $actor['name'] ?? '';
-            }, $movie['credits']['cast']), 0, 10);
-        } elseif ($content?->castMembers) {
-            $actors = $content->castMembers->pluck('name')->toArray();
-        }
+        // Get tags
+        $tags = $article->tags->pluck('name')->toArray();
+        
+        // Get author
+        $author = $article->author ? $article->author->name : $this->siteName;
 
-        $url = route('movies.show', $content?->slug ?? ($movie['id'] ?? ''));
-        $keywords = implode(', ', array_merge([$title], $genres, array_slice($actors, 0, 5)));
+        $url = route('articles.show', $article->slug);
+        $keywords = implode(', ', array_merge([$title], $tags, [$category]));
 
-        // Generate movie schema
-        $movieSchema = SchemaHelper::movie([
-            'name' => $title,
+        // Generate article schema
+        $articleSchema = SchemaHelper::article([
+            'headline' => $title,
             'description' => $description,
             'image' => $image,
             'url' => $url,
-            'date_published' => $releaseDate,
-            'duration' => $duration,
-            'director' => $director,
-            'aggregate_rating' => [
-                'value' => $rating,
-                'count' => $movie['views'] ?? $content?->views ?? 0,
+            'date_published' => $article->published_at ? $article->published_at->toIso8601String() : $article->created_at->toIso8601String(),
+            'date_modified' => $article->updated_at->toIso8601String(),
+            'author' => [
+                'name' => $author,
             ],
-            'genre' => $genres,
-            'actor' => $actors,
+            'publisher' => [
+                'name' => $this->siteName,
+            ],
+            'category' => $category,
+            'keywords' => $tags,
         ]);
 
         return $this->generate([
-            'title' => "{$title} ({$releaseDate}) - Watch Online | Nazaarabox",
+            'title' => "{$title} | TechBlog",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
             'url' => $url,
-            'type' => 'video.movie',
-            'published_time' => $releaseDate ? date('c', strtotime($releaseDate)) : null,
-            'schema' => [$movieSchema],
+            'type' => 'article',
+            'published_time' => $article->published_at ? $article->published_at->toIso8601String() : $article->created_at->toIso8601String(),
+            'modified_time' => $article->updated_at->toIso8601String(),
+            'author' => $author,
+            'schema' => [$articleSchema],
         ]);
     }
 
     /**
-     * Generate SEO for TV shows listing page
+     * Generate SEO for categories listing page
      */
-    public function forTvShowsIndex(): array
+    public function forCategoriesIndex(): array
     {
         return $this->generate([
-            'title' => 'TV Shows - Browse All TV Series | Nazaarabox',
-            'description' => 'Browse our complete collection of TV shows and series. Find drama, comedy, action, thriller series and more. Watch and download TV shows in high quality.',
-            'keywords' => 'tv shows, tv series, watch tv shows, download tv shows, drama series, comedy series, latest tv shows',
+            'title' => 'Categories - Browse Tech Categories | TechBlog',
+            'description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more technology topics.',
+            'keywords' => 'tech categories, programming categories, web development, AI, machine learning, tutorials',
+            'type' => 'website',
+        ], 'categories.index');
+    }
+
+    /**
+     * Generate SEO for a category page
+     */
+    public function forCategory(Category $category): array
+    {
+        $title = $category->name;
+        $description = $category->description ?: "Browse articles in {$title} category. Latest technology articles, tutorials, and guides.";
+        
+        $url = route('categories.show', $category->slug);
+        $keywords = "{$title}, tech articles, programming, tutorials, technology";
+
+        return $this->generate([
+            'title' => "{$title} - Tech Articles | TechBlog",
+            'description' => $description,
+            'keywords' => $keywords,
+            'url' => $url,
             'type' => 'website',
             'schema' => [
                 SchemaHelper::collectionPage([
-                    'name' => 'TV Shows',
-                    'url' => route('tv-shows.index'),
-                    'description' => 'Browse our complete collection of TV shows and series',
+                    'name' => $title,
+                    'url' => $url,
+                    'description' => $description,
                 ]),
             ],
-        ], 'tv-shows.index');
-    }
-
-    /**
-     * Generate SEO for a TV show detail page
-     */
-    public function forTvShow($show, $content = null): array
-    {
-        $title = $show['name'] ?? $show['title'] ?? 'TV Show';
-        $description = $show['overview'] ?? $show['description'] ?? "Watch {$title} online. Download and stream all episodes in high quality.";
-        $firstAirDate = $show['first_air_date'] ?? ($content?->release_date?->format('Y-m-d'));
-        $lastAirDate = $show['last_air_date'] ?? ($content?->end_date?->format('Y-m-d'));
-        $rating = $show['vote_average'] ?? $show['rating'] ?? 0;
-        $numberOfSeasons = $show['number_of_seasons'] ?? 1;
-        $numberOfEpisodes = $show['number_of_episodes'] ?? ($content ? $content->episodes()->count() : 0);
-        
-        // Get image
-        $image = $this->getImageUrl($show['backdrop_path'] ?? $show['poster_path'] ?? $content?->backdrop_path ?? $content?->poster_path, 'w1280');
-        
-        // Get genres
-        $genres = [];
-        if (isset($show['genres']) && is_array($show['genres'])) {
-            $genres = array_map(function($g) {
-                return is_array($g) ? ($g['name'] ?? '') : $g;
-            }, $show['genres']);
-        } elseif ($content?->genres) {
-            $genres = is_array($content->genres) ? $content->genres : [$content->genres];
-        }
-        
-        // Get actors
-        $actors = [];
-        if (isset($show['credits']['cast'])) {
-            $actors = array_slice(array_map(function($actor) {
-                return $actor['name'] ?? '';
-            }, $show['credits']['cast']), 0, 10);
-        } elseif ($content?->castMembers) {
-            $actors = $content->castMembers->pluck('name')->toArray();
-        }
-
-        $url = route('tv-shows.show', $content?->slug ?? ($show['id'] ?? ''));
-        $keywords = implode(', ', array_merge([$title], $genres, array_slice($actors, 0, 5)));
-
-        // Generate TV series schema
-        $tvSchema = SchemaHelper::tvSeries([
-            'name' => $title,
-            'description' => $description,
-            'image' => $image,
-            'url' => $url,
-            'start_date' => $firstAirDate,
-            'end_date' => $lastAirDate,
-            'number_of_seasons' => $numberOfSeasons,
-            'number_of_episodes' => $numberOfEpisodes,
-            'actor' => $actors,
-        ]);
-
-        return $this->generate([
-            'title' => "{$title} - Watch Online | Nazaarabox",
-            'description' => $description,
-            'keywords' => $keywords,
-            'image' => $image,
-            'url' => $url,
-            'type' => 'video.tv_show',
-            'published_time' => $firstAirDate ? date('c', strtotime($firstAirDate)) : null,
-            'schema' => [$tvSchema],
         ]);
     }
 
     /**
-     * Generate SEO for cast listing page
+     * Generate SEO for tags listing page
      */
-    public function forCastIndex(): array
+    public function forTagsIndex(): array
     {
         return $this->generate([
-            'title' => 'Cast & Actors - Browse All Cast Members | Nazaarabox',
-            'description' => 'Browse our collection of actors and cast members. Discover popular actors, their movies and TV shows.',
-            'keywords' => 'actors, cast, celebrities, movie stars, tv actors, popular actors',
+            'title' => 'Tags - Browse All Tags | TechBlog',
+            'description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
+            'keywords' => 'tags, tech tags, programming tags, technology topics',
             'type' => 'website',
-        ], 'cast.index');
-    }
-
-    /**
-     * Generate SEO for a cast member detail page
-     */
-    public function forCast($cast): array
-    {
-        $name = $cast->name ?? 'Actor';
-        $biography = $cast->biography ?? '';
-        $description = $biography ?: "Learn more about {$name}. Browse their movies and TV shows on Nazaarabox.";
-        
-        // Get image
-        $image = $this->getImageUrl($cast->profile_path, 'w500');
-        
-        $url = route('cast.show', $cast->slug ?? $cast->id);
-        $keywords = "{$name}, actor, cast, movies, tv shows";
-
-        // Generate person schema
-        $personSchema = SchemaHelper::person([
-            'name' => $name,
-            'description' => $description,
-            'image' => $image,
-        ]);
-
-        return $this->generate([
-            'title' => "{$name} - Movies & TV Shows | Nazaarabox",
-            'description' => $description,
-            'keywords' => $keywords,
-            'image' => $image,
-            'url' => $url,
-            'type' => 'profile',
-            'schema' => [$personSchema],
-        ]);
+        ], 'tags.index');
     }
 
     /**
@@ -416,15 +330,15 @@ class SeoService
      */
     public function forSearch($query = null): array
     {
-        $title = $query ? "Search Results for '{$query}' - Nazaarabox" : 'Search Movies & TV Shows - Nazaarabox';
+        $title = $query ? "Search Results for '{$query}' - TechBlog" : 'Search Articles - TechBlog';
         $description = $query 
-            ? "Search results for '{$query}'. Find movies and TV shows matching your search."
-            : 'Search for movies and TV shows. Find your favorite content quickly.';
+            ? "Search results for '{$query}'. Find technology articles, tutorials, and guides matching your search."
+            : 'Search for technology articles, tutorials, and guides. Find what you need quickly.';
 
         return $this->generate([
             'title' => $title,
             'description' => $description,
-            'keywords' => 'search, find movies, find tv shows, search entertainment',
+            'keywords' => 'search, find articles, tech search, programming search',
             'type' => 'website',
             'robots' => 'noindex, follow', // Don't index search pages
         ], 'search');
@@ -437,25 +351,25 @@ class SeoService
     {
         $pages = [
             'about' => [
-                'title' => 'About Us - Nazaarabox',
-                'description' => 'Learn more about Nazaarabox. Your destination for movies and TV shows.',
+                'title' => 'About Us - TechBlog',
+                'description' => 'Learn more about TechBlog. Your destination for technology news, tutorials, and insights.',
             ],
-            'dmca' => [
-                'title' => 'DMCA - Digital Millennium Copyright Act | Nazaarabox',
-                'description' => 'DMCA policy and copyright information for Nazaarabox.',
+            'contact' => [
+                'title' => 'Contact Us - TechBlog',
+                'description' => 'Get in touch with TechBlog. We\'d love to hear from you.',
             ],
-            'completed' => [
-                'title' => 'Completed TV Shows - Nazaarabox',
-                'description' => 'Browse completed TV shows and series. Watch finished series in high quality.',
+            'privacy' => [
+                'title' => 'Privacy Policy - TechBlog',
+                'description' => 'Privacy policy and data protection information for TechBlog.',
             ],
-            'upcoming' => [
-                'title' => 'Upcoming Movies & TV Shows - Nazaarabox',
-                'description' => 'Discover upcoming movies and TV shows. Stay updated with latest releases.',
+            'terms' => [
+                'title' => 'Terms of Service - TechBlog',
+                'description' => 'Terms of service and usage policy for TechBlog.',
             ],
         ];
 
         $pageData = $pages[$pageKey] ?? [
-            'title' => $title ?? ucfirst($pageKey) . ' - Nazaarabox',
+            'title' => $title ?? ucfirst($pageKey) . ' - TechBlog',
             'description' => $description ?? '',
         ];
 
@@ -467,9 +381,9 @@ class SeoService
     }
 
     /**
-     * Get image URL (handles TMDB and custom images)
+     * Get image URL (handles custom images)
      */
-    protected function getImageUrl($path, $size = 'w1280'): string
+    protected function getImageUrl($path): string
     {
         if (!$path) {
             return $this->defaultImage;
@@ -478,11 +392,6 @@ class SeoService
         // If it's already a full URL, return it
         if (filter_var($path, FILTER_VALIDATE_URL)) {
             return $path;
-        }
-
-        // If it starts with /, it's a TMDB path
-        if (str_starts_with($path, '/')) {
-            return $this->tmdb->getImageUrl($path, $size);
         }
 
         // Otherwise, treat as relative URL
@@ -535,14 +444,14 @@ class SeoService
         // Map route names to page keys and methods
         $routeMap = [
             'home' => ['pageKey' => 'home', 'method' => 'forHome'],
-            'movies.index' => ['pageKey' => 'movies.index', 'method' => 'forMoviesIndex'],
-            'tv-shows.index' => ['pageKey' => 'tv-shows.index', 'method' => 'forTvShowsIndex'],
-            'cast.index' => ['pageKey' => 'cast.index', 'method' => 'forCastIndex'],
+            'articles.index' => ['pageKey' => 'articles.index', 'method' => 'forArticlesIndex'],
+            'categories.index' => ['pageKey' => 'categories.index', 'method' => 'forCategoriesIndex'],
+            'tags.index' => ['pageKey' => 'tags.index', 'method' => 'forTagsIndex'],
             'search' => ['pageKey' => 'search', 'method' => 'forSearch'],
             'about' => ['pageKey' => 'about', 'method' => 'forPage'],
-            'dmca' => ['pageKey' => 'dmca', 'method' => 'forPage'],
-            'completed' => ['pageKey' => 'completed', 'method' => 'forPage'],
-            'upcoming' => ['pageKey' => 'upcoming', 'method' => 'forPage'],
+            'contact' => ['pageKey' => 'contact', 'method' => 'forPage'],
+            'privacy' => ['pageKey' => 'privacy', 'method' => 'forPage'],
+            'terms' => ['pageKey' => 'terms', 'method' => 'forPage'],
         ];
 
         if (isset($routeMap[$routeName])) {
@@ -561,7 +470,7 @@ class SeoService
 
         // Fallback: try to use page key directly
         if (str_contains($routeName, '.')) {
-            $pageKey = str_replace(['movies.', 'tv-shows.', 'cast.'], ['movies.', 'tv-shows.', 'cast.'], $routeName);
+            $pageKey = str_replace(['articles.', 'categories.', 'tags.'], ['articles.', 'categories.', 'tags.'], $routeName);
             return $this->generate([], $pageKey);
         }
 

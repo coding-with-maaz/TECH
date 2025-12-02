@@ -54,14 +54,14 @@ class PageSeo extends Model
     {
         return [
             'home' => 'Home Page',
-            'movies.index' => 'Movies Listing',
-            'tv-shows.index' => 'TV Shows Listing',
-            'cast.index' => 'Cast Listing',
+            'articles.index' => 'Articles Listing',
+            'categories.index' => 'Categories Listing',
+            'tags.index' => 'Tags Listing',
             'search' => 'Search Page',
             'about' => 'About Page',
-            'dmca' => 'DMCA Page',
-            'completed' => 'Completed TV Shows',
-            'upcoming' => 'Upcoming Content',
+            'contact' => 'Contact Page',
+            'privacy' => 'Privacy Policy',
+            'terms' => 'Terms of Service',
         ];
     }
 

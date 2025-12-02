@@ -1,0 +1,211 @@
+@extends('layouts.app')
+
+@section('title', 'Edit Article - Admin')
+
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-4 mb-2">
+                <a href="{{ route('admin.articles.index') }}" class="text-gray-600 hover:text-accent dark:!text-text-secondary dark:!hover:text-accent transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    ← Back to Articles
+                </a>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                Edit Article
+            </h1>
+            <p class="text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                Update article: {{ $article->title }}
+            </p>
+        </div>
+    </div>
+
+    @if($errors->any())
+    <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg dark:!bg-red-900/20 dark:!border-red-700 dark:!text-red-400">
+        <ul class="list-disc list-inside">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+        <form action="{{ route('admin.articles.update', $article) }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Title <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="title" value="{{ old('title', $article->title) }}" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               placeholder="Enter article title">
+                    </div>
+
+                    <!-- Slug -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Slug
+                        </label>
+                        <input type="text" name="slug" value="{{ old('slug', $article->slug) }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               placeholder="auto-generated-from-title">
+                        <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">Leave empty to auto-generate from title</p>
+                    </div>
+
+                    <!-- Excerpt -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Excerpt
+                        </label>
+                        <textarea name="excerpt" rows="3"
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                                  placeholder="Short description of the article">{{ old('excerpt', $article->excerpt) }}</textarea>
+                    </div>
+
+                    <!-- Content -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Content <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="content" id="content" rows="15" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white font-mono text-sm"
+                                  placeholder="Write your article content here...">{{ old('content', $article->content) }}</textarea>
+                    </div>
+
+                    <!-- Featured Image -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Featured Image URL
+                        </label>
+                        <input type="text" name="featured_image" value="{{ old('featured_image', $article->featured_image) }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               placeholder="https://example.com/image.jpg or /storage/image.jpg">
+                        @if($article->featured_image)
+                            <div class="mt-2">
+                                @php
+                                    $imageUrl = str_starts_with($article->featured_image, 'http') 
+                                        ? $article->featured_image 
+                                        : asset('storage/' . $article->featured_image);
+                                @endphp
+                                <img src="{{ $imageUrl }}" alt="Current featured image" class="w-32 h-32 object-cover rounded" onerror="this.style.display='none'">
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Status <span class="text-red-500">*</span>
+                        </label>
+                        <select name="status" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                            <option value="published" {{ old('status', $article->status) === 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="draft" {{ old('status', $article->status) === 'draft' ? 'selected' : '' }}>Draft</option>
+                            <option value="scheduled" {{ old('status', $article->status) === 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                        </select>
+                    </div>
+
+                    <!-- Published At -->
+                    <div id="published_at_field" style="display: {{ old('status', $article->status) === 'scheduled' ? 'block' : 'none' }};">
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Publish Date & Time
+                        </label>
+                        <input type="datetime-local" name="published_at" 
+                               value="{{ old('published_at', $article->published_at ? $article->published_at->format('Y-m-d\TH:i') : '') }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Category
+                        </label>
+                        <select name="category_id"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                            <option value="">No Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id', $article->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Tags -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Tags
+                        </label>
+                        <div class="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3 dark:!bg-bg-card-hover dark:!border-border-primary">
+                            @foreach($tags as $tag)
+                                <label class="flex items-center gap-2 mb-2 cursor-pointer">
+                                    <input type="checkbox" name="tags[]" value="{{ $tag->id }}" 
+                                           {{ in_array($tag->id, old('tags', $article->tags->pluck('id')->toArray())) ? 'checked' : '' }}
+                                           class="rounded border-gray-300 text-accent focus:ring-accent">
+                                    <span class="text-sm text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 400;">{{ $tag->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="is_featured" value="1" {{ old('is_featured', $article->is_featured) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Featured Article</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="allow_comments" value="1" {{ old('allow_comments', $article->allow_comments) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Allow Comments</span>
+                        </label>
+                    </div>
+
+                    <!-- Sort Order -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Sort Order
+                        </label>
+                        <input type="number" name="sort_order" value="{{ old('sort_order', $article->sort_order) }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Update Article
+                </button>
+                <a href="{{ route('admin.articles.index') }}" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg transition-colors dark:!bg-bg-card dark:!text-white dark:!hover:bg-bg-card-hover" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.querySelector('select[name="status"]');
+    const publishedAtField = document.getElementById('published_at_field');
+    
+    function togglePublishedAt() {
+        if (statusSelect.value === 'scheduled') {
+            publishedAtField.style.display = 'block';
+        } else {
+            publishedAtField.style.display = 'none';
+        }
+    }
+    
+    statusSelect.addEventListener('change', togglePublishedAt);
+});
+</script>
+@endsection
+
