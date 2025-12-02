@@ -21,6 +21,8 @@ class Article extends Model
         'featured_image',
         'category_id',
         'author_id',
+        'series_id',
+        'series_order',
         'status',
         'views',
         'reading_time',
@@ -38,6 +40,7 @@ class Article extends Model
         'views' => 'integer',
         'reading_time' => 'integer',
         'sort_order' => 'integer',
+        'series_order' => 'integer',
         'meta' => 'array',
     ];
 
@@ -55,6 +58,14 @@ class Article extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    /**
+     * Get the series this article belongs to
+     */
+    public function series(): BelongsTo
+    {
+        return $this->belongsTo(Series::class);
     }
 
     /**

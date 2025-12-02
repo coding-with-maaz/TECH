@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
@@ -100,6 +101,10 @@ Route::get('/categories/{slug}', [CategoryController::class, 'show'])->name('cat
 Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
 Route::get('/tags/{slug}', [TagController::class, 'show'])->name('tags.show');
 
+// Series routes
+Route::get('/series', [SeriesController::class, 'index'])->name('series.index');
+Route::get('/series/{slug}', [SeriesController::class, 'show'])->name('series.show');
+
 // Search
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
@@ -127,6 +132,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     
     // Tag management
     Route::resource('tags', AdminTagController::class);
+    
+    // Series management
+    Route::resource('series', App\Http\Controllers\Admin\SeriesController::class);
     
     // Author management
     Route::get('authors', [App\Http\Controllers\Admin\AuthorController::class, 'index'])->name('authors.index');

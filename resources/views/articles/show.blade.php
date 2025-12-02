@@ -11,6 +11,63 @@
     <div class="max-w-4xl mx-auto">
         <!-- Main Content -->
         <div>
+            <!-- Series Header (if article belongs to a series) -->
+            @if($article->series)
+            <div class="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:!from-purple-900/10 dark:!to-blue-900/10 rounded-lg border border-purple-200 dark:!border-purple-800 p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <a href="{{ route('series.show', $article->series->slug) }}" class="inline-block px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-semibold mb-3 hover:bg-purple-700 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Series: {{ $article->series->title }}
+                        </a>
+                        @if($article->series->description)
+                            <p class="text-sm text-gray-600 dark:!text-text-secondary mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                {{ $article->series->description }}
+                            </p>
+                        @endif
+                        <!-- Progress Indicator -->
+                        @if($totalSeriesArticles)
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between text-xs text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    <span>Article {{ $currentSeriesIndex ?? 1 }} of {{ $totalSeriesArticles }}</span>
+                                    <span>{{ round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) }}% Complete</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:!bg-gray-700 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ ($totalSeriesArticles ? round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) : 0) }}%"></div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                
+                <!-- Series Table of Contents -->
+                @if($seriesArticles && $seriesArticles->count() > 0)
+                <div class="border-t border-purple-200 dark:!border-purple-800 pt-4">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:!text-white mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Table of Contents
+                    </h4>
+                    <div class="space-y-2">
+                        @foreach($seriesArticles as $seriesArticle)
+                            <div class="flex items-center gap-3 {{ $seriesArticle->id === $article->id ? 'bg-white dark:!bg-bg-card rounded-lg p-2' : '' }}">
+                                <span class="text-xs text-gray-500 dark:!text-text-secondary w-8 flex-shrink-0" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    {{ $seriesArticle->series_order ?? $loop->iteration }}.
+                                </span>
+                                @if($seriesArticle->id === $article->id)
+                                    <span class="text-sm font-semibold text-purple-600 dark:!text-purple-400 flex-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                        {{ $seriesArticle->title }} (Current)
+                                    </span>
+                                @else
+                                    <a href="{{ route('articles.show', $seriesArticle->slug) }}" class="text-sm text-gray-700 hover:text-purple-600 dark:!text-text-secondary dark:!hover:text-purple-400 flex-1 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                        {{ $seriesArticle->title }}
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+            @endif
+
             <!-- Article Header -->
             <div class="mb-6">
                 @if($article->category)
@@ -67,6 +124,53 @@
             <div class="prose prose-lg dark:prose-invert max-w-none mb-8 article-content" style="font-family: 'Poppins', sans-serif;">
                 {!! $article->rendered_content !!}
             </div>
+
+            <!-- Series Navigation (Previous/Next) -->
+            @if($article->series && ($previousArticle || $nextArticle))
+            <div class="mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Previous Article -->
+                    @if($previousArticle)
+                    <a href="{{ route('articles.show', $previousArticle->slug) }}" class="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 dark:!bg-bg-card-hover dark:!hover:bg-bg-card rounded-lg transition-colors border border-gray-200 dark:!border-border-secondary">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                Previous Article
+                            </p>
+                            <p class="text-sm font-semibold text-gray-900 dark:!text-white truncate group-hover:text-accent transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                {{ $previousArticle->title }}
+                            </p>
+                        </div>
+                    </a>
+                    @else
+                    <div></div>
+                    @endif
+                    
+                    <!-- Next Article -->
+                    @if($nextArticle)
+                    <a href="{{ route('articles.show', $nextArticle->slug) }}" class="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 dark:!bg-bg-card-hover dark:!hover:bg-bg-card rounded-lg transition-colors border border-gray-200 dark:!border-border-secondary text-right">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                Next Article
+                            </p>
+                            <p class="text-sm font-semibold text-gray-900 dark:!text-white truncate group-hover:text-accent transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                {{ $nextArticle->title }}
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <!-- Article Actions (Like Button) -->
             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">

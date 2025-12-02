@@ -136,6 +136,34 @@
                         </select>
                     </div>
 
+                    <!-- Series -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Series
+                        </label>
+                        <select name="series_id" id="series_id"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                            <option value="">No Series</option>
+                            @if(isset($series))
+                                @foreach($series as $ser)
+                                    <option value="{{ $ser->id }}" {{ old('series_id', $article->series_id) == $ser->id ? 'selected' : '' }}>{{ $ser->title }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">Select a series to add this article to</p>
+                    </div>
+
+                    <!-- Series Order -->
+                    <div id="series_order_field" style="display: {{ old('series_id', $article->series_id) ? 'block' : 'none' }};">
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Order in Series
+                        </label>
+                        <input type="number" name="series_order" value="{{ old('series_order', $article->series_order ?? 1) }}" min="1"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               placeholder="1">
+                        <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">Position of this article in the series</p>
+                    </div>
+
                     <!-- Tags -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
@@ -209,6 +237,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     statusSelect.addEventListener('change', togglePublishedAt);
+    
+    // Series order field toggle
+    const seriesSelect = document.querySelector('select[name="series_id"]');
+    const seriesOrderField = document.getElementById('series_order_field');
+    
+    function toggleSeriesOrder() {
+        if (seriesSelect && seriesOrderField) {
+            if (seriesSelect.value) {
+                seriesOrderField.style.display = 'block';
+            } else {
+                seriesOrderField.style.display = 'none';
+            }
+        }
+    }
+    
+    if (seriesSelect) {
+        seriesSelect.addEventListener('change', toggleSeriesOrder);
+    }
     
     // Auto-save functionality
     let autoSaveTimer;

@@ -53,10 +53,36 @@ class ArticleController extends Controller
     {
         $article = Article::published()
             ->where('slug', $slug)
-            ->with(['category', 'author', 'tags', 'likes', 'comments' => function($query) {
+            ->with(['category', 'author', 'tags', 'likes', 'series', 'comments' => function($query) {
                 $query->approved()->with(['replies.user', 'user']);
             }])
             ->firstOrFail();
+        
+        // Load series articles if article belongs to a series
+        $seriesArticles = null;
+        $previousArticle = null;
+        $nextArticle = null;
+        $currentIndex = null;
+        
+        if ($article->series_id) {
+            $seriesArticles = Article::published()
+                ->where('series_id', $article->series_id)
+                ->orderBy('series_order', 'asc')
+                ->get(['id', 'title', 'slug', 'series_order']);
+            
+            $currentIndex = $seriesArticles->search(function($item) use ($article) {
+                return $item->id === $article->id;
+            });
+            
+            if ($currentIndex !== false) {
+                if ($currentIndex > 0) {
+                    $previousArticle = $seriesArticles[$currentIndex - 1];
+                }
+                if ($currentIndex < $seriesArticles->count() - 1) {
+                    $nextArticle = $seriesArticles[$currentIndex + 1];
+                }
+            }
+        }
         
         // Check if article is liked by current user/IP
         $isLiked = false;
@@ -81,6 +107,11 @@ class ArticleController extends Controller
             'categories' => $categories,
             'popularTags' => $popularTags,
             'isLiked' => $isLiked,
+            'seriesArticles' => $seriesArticles,
+            'previousArticle' => $previousArticle,
+            'nextArticle' => $nextArticle,
+            'currentSeriesIndex' => $currentIndex !== false ? $currentIndex + 1 : null,
+            'totalSeriesArticles' => $seriesArticles ? $seriesArticles->count() : null,
             'seo' => $this->seoService->forArticle($article),
         ]);
     }

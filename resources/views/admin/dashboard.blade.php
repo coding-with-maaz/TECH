@@ -254,6 +254,9 @@
                     <a href="{{ route('admin.authors.requests') }}" class="block w-full px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Author Requests
                     </a>
+                    <a href="{{ route('admin.series.index') }}" class="block w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Manage Series
+                    </a>
                 </div>
             </div>
 

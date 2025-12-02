@@ -6,6 +6,7 @@ use App\Helpers\SchemaHelper;
 use App\Models\PageSeo;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Series;
 
 class SeoService
 {
@@ -313,6 +314,51 @@ class SeoService
     }
 
     /**
+     * Generate SEO for series listing page
+     */
+    public function forSeriesIndex(): array
+    {
+        return $this->generate([
+            'title' => 'Article Series - Browse Collections | TechBlog',
+            'description' => 'Browse our curated article series and collections. Explore related articles organized into comprehensive series.',
+            'keywords' => 'article series, collections, tech series, programming series, tutorial series',
+            'type' => 'website',
+        ], 'series.index');
+    }
+
+    /**
+     * Generate SEO for a series page
+     */
+    public function forSeries(Series $series): array
+    {
+        $title = $series->title;
+        $description = $series->description ?: "Browse articles in the {$title} series. A curated collection of related technology articles.";
+        
+        $url = route('series.show', $series->slug);
+        $keywords = "{$title}, article series, tech series, programming series, tutorials";
+        
+        $image = $series->featured_image 
+            ? (filter_var($series->featured_image, FILTER_VALIDATE_URL) ? $series->featured_image : url($series->featured_image))
+            : $this->defaultImage;
+
+        return $this->generate([
+            'title' => "{$title} - Article Series | TechBlog",
+            'description' => $description,
+            'keywords' => $keywords,
+            'image' => $image,
+            'url' => $url,
+            'type' => 'website',
+            'schema' => [
+                SchemaHelper::collectionPage([
+                    'name' => $title,
+                    'url' => $url,
+                    'description' => $description,
+                ]),
+            ],
+        ]);
+    }
+
+    /**
      * Generate SEO for tags listing page
      */
     public function forTagsIndex(): array
@@ -447,6 +493,7 @@ class SeoService
             'articles.index' => ['pageKey' => 'articles.index', 'method' => 'forArticlesIndex'],
             'categories.index' => ['pageKey' => 'categories.index', 'method' => 'forCategoriesIndex'],
             'tags.index' => ['pageKey' => 'tags.index', 'method' => 'forTagsIndex'],
+            'series.index' => ['pageKey' => 'series.index', 'method' => 'forSeriesIndex'],
             'search' => ['pageKey' => 'search', 'method' => 'forSearch'],
             'about' => ['pageKey' => 'about', 'method' => 'forPage'],
             'contact' => ['pageKey' => 'contact', 'method' => 'forPage'],

@@ -67,7 +67,8 @@ class ArticleController extends Controller
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
-        return view('admin.articles.create', compact('categories', 'tags'));
+        $series = \App\Models\Series::where('is_active', true)->orderBy('title')->get();
+        return view('admin.articles.create', compact('categories', 'tags', 'series'));
     }
 
     /**
@@ -82,6 +83,8 @@ class ArticleController extends Controller
             'content' => 'required|string',
             'featured_image' => 'nullable|string|max:500',
             'category_id' => 'nullable|exists:categories,id',
+            'series_id' => 'nullable|exists:article_series,id',
+            'series_order' => 'nullable|integer|min:1',
             'author_id' => 'nullable|exists:users,id',
             'status' => 'required|string|in:published,draft,scheduled',
             'is_featured' => 'nullable|boolean',
@@ -208,8 +211,9 @@ class ArticleController extends Controller
 
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
-        $article->load('tags');
-        return view('admin.articles.edit', compact('article', 'categories', 'tags'));
+        $series = \App\Models\Series::where('is_active', true)->orderBy('title')->get();
+        $article->load('tags', 'series');
+        return view('admin.articles.edit', compact('article', 'categories', 'tags', 'series'));
     }
 
     /**
@@ -229,6 +233,8 @@ class ArticleController extends Controller
             'content' => 'required|string',
             'featured_image' => 'nullable|string|max:500',
             'category_id' => 'nullable|exists:categories,id',
+            'series_id' => 'nullable|exists:article_series,id',
+            'series_order' => 'nullable|integer|min:1',
             'author_id' => 'nullable|exists:users,id',
             'status' => 'required|string|in:published,draft,scheduled',
             'is_featured' => 'nullable|boolean',
