@@ -63,13 +63,13 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
     <meta property="og:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'Nazaarabox - Movies & TV Shows' }}">
-    <meta property="og:description" content="{{ $seo['og_description'] ?? $seo['description'] ?? 'Watch and download your favorite movies and TV shows. Browse thousands of titles in high quality.' }}">
+    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'Tech Blog - Articles & Tutorials' }}">
+    <meta property="og:description" content="{{ $seo['og_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta property="og:image" content="{{ $seo['og_image'] ?? $seo['image'] ?? asset('favicon.ico') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'Nazaarabox' }}">
-    <meta property="og:site_name" content="Nazaarabox">
+    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'Tech Blog' }}">
+    <meta property="og:site_name" content="Tech Blog">
     <meta property="og:locale" content="{{ $seo['locale'] ?? 'en_US' }}">
     @if(!empty($seo['published_time']))
     <meta property="og:published_time" content="{{ $seo['published_time'] }}">
@@ -822,23 +822,21 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <a href="{{ route('home') }}" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
-                    Nazaarabox
+                    Tech Blog
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
                     <li><a href="{{ route('home') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
-                    <li><a href="{{ route('movies.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Movies</a></li>
-                    <li><a href="{{ route('tv-shows.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">TV Shows</a></li>
-                    <li><a href="{{ route('cast.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Cast</a></li>
-                    <li><a href="{{ route('upcoming') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Upcoming</a></li>
-                    <li><a href="{{ route('completed') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Completed</a></li>
+                    <li><a href="{{ route('articles.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Articles</a></li>
+                    <li><a href="{{ route('categories.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Categories</a></li>
+                    <li><a href="{{ route('tags.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Tags</a></li>
                     <li><a href="{{ route('about') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
-                    <li><a href="{{ route('dmca') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">DMCA</a></li>
+                    <li><a href="{{ route('contact') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Contact</a></li>
                 </ul>
                 {{-- Search form commented out --}}
                 {{-- <form action="{{ route('search') }}" method="GET" class="hidden lg:flex items-center gap-2">
                     <input type="text" name="q" 
                            class="px-4 py-2 w-64 rounded-full bg-gray-100 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all dark:!bg-bg-card dark:!border-border-primary dark:!text-white dark:!placeholder-text-muted" 
-                           placeholder="Search movies or TV shows..." 
+                           placeholder="Search articles..." 
                            value="{{ request('q') }}"
                            style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                     <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
@@ -886,7 +884,7 @@
                     </a>
                 </div>
                 <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    Copyright © {{ date('Y') }} - Nazaarabox
+                    Copyright © {{ date('Y') }} - Tech Blog
                 </p>
             </div>
         </div>
