@@ -42,4 +42,15 @@ return [
         'image_base_url' => 'https://image.tmdb.org/t/p',
     ],
 
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID', 'harpaltech-f183d'),
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase/firebase-service-account.json')),
+        'api_key' => env('FIREBASE_API_KEY', 'AIzaSyA5lTVNe3_-_pURTo5AaNF57jW7Ve0o4d0'),
+        'auth_domain' => env('FIREBASE_AUTH_DOMAIN', 'harpaltech-f183d.firebaseapp.com'),
+        'storage_bucket' => env('FIREBASE_STORAGE_BUCKET', 'harpaltech-f183d.firebasestorage.app'),
+        'messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID', '644904840702'),
+        'app_id' => env('FIREBASE_APP_ID', '1:644904840702:web:4baaf8cf58588fc2eb24af'),
+        'measurement_id' => env('FIREBASE_MEASUREMENT_ID', 'G-HCVYF6TM81'),
+    ],
+
 ];

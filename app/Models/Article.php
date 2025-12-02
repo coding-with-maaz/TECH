@@ -115,6 +115,39 @@ class Article extends Model
     }
 
     /**
+     * Get all revisions for this article
+     */
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(ArticleRevision::class)->orderBy('revision_number', 'desc');
+    }
+
+    /**
+     * Create a revision snapshot of the current article state
+     */
+    public function createRevision($createdBy = null, $changeSummary = null): ArticleRevision
+    {
+        $revisionNumber = $this->revisions()->max('revision_number') + 1;
+
+        return ArticleRevision::create([
+            'article_id' => $this->id,
+            'created_by' => $createdBy ?? auth()->id(),
+            'title' => $this->title,
+            'excerpt' => $this->excerpt,
+            'content' => $this->content,
+            'featured_image' => $this->featured_image,
+            'category_id' => $this->category_id,
+            'status' => $this->status,
+            'is_featured' => $this->is_featured,
+            'allow_comments' => $this->allow_comments,
+            'published_at' => $this->published_at,
+            'meta' => $this->meta,
+            'change_summary' => $changeSummary,
+            'revision_number' => $revisionNumber,
+        ]);
+    }
+
+    /**
      * Check if article is bookmarked by user
      */
     public function isBookmarkedBy($userId): bool
@@ -252,6 +285,22 @@ class Article extends Model
     public function incrementViews()
     {
         $this->increment('views');
+    }
+
+    /**
+     * Get the rendered content (decoded HTML)
+     */
+    public function getRenderedContentAttribute()
+    {
+        // Decode HTML entities if they exist, otherwise return as-is
+        $content = $this->content;
+        
+        // Check if content is HTML-encoded
+        if (strpos($content, '&lt;') !== false || strpos($content, '&gt;') !== false) {
+            $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+        
+        return $content;
     }
 }
 

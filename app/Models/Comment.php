@@ -54,11 +54,14 @@ class Comment extends Model
     }
 
     /**
-     * Get all replies to this comment
+     * Get all replies to this comment (supports nested replies)
      */
     public function replies(): HasMany
     {
-        return $this->hasMany(Comment::class, 'parent_id')->where('status', 'approved')->orderBy('created_at', 'asc');
+        return $this->hasMany(Comment::class, 'parent_id')
+            ->where('status', 'approved')
+            ->with('replies') // Eager load nested replies
+            ->orderBy('created_at', 'asc');
     }
 
     /**

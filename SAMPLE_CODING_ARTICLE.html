@@ -1,0 +1,372 @@
+<h1>Mastering JavaScript ES6+ Features: A Complete Guide</h1>
+
+<p>JavaScript has evolved significantly since ES6 (ECMAScript 2015), introducing powerful features that make code more readable, maintainable, and efficient. In this comprehensive guide, we'll explore the most important ES6+ features that every modern JavaScript developer should know.</p>
+
+<h2>What is ES6?</h2>
+
+<p>ES6, also known as ECMAScript 2015, was a major update to JavaScript that introduced many new features. Since then, JavaScript has continued to evolve with annual updates, bringing even more powerful capabilities to the language.</p>
+
+<figure class="image"><img title="JavaScript ES6 Features" src="https://images.unsplash.com/photo-1579468118864-7b3a3c9d93ef?w=1200&h=630&fit=crop" alt="JavaScript ES6 Features" width="1200" height="630">
+<figcaption>Modern JavaScript development with ES6+ features</figcaption>
+</figure>
+
+<h2>1. Arrow Functions</h2>
+
+<p>Arrow functions provide a more concise syntax for writing functions. They're especially useful for callbacks and array methods.</p>
+
+<h3>Traditional Function vs Arrow Function</h3>
+
+<pre><code class="language-javascript">// Traditional function
+function multiply(a, b) {
+    return a * b;
+}
+
+// Arrow function
+const multiply = (a, b) => a * b;
+
+// Arrow function with multiple statements
+const greet = (name) => {
+    const message = `Hello, ${name}!`;
+    return message;
+};
+</code></pre>
+
+<h3>Benefits of Arrow Functions</h3>
+
+<ul>
+<li>Shorter syntax</li>
+<li>Lexical <code>this</code> binding</li>
+<li>Implicit return for single expressions</li>
+</ul>
+
+<h2>2. Destructuring Assignment</h2>
+
+<p>Destructuring allows you to extract values from arrays or objects into distinct variables.</p>
+
+<h3>Array Destructuring</h3>
+
+<pre><code class="language-javascript">// Basic array destructuring
+const numbers = [1, 2, 3, 4, 5];
+const [first, second, ...rest] = numbers;
+console.log(first);  // 1
+console.log(second); // 2
+console.log(rest);   // [3, 4, 5]
+
+// Swapping variables
+let a = 10;
+let b = 20;
+[a, b] = [b, a];
+console.log(a, b); // 20, 10
+</code></pre>
+
+<h3>Object Destructuring</h3>
+
+<pre><code class="language-javascript">// Basic object destructuring
+const user = {
+    name: 'John Doe',
+    age: 30,
+    email: 'john@example.com'
+};
+
+const { name, age, email } = user;
+console.log(name);  // John Doe
+console.log(age);   // 30
+
+// Destructuring with default values
+const { name, city = 'Unknown' } = user;
+
+// Renaming variables
+const { name: fullName, age: userAge } = user;
+</code></pre>
+
+<h2>3. Template Literals</h2>
+
+<p>Template literals provide an elegant way to work with strings, allowing embedded expressions and multi-line strings.</p>
+
+<pre><code class="language-javascript">// Basic template literal
+const name = 'World';
+const greeting = `Hello, ${name}!`;
+
+// Multi-line strings
+const html = `
+    &lt;div&gt;
+        &lt;h1&gt;Welcome&lt;/h1&gt;
+        &lt;p&gt;This is a multi-line string&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Expression evaluation
+const a = 10;
+const b = 20;
+const result = `The sum of ${a} and ${b} is ${a + b}`;
+// "The sum of 10 and 20 is 30"
+</code></pre>
+
+<h2>4. Spread and Rest Operators</h2>
+
+<p>The spread operator (<code>...</code>) allows you to expand arrays or objects, while the rest operator collects remaining elements.</p>
+
+<h3>Spread Operator</h3>
+
+<pre><code class="language-javascript">// Copying arrays
+const original = [1, 2, 3];
+const copy = [...original];
+
+// Combining arrays
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+const combined = [...arr1, ...arr2]; // [1, 2, 3, 4, 5, 6]
+
+// Spreading objects
+const user = { name: 'John', age: 30 };
+const updatedUser = { ...user, email: 'john@example.com' };
+
+// Function arguments
+const numbers = [1, 2, 3, 4, 5];
+Math.max(...numbers); // 5
+</code></pre>
+
+<h3>Rest Operator</h3>
+
+<pre><code class="language-javascript">// Collecting function arguments
+function sum(...numbers) {
+    return numbers.reduce((total, num) => total + num, 0);
+}
+
+sum(1, 2, 3, 4, 5); // 15
+
+// Destructuring with rest
+const [first, ...rest] = [1, 2, 3, 4, 5];
+console.log(first); // 1
+console.log(rest);  // [2, 3, 4, 5]
+</code></pre>
+
+<h2>5. Promises and Async/Await</h2>
+
+<p>ES6 introduced Promises, and ES2017 added async/await, making asynchronous code much more readable.</p>
+
+<h3>Promises</h3>
+
+<pre><code class="language-javascript">// Creating a Promise
+const fetchData = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('Data fetched successfully');
+        }, 1000);
+    });
+};
+
+// Using Promises
+fetchData()
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+</code></pre>
+
+<h3>Async/Await</h3>
+
+<pre><code class="language-javascript">// Async function
+async function fetchUserData(userId) {
+    try {
+        const response = await fetch(`/api/users/${userId}`);
+        const user = await response.json();
+        return user;
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error;
+    }
+}
+
+// Using async/await
+async function displayUser(userId) {
+    const user = await fetchUserData(userId);
+    console.log(user.name);
+}
+</code></pre>
+
+<h2>6. Classes</h2>
+
+<p>ES6 introduced class syntax, providing a cleaner way to work with object-oriented programming in JavaScript.</p>
+
+<pre><code class="language-javascript">// Class definition
+class User {
+    constructor(name, email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    // Method
+    greet() {
+        return `Hello, I'm ${this.name}`;
+    }
+
+    // Static method
+    static createAdmin(name, email) {
+        const admin = new User(name, email);
+        admin.role = 'admin';
+        return admin;
+    }
+}
+
+// Inheritance
+class Admin extends User {
+    constructor(name, email, permissions) {
+        super(name, email);
+        this.permissions = permissions;
+    }
+
+    deleteUser(userId) {
+        console.log(`Deleting user ${userId}`);
+    }
+}
+
+// Usage
+const admin = new Admin('John', 'john@example.com', ['read', 'write', 'delete']);
+console.log(admin.greet());
+</code></pre>
+
+<h2>7. Modules (import/export)</h2>
+
+<p>ES6 modules provide a standardized way to organize and share code between files.</p>
+
+<h3>Exporting</h3>
+
+<pre><code class="language-javascript">// math.js
+export const PI = 3.14159;
+
+export function add(a, b) {
+    return a + b;
+}
+
+export function subtract(a, b) {
+    return a - b;
+}
+
+// Default export
+export default class Calculator {
+    multiply(a, b) {
+        return a * b;
+    }
+}
+</code></pre>
+
+<h3>Importing</h3>
+
+<pre><code class="language-javascript">// app.js
+import Calculator, { PI, add, subtract } from './math.js';
+
+console.log(PI); // 3.14159
+console.log(add(5, 3)); // 8
+
+const calc = new Calculator();
+console.log(calc.multiply(4, 5)); // 20
+</code></pre>
+
+<h2>8. Map and Set</h2>
+
+<p>ES6 introduced Map and Set data structures, providing better alternatives to objects and arrays in certain scenarios.</p>
+
+<h3>Map</h3>
+
+<pre><code class="language-javascript">// Creating a Map
+const userMap = new Map();
+
+// Adding entries
+userMap.set('name', 'John');
+userMap.set('age', 30);
+userMap.set(1, 'One'); // Keys can be any type
+
+// Getting values
+console.log(userMap.get('name')); // John
+
+// Iterating
+userMap.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+});
+</code></pre>
+
+<h3>Set</h3>
+
+<pre><code class="language-javascript">// Creating a Set
+const uniqueNumbers = new Set([1, 2, 3, 3, 4, 4, 5]);
+console.log(uniqueNumbers); // Set {1, 2, 3, 4, 5}
+
+// Adding values
+uniqueNumbers.add(6);
+
+// Checking existence
+console.log(uniqueNumbers.has(3)); // true
+
+// Removing values
+uniqueNumbers.delete(3);
+</code></pre>
+
+<h2>9. Array Methods</h2>
+
+<p>ES6 introduced several powerful array methods that make data manipulation easier.</p>
+
+<pre><code class="language-javascript">const numbers = [1, 2, 3, 4, 5];
+
+// map() - Transform each element
+const doubled = numbers.map(n => n * 2); // [2, 4, 6, 8, 10]
+
+// filter() - Filter elements
+const evens = numbers.filter(n => n % 2 === 0); // [2, 4]
+
+// reduce() - Reduce to a single value
+const sum = numbers.reduce((acc, n) => acc + n, 0); // 15
+
+// find() - Find first matching element
+const found = numbers.find(n => n > 3); // 4
+
+// some() - Check if any element matches
+const hasEven = numbers.some(n => n % 2 === 0); // true
+
+// every() - Check if all elements match
+const allPositive = numbers.every(n => n > 0); // true
+</code></pre>
+
+<h2>10. Optional Chaining and Nullish Coalescing</h2>
+
+<p>ES2020 introduced optional chaining (<code>?.</code>) and nullish coalescing (<code>??</code>) operators for safer property access and default values.</p>
+
+<pre><code class="language-javascript">// Optional chaining
+const user = {
+    profile: {
+        name: 'John',
+        address: {
+            city: 'New York'
+        }
+    }
+};
+
+// Safe property access
+const city = user?.profile?.address?.city; // 'New York'
+const zip = user?.profile?.address?.zip; // undefined (no error)
+
+// Nullish coalescing
+const name = user?.name ?? 'Anonymous';
+const age = user?.age ?? 0; // Only uses default if null or undefined
+
+// Combined
+const displayName = user?.profile?.name ?? 'Guest';
+</code></pre>
+
+<h2>Best Practices</h2>
+
+<p>When using ES6+ features, keep these best practices in mind:</p>
+
+<ul>
+<li>Use <code>const</code> by default, <code>let</code> when reassignment is needed</li>
+<li>Prefer arrow functions for callbacks and short functions</li>
+<li>Use template literals instead of string concatenation</li>
+<li>Leverage destructuring for cleaner code</li>
+<li>Use async/await for better readability with Promises</li>
+<li>Take advantage of array methods for data manipulation</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>ES6+ features have transformed JavaScript into a modern, powerful language. By mastering these features, you'll write more efficient, readable, and maintainable code. Start incorporating these features into your projects gradually, and you'll see significant improvements in your code quality.</p>
+
+<p>Remember, the best way to learn is by doing. Try implementing these features in your next project and see how they can improve your development workflow!</p>
+

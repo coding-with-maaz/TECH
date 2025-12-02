@@ -10,6 +10,7 @@ use App\Models\Comment;
 use App\Models\User;
 use App\Models\NewsletterSubscription;
 use App\Models\ContactMessage;
+use App\Models\AuthorRequest;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -87,6 +88,15 @@ class DashboardController extends Controller
         // Contact messages
         $unreadMessages = ContactMessage::where('status', 'unread')->count();
         $totalMessages = ContactMessage::count();
+        
+        // Author statistics
+        $totalAuthors = User::where(function($query) {
+            $query->where('is_author', true)
+                  ->orWhere('role', 'author')
+                  ->orWhere('role', 'admin');
+        })->count();
+        
+        $pendingAuthorRequests = AuthorRequest::where('status', 'pending')->count();
 
         return view('admin.dashboard', compact(
             'totalArticles',
@@ -109,7 +119,9 @@ class DashboardController extends Controller
             'totalSubscriptions',
             'newSubscriptionsThisMonth',
             'unreadMessages',
-            'totalMessages'
+            'totalMessages',
+            'totalAuthors',
+            'pendingAuthorRequests'
         ));
     }
 }

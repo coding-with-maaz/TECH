@@ -101,7 +101,7 @@
 </section>
 
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" style="align-items: start;">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
         <!-- Main Content Area -->
         <div class="lg:col-span-2">
             <!-- Latest Articles -->
@@ -131,10 +131,11 @@
         </div>
 
         <!-- Right Sidebar -->
-        <div class="lg:col-span-1" style="position: relative;">
+        <div class="lg:col-span-1" style="align-self: start;">
+            <div class="lg:sticky lg:top-24" style="position: -webkit-sticky; position: sticky; top: 6rem; align-self: flex-start;">
             <!-- Categories -->
             @if($categories->count() > 0)
-            <div class="bg-white border border-gray-200 p-6 mb-6 dark:!bg-bg-card dark:!border-border-secondary" style="position: -webkit-sticky; position: sticky; top: 5.5rem; align-self: flex-start; z-index: 10;">
+            <div class="bg-white border border-gray-200 p-6 mb-6 dark:!bg-bg-card dark:!border-border-secondary">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 border-b border-gray-200 pb-3 dark:!text-white dark:!border-border-primary" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
                     Categories
                 </h3>
@@ -214,6 +215,7 @@
                 </div>
             </div>
             @endif
+            </div>
         </div>
     </div>
 </div>

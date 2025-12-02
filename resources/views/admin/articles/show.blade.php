@@ -60,8 +60,8 @@
                         </p>
                     </div>
                 @endif
-                <div class="prose dark:!prose-invert max-w-none">
-                    {!! nl2br(e($article->content)) !!}
+                <div class="prose dark:!prose-invert max-w-none article-content">
+                    {!! $article->rendered_content !!}
                 </div>
             </div>
 

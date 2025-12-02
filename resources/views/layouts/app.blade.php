@@ -815,6 +815,246 @@
         body.dark-mode article .absolute.inset-0 > div {
             pointer-events: auto !important;
         }
+        
+        /* TinyMCE Content Styling */
+        .article-content {
+            line-height: 1.8;
+        }
+        
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            line-height: 1.3;
+        }
+        
+        .article-content h1 {
+            font-size: 2.5em;
+        }
+        
+        .article-content h2 {
+            font-size: 2em;
+        }
+        
+        .article-content h3 {
+            font-size: 1.75em;
+        }
+        
+        .article-content h4 {
+            font-size: 1.5em;
+        }
+        
+        .article-content p {
+            margin-bottom: 0.75em;
+            line-height: 1.7;
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1em 0;
+        }
+        
+        .article-content figure {
+            margin: 1em 0;
+        }
+        
+        .article-content figure img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .article-content figcaption {
+            text-align: center;
+            font-size: 0.875em;
+            color: #666;
+            margin-top: 0.5em;
+            font-style: italic;
+        }
+        
+        .article-content pre {
+            background-color: #f4f4f4;
+            padding: 0.75em;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1em 0;
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+        
+        /* Code samples from TinyMCE codesample plugin */
+        .article-content pre[class*="language-"],
+        .article-content code[class*="language-"] {
+            font-family: 'Fira Code', 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+            white-space: pre;
+            word-spacing: normal;
+            word-break: normal;
+            tab-size: 4;
+            hyphens: none;
+        }
+        
+        .article-content pre[class*="language-"] {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 0.75em 1em;
+            margin: 1em 0;
+            overflow: auto;
+            border-radius: 8px;
+            border: 1px solid #3d3d3d;
+        }
+        
+        .article-content code {
+            background-color: #f4f4f4;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Fira Code', 'Courier New', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        /* Inline code (not in pre) */
+        .article-content p code,
+        .article-content li code,
+        .article-content td code {
+            background-color: #f4f4f4;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        /* Code inside pre blocks */
+        .article-content pre code {
+            background-color: transparent;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+            border-radius: 0;
+        }
+        
+        /* Ensure code samples are visible */
+        .article-content pre code[class*="language-"] {
+            display: block;
+            color: #f8f8f2;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid #E50914;
+            margin: 1em 0;
+            padding-left: 1em;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .article-content ul,
+        .article-content ol {
+            margin: 1em 0;
+            padding-left: 2em;
+        }
+        
+        .article-content li {
+            margin-bottom: 0.5em;
+        }
+        
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+        
+        .article-content table td,
+        .article-content table th {
+            border: 1px solid #ddd;
+            padding: 0.75em;
+        }
+        
+        .article-content table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        .article-content a {
+            color: #E50914;
+            text-decoration: underline;
+        }
+        
+        .article-content a:hover {
+            color: #b8070f;
+        }
+        
+        /* Dark mode for article content */
+        html.dark .article-content,
+        body.dark-mode .article-content {
+            color: #e5e7eb;
+        }
+        
+        html.dark .article-content figcaption,
+        body.dark-mode .article-content figcaption {
+            color: #9ca3af;
+        }
+        
+        html.dark .article-content blockquote,
+        body.dark-mode .article-content blockquote {
+            color: #d1d5db;
+            border-left-color: #E50914;
+        }
+        
+        html.dark .article-content pre,
+        body.dark-mode .article-content pre {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        html.dark .article-content pre[class*="language-"],
+        body.dark-mode .article-content pre[class*="language-"] {
+            background-color: #1e1e1e;
+            border-color: #3d3d3d;
+            color: #d4d4d4;
+        }
+        
+        html.dark .article-content code,
+        body.dark-mode .article-content code {
+            background-color: #1f2937;
+            color: #e5e7eb;
+        }
+        
+        html.dark .article-content p code,
+        html.dark .article-content li code,
+        html.dark .article-content td code,
+        body.dark-mode .article-content p code,
+        body.dark-mode .article-content li code,
+        body.dark-mode .article-content td code {
+            background-color: #374151;
+            color: #f472b6;
+        }
+        
+        html.dark .article-content pre code[class*="language-"],
+        body.dark-mode .article-content pre code[class*="language-"] {
+            color: #d4d4d4;
+        }
+        
+        html.dark .article-content table td,
+        html.dark .article-content table th,
+        body.dark-mode .article-content table td,
+        body.dark-mode .article-content table th {
+            border-color: #4b5563;
+        }
+        
+        html.dark .article-content table th,
+        body.dark-mode .article-content table th {
+            background-color: #374151;
+        }
     </style>
 </head>
 <body>
@@ -844,6 +1084,107 @@
                     </button>
                 </form> --}}
                 <div class="flex items-center gap-4">
+                    @auth
+                        <!-- User Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all dark:!bg-bg-card dark:!border-border-primary dark:!hover:bg-bg-card-hover">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full object-cover">
+                                @else
+                                    <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-semibold">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <span class="hidden md:block text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif;">
+                                    {{ auth()->user()->name }}
+                                </span>
+                                <svg class="w-4 h-4 text-gray-900 dark:!text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" 
+                                 @click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white border border-gray-200 dark:!bg-bg-card dark:!border-border-primary z-50"
+                                 style="display: none;">
+                                <div class="py-1">
+                                    <div class="px-4 py-2 border-b border-gray-200 dark:!border-border-primary">
+                                        <p class="text-sm font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif;">
+                                            {{ auth()->user()->name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:!text-text-muted" style="font-family: 'Poppins', sans-serif;">
+                                            {{ auth()->user()->email }}
+                                        </p>
+                                    </div>
+                                    <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                            </svg>
+                                            My Dashboard
+                                        </div>
+                                    </a>
+                                    @if(auth()->user()->isAuthor())
+                                        <a href="{{ route('author.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                                Author Dashboard
+                                            </div>
+                                        </a>
+                                        <a href="{{ route('admin.articles.index') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                My Articles
+                                            </div>
+                                        </a>
+                                    @endif
+                                    @if(auth()->user()->isAdmin())
+                                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                                </svg>
+                                                Admin Dashboard
+                                            </div>
+                                        </a>
+                                    @endif
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:!text-red-400 dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                                </svg>
+                                                Logout
+                                            </div>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Login/Register Buttons -->
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="{{ route('login') }}" class="px-4 py-2 text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                Login
+                            </a>
+                            <a href="{{ route('register') }}" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                Sign Up
+                            </a>
+                        </div>
+                    @endauth
+                    
                     <!-- Theme Toggle -->
                     <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all dark:!bg-bg-card dark:!border-border-primary dark:!hover:bg-bg-card-hover" title="Toggle Theme">
                         <svg id="sunIcon" class="w-5 h-5 text-gray-900 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -863,7 +1204,7 @@
         </div>
     </nav>
     
-    <main>
+    <main style="overflow-x: visible;">
         @yield('content')
     </main>
     
@@ -929,6 +1270,106 @@
             }
         });
     </script>
+    
+    <!-- Alpine.js for dropdown functionality -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Prism.js for syntax highlighting (code samples) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" id="prism-theme-light" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" id="prism-theme-dark" media="(prefers-color-scheme: dark)" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- Initialize Prism.js for code samples -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to update Prism theme based on dark mode
+            function updatePrismTheme() {
+                const isDark = document.documentElement.classList.contains('dark') || 
+                              document.body.classList.contains('dark-mode');
+                const lightTheme = document.getElementById('prism-theme-light');
+                const darkTheme = document.getElementById('prism-theme-dark');
+                
+                if (isDark) {
+                    if (lightTheme) lightTheme.disabled = true;
+                    if (darkTheme) darkTheme.disabled = false;
+                } else {
+                    if (lightTheme) lightTheme.disabled = false;
+                    if (darkTheme) darkTheme.disabled = true;
+                }
+            }
+            
+            // Update theme on load
+            updatePrismTheme();
+            
+            // Watch for theme changes
+            const themeObserver = new MutationObserver(updatePrismTheme);
+            themeObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            themeObserver.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            
+            // Re-run Prism highlighting after content loads
+            if (typeof Prism !== 'undefined') {
+                // Small delay to ensure content is fully rendered
+                setTimeout(function() {
+                    Prism.highlightAll();
+                }, 100);
+            }
+        });
+        
+        // Also highlight after dynamic content loads
+        if (typeof Prism !== 'undefined') {
+            // Use MutationObserver to highlight new code blocks
+            const observer = new MutationObserver(function(mutations) {
+                let shouldHighlight = false;
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        mutation.addedNodes.forEach(function(node) {
+                            if (node.nodeType === 1) { // Element node
+                                if (node.tagName === 'PRE' || node.querySelector('pre, code[class*="language-"]')) {
+                                    shouldHighlight = true;
+                                }
+                            }
+                        });
+                    }
+                });
+                if (shouldHighlight) {
+                    setTimeout(function() {
+                        Prism.highlightAll();
+                    }, 50);
+                }
+            });
+            
+            // Observe the main content area and article content
+            const mainContent = document.querySelector('main');
+            const articleContent = document.querySelector('.article-content');
+            
+            if (mainContent) {
+                observer.observe(mainContent, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            if (articleContent) {
+                observer.observe(articleContent, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+    </script>
+    
+    <!-- TinyMCE Editor Component -->
+    @if(request()->is('admin/articles/*') || request()->is('author/*'))
+        <x-head.tinymce-config />
+    @endif
+    
+    @stack('scripts')
 </body>
 </html>
 

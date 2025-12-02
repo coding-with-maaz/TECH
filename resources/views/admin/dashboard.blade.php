@@ -115,7 +115,7 @@
     </div>
 
     <!-- Secondary Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
         <!-- Published Articles -->
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4">
             <p class="text-sm text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Published</p>
@@ -138,6 +138,23 @@
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4">
             <p class="text-sm text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">This Month</p>
             <p class="text-2xl font-bold text-blue-600 dark:!text-blue-400" style="font-family: 'Poppins', sans-serif; font-weight: 700;">{{ number_format($thisMonthArticles) }}</p>
+        </div>
+
+        <!-- Total Authors -->
+        <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4">
+            <p class="text-sm text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Authors</p>
+            <p class="text-2xl font-bold text-teal-600 dark:!text-teal-400" style="font-family: 'Poppins', sans-serif; font-weight: 700;">{{ number_format($totalAuthors ?? 0) }}</p>
+        </div>
+
+        <!-- Pending Author Requests -->
+        <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4">
+            <p class="text-sm text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Pending Requests</p>
+            <p class="text-2xl font-bold text-orange-600 dark:!text-orange-400" style="font-family: 'Poppins', sans-serif; font-weight: 700;">{{ number_format($pendingAuthorRequests ?? 0) }}</p>
+            @if(($pendingAuthorRequests ?? 0) > 0)
+                <a href="{{ route('admin.authors.requests') }}" class="text-xs text-accent hover:underline mt-1 block" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Review Now →
+                </a>
+            @endif
         </div>
     </div>
 
@@ -231,6 +248,12 @@
                     <a href="{{ route('admin.page-seo.index') }}" class="block w-full px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Public Pages SEO Management
                     </a>
+                    <a href="{{ route('admin.authors.index') }}" class="block w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Manage Authors
+                    </a>
+                    <a href="{{ route('admin.authors.requests') }}" class="block w-full px-4 py-3 bg-yellow-600 hover:bg-yellow-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Author Requests
+                    </a>
                 </div>
             </div>
 
@@ -296,6 +319,19 @@
                             <p class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                                 {{ $unreadMessages }} unread messages
                             </p>
+                        </div>
+                    </div>
+                    @endif
+                    @if(($pendingAuthorRequests ?? 0) > 0)
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                {{ $pendingAuthorRequests }} pending author requests
+                            </p>
+                            <a href="{{ route('admin.authors.requests') }}" class="text-xs text-accent hover:underline" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                Review now →
+                            </a>
                         </div>
                     </div>
                     @endif

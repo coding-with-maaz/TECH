@@ -14,8 +14,61 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PageSeoController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\Auth\FirebaseAuthController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\AuthorDashboardController;
+use App\Http\Controllers\CommentController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+    
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.store');
+    
+    // Firebase Authentication Route
+    Route::post('/auth/firebase', [FirebaseAuthController::class, 'authenticate'])->name('firebase.authenticate');
+    
+    // Social Authentication Routes (optional - requires Laravel Socialite)
+    // Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    // Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Email Verification Routes
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+    
+    // User Dashboard
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::post('/dashboard/request-author', [UserDashboardController::class, 'requestAuthor'])->name('user.request-author');
+    
+    // Author Dashboard
+    Route::prefix('author')->middleware('author')->name('author.')->group(function () {
+        Route::get('/dashboard', [AuthorDashboardController::class, 'index'])->name('dashboard');
+    });
+});
 
 // SEO routes (must be before other routes for proper matching)
 Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots');
@@ -30,6 +83,13 @@ Route::get('/sitemap/tags.xml', [SitemapController::class, 'tags'])->name('sitem
 
 // Article routes
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+
+// Article actions (must come before slug route to avoid conflicts)
+Route::post('/articles/{article}/like', [App\Http\Controllers\ArticleLikeController::class, 'toggle'])->name('articles.like');
+Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::post('/articles/{article}/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+
+// Article show route (must be last to avoid conflicts)
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 // Category routes
@@ -49,12 +109,18 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
-// Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
+// Admin routes - Protected with authentication and admin middleware
+Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
     // Article management
     Route::resource('articles', AdminArticleController::class);
+    
+    // Article revisions
+    Route::get('articles/{article}/revisions', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'index'])->name('articles.revisions');
+    Route::get('articles/{article}/revisions/{revision}', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'show'])->name('articles.revisions.show');
+    Route::get('articles/{article}/revisions/{revision1}/compare/{revision2?}', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'compare'])->name('articles.revisions.compare');
+    Route::post('articles/{article}/revisions/{revision}/restore', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'restore'])->name('articles.revisions.restore');
     
     // Category management
     Route::resource('categories', AdminCategoryController::class);
@@ -62,6 +128,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Tag management
     Route::resource('tags', AdminTagController::class);
     
+    // Author management
+    Route::get('authors', [App\Http\Controllers\Admin\AuthorController::class, 'index'])->name('authors.index');
+    // Author requests routes (must come before {author} route to avoid conflicts)
+    Route::get('authors/requests', [App\Http\Controllers\Admin\AuthorController::class, 'requests'])->name('authors.requests');
+    Route::post('authors/requests/{request}/approve', [App\Http\Controllers\Admin\AuthorController::class, 'approveRequest'])->name('authors.requests.approve');
+    Route::post('authors/requests/{request}/reject', [App\Http\Controllers\Admin\AuthorController::class, 'rejectRequest'])->name('authors.requests.reject');
+    // Author detail routes (must come after requests routes)
+    Route::get('authors/{author}', [App\Http\Controllers\Admin\AuthorController::class, 'show'])->name('authors.show');
+    Route::put('authors/{author}/permissions', [App\Http\Controllers\Admin\AuthorController::class, 'updatePermissions'])->name('authors.update-permissions');
+    Route::delete('authors/{author}/remove-status', [App\Http\Controllers\Admin\AuthorController::class, 'removeAuthorStatus'])->name('authors.remove-status');
+    
     // Public Pages SEO Management
     Route::resource('page-seo', PageSeoController::class);
+});
+
+// Author article management routes (auth middleware, no admin required)
+Route::prefix('admin')->middleware(['auth', 'author'])->name('admin.')->group(function () {
+    // Article auto-save (for authors)
+    Route::post('articles/{article?}/auto-save', [AdminArticleController::class, 'autoSave'])->name('articles.auto-save');
+    
+    // Article revisions (authors can view their own)
+    Route::get('articles/{article}/revisions', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'index'])->name('articles.revisions');
+    Route::get('articles/{article}/revisions/{revision}', [App\Http\Controllers\Admin\ArticleRevisionController::class, 'show'])->name('articles.revisions.show');
 });

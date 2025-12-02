@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Services\ArticleService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -28,7 +29,11 @@ class ArticleController extends Controller
 
         // Search filter
         if ($request->has('search') && $request->search) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%");
+            });
         }
 
         // Status filter
@@ -41,9 +46,14 @@ class ArticleController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        $articles = $query->with(['category', 'author', 'tags'])
+        // If author, only show their articles
+        if (Auth::user()->isAuthor() && !Auth::user()->isAdmin()) {
+            $query->where('author_id', Auth::id());
+        }
+
+        $articles = $query->with(['category', 'author'])
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(15);
 
         $categories = Category::where('is_active', true)->orderBy('name')->get();
 
@@ -87,7 +97,13 @@ class ArticleController extends Controller
         $validated['is_featured'] = $validated['is_featured'] ?? false;
         $validated['allow_comments'] = $validated['allow_comments'] ?? true;
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
-        $validated['author_id'] = $validated['author_id'] ?? auth()->id();
+        
+        // If author (not admin), force author_id to be themselves
+        if (Auth::user()->isAuthor() && !Auth::user()->isAdmin()) {
+            $validated['author_id'] = Auth::id();
+        } else {
+            $validated['author_id'] = $validated['author_id'] ?? Auth::id();
+        }
 
         // Handle published_at
         if ($validated['status'] === 'scheduled' && $validated['published_at']) {
@@ -106,11 +122,69 @@ class ArticleController extends Controller
             $article->tags()->sync($tags);
         }
 
+        // Create initial revision
+        if ($article->exists) {
+            $article->createRevision(auth()->id(), 'Initial version');
+        }
+
+        // Handle scheduled publishing
+        if ($validated['status'] === 'scheduled' && isset($validated['published_at'])) {
+            $publishDate = Carbon::parse($validated['published_at']);
+            if ($publishDate->isFuture()) {
+                \App\Jobs\PublishScheduledArticle::dispatch($article)->delay($publishDate);
+            }
+        }
+
         // Clear cache
         $this->articleService->clearCache();
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article saved successfully.',
+                'article_id' => $article->id,
+            ]);
+        }
+
         return redirect()->route('admin.articles.index')
             ->with('success', 'Article created successfully.');
+    }
+
+    /**
+     * Auto-save draft
+     */
+    public function autoSave(Request $request, Article $article = null)
+    {
+        $validated = $request->validate([
+            'title' => 'nullable|string|max:255',
+            'excerpt' => 'nullable|string|max:500',
+            'content' => 'nullable|string',
+            'featured_image' => 'nullable|string|max:500',
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
+
+        // If article exists, update it; otherwise create new draft
+        if ($article) {
+            // Check permission
+            if (Auth::user()->isAuthor() && !Auth::user()->isAdmin() && $article->author_id !== Auth::id()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+
+            $article->update(array_merge($validated, [
+                'status' => 'draft', // Always save as draft when auto-saving
+            ]));
+        } else {
+            $article = Article::create(array_merge($validated, [
+                'author_id' => Auth::id(),
+                'status' => 'draft',
+            ]));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Draft saved successfully.',
+            'article_id' => $article->id,
+        ]);
     }
 
     /**
@@ -127,6 +201,11 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        // Check permission
+        if (Auth::user()->isAuthor() && !Auth::user()->isAdmin() && $article->author_id !== Auth::id()) {
+            abort(403, 'You can only edit your own articles.');
+        }
+
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $tags = Tag::orderBy('name')->get();
         $article->load('tags');
@@ -138,6 +217,11 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        // Check permission
+        if (Auth::user()->isAuthor() && !Auth::user()->isAdmin() && $article->author_id !== Auth::id()) {
+            abort(403, 'You can only edit your own articles.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
@@ -155,11 +239,32 @@ class ArticleController extends Controller
             'tags.*' => 'exists:tags,id',
         ]);
 
+        // If author (not admin), prevent changing author_id and is_featured
+        if (Auth::user()->isAuthor() && !Auth::user()->isAdmin()) {
+            $validated['author_id'] = Auth::id();
+            $validated['is_featured'] = false; // Authors can't feature their own articles
+        }
+
         // Handle published_at
         if ($validated['status'] === 'scheduled' && $validated['published_at']) {
             $validated['published_at'] = Carbon::parse($validated['published_at']);
         } elseif ($validated['status'] === 'published' && !$validated['published_at']) {
             $validated['published_at'] = $validated['published_at'] ?? now();
+        }
+
+        // Check for significant changes before updating
+        $changedFields = ['title', 'content', 'excerpt'];
+        $hasChanges = false;
+        foreach ($changedFields as $field) {
+            if (isset($validated[$field]) && $article->$field !== $validated[$field]) {
+                $hasChanges = true;
+                break;
+            }
+        }
+
+        // Create revision before updating if there are changes
+        if ($article->exists && $hasChanges) {
+            $article->createRevision(auth()->id());
         }
 
         $tags = $validated['tags'] ?? [];
@@ -170,8 +275,23 @@ class ArticleController extends Controller
         // Sync tags
         $article->tags()->sync($tags);
 
+        // Handle scheduled publishing
+        if ($validated['status'] === 'scheduled' && isset($validated['published_at'])) {
+            $publishDate = Carbon::parse($validated['published_at']);
+            if ($publishDate->isFuture()) {
+                \App\Jobs\PublishScheduledArticle::dispatch($article)->delay($publishDate);
+            }
+        }
+
         // Clear cache
         $this->articleService->clearCache();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article saved successfully.',
+            ]);
+        }
 
         return redirect()->route('admin.articles.index')
             ->with('success', 'Article updated successfully.');
@@ -182,6 +302,11 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+        // Only admins can delete
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Only administrators can delete articles.');
+        }
+
         $article->delete();
 
         // Clear cache
@@ -191,4 +316,3 @@ class ArticleController extends Controller
             ->with('success', 'Article deleted successfully.');
     }
 }
-

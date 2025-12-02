@@ -72,9 +72,8 @@
                         <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                             Content <span class="text-red-500">*</span>
                         </label>
-                        <textarea name="content" id="content" rows="15" required
-                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white font-mono text-sm"
-                                  placeholder="Write your article content here...">{{ old('content') }}</textarea>
+                        <textarea name="content" id="content" class="tinymce-editor w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                                  placeholder="Write your article content here...">{!! old('content') !!}</textarea>
                     </div>
 
                     <!-- Featured Image -->
@@ -182,6 +181,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelect = document.querySelector('select[name="status"]');
     const publishedAtField = document.getElementById('published_at_field');
+    const form = document.querySelector('form');
+    let articleId = null;
     
     function togglePublishedAt() {
         if (statusSelect.value === 'scheduled') {
@@ -193,6 +194,97 @@ document.addEventListener('DOMContentLoaded', function() {
     
     statusSelect.addEventListener('change', togglePublishedAt);
     togglePublishedAt();
+    
+    // Auto-save functionality
+    let autoSaveTimer;
+    let isSaving = false;
+    let lastSavedContent = '';
+    
+    function autoSave() {
+        if (isSaving) return;
+        
+        const formData = new FormData(form);
+        const currentContent = tinymce.get('content') ? tinymce.get('content').getContent() : formData.get('content');
+        
+        // Only save if content has changed
+        if (currentContent === lastSavedContent) return;
+        
+        isSaving = true;
+        
+        // Get TinyMCE content if available
+        if (tinymce.get('content')) {
+            formData.set('content', tinymce.get('content').getContent());
+        }
+        
+        const url = articleId ? `/admin/articles/${articleId}/auto-save` : '/admin/articles/auto-save';
+        
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            isSaving = false;
+            if (data.success) {
+                lastSavedContent = currentContent;
+                if (data.article_id && !articleId) {
+                    articleId = data.article_id;
+                    // Update form action to include article ID
+                    form.action = `/admin/articles/${articleId}`;
+                    form.innerHTML += `<input type="hidden" name="_method" value="PUT">`;
+                }
+                showAutoSaveIndicator('saved');
+            }
+        })
+        .catch(error => {
+            isSaving = false;
+            console.error('Auto-save error:', error);
+        });
+    }
+    
+    function showAutoSaveIndicator(status) {
+        let indicator = document.getElementById('auto-save-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.id = 'auto-save-indicator';
+            indicator.className = 'fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 transition-all';
+            document.body.appendChild(indicator);
+        }
+        
+        if (status === 'saving') {
+            indicator.className = 'fixed bottom-4 right-4 px-4 py-2 bg-yellow-500 text-white rounded-lg shadow-lg z-50 transition-all';
+            indicator.textContent = 'Saving...';
+        } else if (status === 'saved') {
+            indicator.className = 'fixed bottom-4 right-4 px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg z-50 transition-all';
+            indicator.textContent = 'Draft saved';
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+                setTimeout(() => indicator.remove(), 300);
+            }, 2000);
+        }
+    }
+    
+    // Auto-save on input (debounced)
+    const inputs = form.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            clearTimeout(autoSaveTimer);
+            showAutoSaveIndicator('saving');
+            autoSaveTimer = setTimeout(autoSave, 3000); // Save after 3 seconds of inactivity
+        });
+    });
+    
+    // Auto-save on TinyMCE content change
+    if (tinymce.get('content')) {
+        tinymce.get('content').on('keyup', () => {
+            clearTimeout(autoSaveTimer);
+            showAutoSaveIndicator('saving');
+            autoSaveTimer = setTimeout(autoSave, 3000);
+        });
+    }
 });
 </script>
 @endsection

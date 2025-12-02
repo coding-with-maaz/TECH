@@ -8,6 +8,7 @@ use App\Models\Tag;
 use App\Services\ArticleService;
 use App\Services\SeoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -52,10 +53,18 @@ class ArticleController extends Controller
     {
         $article = Article::published()
             ->where('slug', $slug)
-            ->with(['category', 'author', 'tags', 'comments' => function($query) {
-                $query->approved()->with('replies');
+            ->with(['category', 'author', 'tags', 'likes', 'comments' => function($query) {
+                $query->approved()->with(['replies.user', 'user']);
             }])
             ->firstOrFail();
+        
+        // Check if article is liked by current user/IP
+        $isLiked = false;
+        if (Auth::check()) {
+            $isLiked = $article->isLikedBy(Auth::id());
+        } else {
+            $isLiked = $article->isLikedBy(null, request()->ip());
+        }
 
         // Increment views
         $article->incrementViews();
@@ -71,6 +80,7 @@ class ArticleController extends Controller
             'featuredArticles' => $featuredArticles,
             'categories' => $categories,
             'popularTags' => $popularTags,
+            'isLiked' => $isLiked,
             'seo' => $this->seoService->forArticle($article),
         ]);
     }
