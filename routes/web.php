@@ -26,6 +26,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\BookmarkController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -111,6 +112,16 @@ Route::get('/series/{slug}', [SeriesController::class, 'show'])->name('series.sh
 // Profile routes
 Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/profile/{username}/articles', [ProfileController::class, 'articles'])->name('profile.articles');
+
+// Bookmark routes (authenticated)
+Route::middleware('auth')->group(function () {
+    Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
+    Route::post('/articles/{article}/bookmark', [BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+    Route::post('/articles/{article}/bookmark/store', [BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::put('/bookmarks/{bookmark}', [BookmarkController::class, 'update'])->name('bookmarks.update');
+    Route::delete('/bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+    Route::delete('/articles/{article}/bookmark', [BookmarkController::class, 'removeByArticle'])->name('bookmarks.remove-by-article');
+});
 
 // Follow routes (authenticated)
 Route::middleware('auth')->group(function () {

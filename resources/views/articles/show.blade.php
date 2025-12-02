@@ -172,7 +172,7 @@
             </div>
             @endif
 
-            <!-- Article Actions (Like Button) -->
+            <!-- Article Actions (Like & Bookmark Buttons) -->
             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">
                 <button id="likeButton" 
                         class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $isLiked ?? false ? 'bg-red-100 text-red-600 dark:!bg-red-900/20 dark:!text-red-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card' }}"
@@ -185,6 +185,30 @@
                         <span id="likesCount">{{ $article->likes()->count() }}</span> Like{{ $article->likes()->count() !== 1 ? 's' : '' }}
                     </span>
                 </button>
+                
+                @auth
+                <button id="bookmarkButton" 
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $isBookmarked ?? false ? 'bg-yellow-100 text-yellow-600 dark:!bg-yellow-900/20 dark:!text-yellow-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card' }}"
+                        data-article-id="{{ $article->id }}"
+                        data-bookmarked="{{ $isBookmarked ?? false ? 'true' : 'false' }}">
+                    <svg class="w-5 h-5" fill="{{ $isBookmarked ?? false ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                    <span class="font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        {{ $isBookmarked ?? false ? 'Bookmarked' : 'Bookmark' }}
+                    </span>
+                </button>
+                @else
+                <a href="{{ route('login') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                    <span class="font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Bookmark
+                    </span>
+                </a>
+                @endauth
             </div>
 
             <!-- Comments Section -->
@@ -878,6 +902,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.disabled = false;
                 console.error('Error:', error);
                 alert('Failed to like article. Please try again.');
+            });
+        });
+    }
+
+    // Article Bookmark functionality
+    const bookmarkButton = document.getElementById('bookmarkButton');
+    if (bookmarkButton) {
+        bookmarkButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const articleId = this.getAttribute('data-article-id');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                             document.querySelector('input[name="_token"]')?.value ||
+                             document.querySelector('input[name="csrf_token"]')?.value;
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                return;
+            }
+            
+            // Disable button during request
+            this.disabled = true;
+            
+            // Create form data for POST request
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
+            
+            const bookmarkUrl = `/articles/${articleId}/bookmark`;
+            fetch(bookmarkUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.disabled = false;
+                
+                if (data.success) {
+                    // Update button state
+                    const isBookmarked = data.bookmarked;
+                    this.setAttribute('data-bookmarked', isBookmarked ? 'true' : 'false');
+                    
+                    const buttonText = this.querySelector('span');
+                    const svg = this.querySelector('svg');
+                    
+                    if (isBookmarked) {
+                        this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200', 'dark:!bg-bg-card-hover', 'dark:!text-white', 'dark:!hover:bg-bg-card');
+                        this.classList.add('bg-yellow-100', 'text-yellow-600', 'dark:!bg-yellow-900/20', 'dark:!text-yellow-400');
+                        if (svg) svg.setAttribute('fill', 'currentColor');
+                        if (buttonText) buttonText.textContent = 'Bookmarked';
+                    } else {
+                        this.classList.remove('bg-yellow-100', 'text-yellow-600', 'dark:!bg-yellow-900/20', 'dark:!text-yellow-400');
+                        this.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200', 'dark:!bg-bg-card-hover', 'dark:!text-white', 'dark:!hover:bg-bg-card');
+                        if (svg) svg.setAttribute('fill', 'none');
+                        if (buttonText) buttonText.textContent = 'Bookmark';
+                    }
+                    
+                    // Show message if available
+                    if (data.message) {
+                        showMessage(data.message, 'success');
+                    }
+                }
+            })
+            .catch(error => {
+                this.disabled = false;
+                console.error('Error:', error);
+                alert('Failed to bookmark article. Please try again.');
             });
         });
     }

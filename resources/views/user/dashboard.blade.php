@@ -132,7 +132,7 @@
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Bookmarks -->
-        <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 shadow-sm">
+        <a href="{{ route('bookmarks.index') }}" class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-semibold text-gray-600 dark:!text-text-secondary uppercase tracking-wider" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
@@ -151,7 +151,10 @@
             <div class="mt-4 text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                 {{ $bookmarksThisMonth }} added this month
             </div>
-        </div>
+            <div class="mt-4 text-sm text-blue-600 dark:!text-blue-400 font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                View All →
+            </div>
+        </a>
 
         <!-- Comments -->
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 shadow-sm">
@@ -228,6 +231,9 @@
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
                     Recent Bookmarks
                 </h2>
+                <a href="{{ route('bookmarks.index') }}" class="text-sm text-accent hover:text-accent-light font-semibold transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    View All →
+                </a>
             </div>
             
             @if($recentBookmarks->count() > 0)

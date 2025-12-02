@@ -91,6 +91,14 @@ class ArticleController extends Controller
         } else {
             $isLiked = $article->isLikedBy(null, request()->ip());
         }
+        
+        // Check if article is bookmarked by current user
+        $isBookmarked = false;
+        if (Auth::check()) {
+            $isBookmarked = \App\Models\Bookmark::where('user_id', Auth::id())
+                ->where('article_id', $article->id)
+                ->exists();
+        }
 
         // Increment views
         $article->incrementViews();
@@ -112,6 +120,7 @@ class ArticleController extends Controller
             'nextArticle' => $nextArticle,
             'currentSeriesIndex' => $currentIndex !== false ? $currentIndex + 1 : null,
             'totalSeriesArticles' => $seriesArticles ? $seriesArticles->count() : null,
+            'isBookmarked' => $isBookmarked,
             'seo' => $this->seoService->forArticle($article),
         ]);
     }
