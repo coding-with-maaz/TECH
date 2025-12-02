@@ -12,6 +12,8 @@ class Series extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'article_series';
+
     protected $fillable = [
         'title',
         'slug',

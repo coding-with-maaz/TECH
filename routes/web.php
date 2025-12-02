@@ -23,6 +23,9 @@ use App\Http\Controllers\Auth\FirebaseAuthController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\AuthorDashboardController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\ActivityController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -104,6 +107,27 @@ Route::get('/tags/{slug}', [TagController::class, 'show'])->name('tags.show');
 // Series routes
 Route::get('/series', [SeriesController::class, 'index'])->name('series.index');
 Route::get('/series/{slug}', [SeriesController::class, 'show'])->name('series.show');
+
+// Profile routes
+Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/{username}/articles', [ProfileController::class, 'articles'])->name('profile.articles');
+
+// Follow routes (authenticated)
+Route::middleware('auth')->group(function () {
+    Route::post('/profile/{user}/follow', [FollowController::class, 'follow'])->name('profile.follow');
+    Route::delete('/profile/{user}/unfollow', [FollowController::class, 'unfollow'])->name('profile.unfollow');
+    Route::post('/profile/{user}/toggle-follow', [FollowController::class, 'toggle'])->name('profile.toggle-follow');
+    Route::get('/profile/{username}/followers', [FollowController::class, 'followers'])->name('profile.followers');
+    Route::get('/profile/{username}/following', [FollowController::class, 'following'])->name('profile.following');
+    
+    // Profile edit routes
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Activity feed routes
+    Route::get('/activity', [ActivityController::class, 'timeline'])->name('activity.timeline');
+    Route::get('/profile/{username}/activity', [ActivityController::class, 'index'])->name('profile.activity');
+});
 
 // Search
 Route::get('/search', [SearchController::class, 'search'])->name('search');

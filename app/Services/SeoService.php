@@ -7,6 +7,7 @@ use App\Models\PageSeo;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Series;
+use App\Models\User;
 
 class SeoService
 {
@@ -355,6 +356,29 @@ class SeoService
                     'description' => $description,
                 ]),
             ],
+        ]);
+    }
+
+    /**
+     * Generate SEO for a user profile page
+     */
+    public function forProfile(User $user): array
+    {
+        $title = $user->name;
+        $description = $user->bio ?: "View {$user->name}'s profile. Articles, statistics, and more.";
+        
+        $url = route('profile.show', $user->username ?? $user->id);
+        $keywords = "{$user->name}, author profile, tech articles, {$user->name} articles";
+        
+        $image = $user->avatar_url ?? $this->defaultImage;
+
+        return $this->generate([
+            'title' => "{$title} - Author Profile | TechBlog",
+            'description' => $description,
+            'keywords' => $keywords,
+            'image' => $image,
+            'url' => $url,
+            'type' => 'profile',
         ]);
     }
 
