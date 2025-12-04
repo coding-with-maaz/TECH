@@ -189,6 +189,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings/facebook', [App\Http\Controllers\Admin\SettingsController::class, 'updateFacebook'])->name('settings.facebook.update');
     Route::post('settings/facebook/test', [App\Http\Controllers\Admin\SettingsController::class, 'testFacebook'])->name('settings.facebook.test');
+    Route::post('settings/twitter', [App\Http\Controllers\Admin\SettingsController::class, 'updateTwitter'])->name('settings.twitter.update');
+    Route::post('settings/twitter/test', [App\Http\Controllers\Admin\SettingsController::class, 'testTwitter'])->name('settings.twitter.test');
+    Route::post('settings/instagram', [App\Http\Controllers\Admin\SettingsController::class, 'updateInstagram'])->name('settings.instagram.update');
+    Route::post('settings/instagram/test', [App\Http\Controllers\Admin\SettingsController::class, 'testInstagram'])->name('settings.instagram.test');
+    Route::post('settings/threads', [App\Http\Controllers\Admin\SettingsController::class, 'updateThreads'])->name('settings.threads.update');
+    Route::post('settings/threads/test', [App\Http\Controllers\Admin\SettingsController::class, 'testThreads'])->name('settings.threads.test');
     
     // Author management
     Route::get('authors', [App\Http\Controllers\Admin\AuthorController::class, 'index'])->name('authors.index');

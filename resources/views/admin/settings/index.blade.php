@@ -148,6 +148,205 @@
             </div>
         </form>
     </div>
+
+    <!-- Twitter/X Integration -->
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Twitter/X Integration
+                </h2>
+                <p class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Automatically share articles to your Twitter/X account when published
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">Status:</span>
+                @if($twitterEnabled && config('services.twitter.bearer_token'))
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold dark:!bg-green-900/20 dark:!text-green-400">Active</span>
+                @else
+                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold dark:!bg-gray-800 dark:!text-gray-400">Inactive</span>
+                @endif
+            </div>
+        </div>
+
+        <form action="{{ route('admin.settings.twitter.update') }}" method="POST">
+            @csrf
+            <div class="space-y-6">
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="enabled" value="1" {{ $twitterEnabled ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
+                        <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Enable Twitter Auto-Posting
+                        </span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Bearer Token <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" name="bearer_token" value="{{ old('bearer_token') }}" 
+                           placeholder="{{ config('services.twitter.bearer_token') ? '••••••••••••••••' : 'Enter your Twitter Bearer Token' }}"
+                           {{ config('services.twitter.bearer_token') ? '' : 'required' }}
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">
+                        Twitter API v2 Bearer Token. Get it from <a href="https://developer.twitter.com/en/portal/dashboard" target="_blank" class="text-accent hover:underline">Twitter Developer Portal</a>
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        API Version
+                    </label>
+                    <input type="text" name="api_version" value="{{ old('api_version', $twitterApiVersion) }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                           placeholder="2">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Save Settings</button>
+                <button type="button" onclick="testConnection('twitter')" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Test Connection</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Instagram Integration -->
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Instagram Integration
+                </h2>
+                <p class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Automatically share articles to your Instagram account when published (requires featured image)
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">Status:</span>
+                @if($instagramEnabled && $instagramPageId)
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold dark:!bg-green-900/20 dark:!text-green-400">Active</span>
+                @else
+                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold dark:!bg-gray-800 dark:!text-gray-400">Inactive</span>
+                @endif
+            </div>
+        </div>
+
+        <form action="{{ route('admin.settings.instagram.update') }}" method="POST">
+            @csrf
+            <div class="space-y-6">
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="enabled" value="1" {{ $instagramEnabled ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
+                        <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Enable Instagram Auto-Posting
+                        </span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Instagram Business Account ID <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="page_id" value="{{ old('page_id', $instagramPageId) }}" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                           placeholder="e.g., 123456789012345">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Access Token <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" name="access_token" value="{{ old('access_token') }}" 
+                           placeholder="{{ config('services.instagram.access_token') ? '••••••••••••••••' : 'Enter your Instagram Access Token' }}"
+                           {{ config('services.instagram.access_token') ? '' : 'required' }}
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">
+                        Instagram Graph API Access Token with <code class="bg-gray-100 dark:!bg-gray-800 px-1 rounded">instagram_basic</code> and <code class="bg-gray-100 dark:!bg-gray-800 px-1 rounded">pages_show_list</code> permissions
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        API Version
+                    </label>
+                    <input type="text" name="api_version" value="{{ old('api_version', $instagramApiVersion) }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                           placeholder="v18.0">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Save Settings</button>
+                <button type="button" onclick="testConnection('instagram')" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Test Connection</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Threads Integration -->
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Threads Integration
+                </h2>
+                <p class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Automatically share articles to your Threads account when published
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600 dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">Status:</span>
+                @if($threadsEnabled && $threadsPageId)
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold dark:!bg-green-900/20 dark:!text-green-400">Active</span>
+                @else
+                    <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold dark:!bg-gray-800 dark:!text-gray-400">Inactive</span>
+                @endif
+            </div>
+        </div>
+
+        <form action="{{ route('admin.settings.threads.update') }}" method="POST">
+            @csrf
+            <div class="space-y-6">
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="enabled" value="1" {{ $threadsEnabled ? 'checked' : '' }}
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
+                        <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Enable Threads Auto-Posting
+                        </span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Threads Account ID <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="page_id" value="{{ old('page_id', $threadsPageId) }}" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                           placeholder="e.g., 123456789012345">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Access Token <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" name="access_token" value="{{ old('access_token') }}" 
+                           placeholder="{{ config('services.threads.access_token') ? '••••••••••••••••' : 'Enter your Threads Access Token' }}"
+                           {{ config('services.threads.access_token') ? '' : 'required' }}
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white">
+                    <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">
+                        Threads API Access Token with <code class="bg-gray-100 dark:!bg-gray-800 px-1 rounded">threads_basic</code> and <code class="bg-gray-100 dark:!bg-gray-800 px-1 rounded">threads_content_publish</code> permissions
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        API Version
+                    </label>
+                    <input type="text" name="api_version" value="{{ old('api_version', $threadsApiVersion) }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                           placeholder="v18.0">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Save Settings</button>
+                <button type="button" onclick="testConnection('threads')" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Test Connection</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -155,35 +354,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const testBtn = document.getElementById('testFacebookBtn');
     if (testBtn) {
         testBtn.addEventListener('click', function() {
-            this.disabled = true;
-            this.textContent = 'Testing...';
-            
-            fetch('{{ route("admin.settings.facebook.test") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                this.disabled = false;
-                this.textContent = 'Test Connection';
-                
-                if (data.success) {
-                    alert('✅ Connection successful! Facebook integration is working.\n\nPage: ' + (data.page_info?.name || 'Connected'));
-                } else {
-                    alert('❌ Connection failed: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                this.disabled = false;
-                this.textContent = 'Test Connection';
-                alert('❌ Error testing connection: ' + error.message);
-            });
+            testConnection('facebook', this);
         });
     }
 });
+
+function testConnection(platform, button = null) {
+    const btn = button || event.target;
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Testing...';
+    
+    const routes = {
+        'facebook': '{{ route("admin.settings.facebook.test") }}',
+        'twitter': '{{ route("admin.settings.twitter.test") }}',
+        'instagram': '{{ route("admin.settings.instagram.test") }}',
+        'threads': '{{ route("admin.settings.threads.test") }}',
+    };
+    
+    fetch(routes[platform], {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        
+        if (data.success) {
+            const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+            const info = data.page_info?.name || data.user_info?.data?.name || 'Connected';
+            alert(`✅ ${platformName} connection successful!\n\n${info}`);
+        } else {
+            alert(`❌ ${platform.charAt(0).toUpperCase() + platform.slice(1)} connection failed: ${data.message || 'Unknown error'}`);
+        }
+    })
+    .catch(error => {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        alert(`❌ Error testing connection: ${error.message}`);
+    });
+}
 </script>
 @endsection
 

@@ -139,11 +139,20 @@ class ArticleController extends Controller
             }
         }
 
-        // Post to Facebook if article is published, Facebook is enabled, and user opted in
-        if ($validated['status'] === 'published' && 
-            config('services.facebook.enabled', false) && 
-            ($request->has('post_to_facebook') && $request->post_to_facebook)) {
-            \App\Jobs\PostToFacebookJob::dispatch($article);
+        // Post to social media platforms if article is published and user opted in
+        if ($validated['status'] === 'published') {
+            if (config('services.facebook.enabled', false) && ($request->has('post_to_facebook') && $request->post_to_facebook)) {
+                \App\Jobs\PostToFacebookJob::dispatch($article);
+            }
+            if (config('services.twitter.enabled', false) && ($request->has('post_to_twitter') && $request->post_to_twitter)) {
+                \App\Jobs\PostToTwitterJob::dispatch($article);
+            }
+            if (config('services.instagram.enabled', false) && ($request->has('post_to_instagram') && $request->post_to_instagram)) {
+                \App\Jobs\PostToInstagramJob::dispatch($article);
+            }
+            if (config('services.threads.enabled', false) && ($request->has('post_to_threads') && $request->post_to_threads)) {
+                \App\Jobs\PostToThreadsJob::dispatch($article);
+            }
         }
 
         // Clear cache
@@ -248,6 +257,9 @@ class ArticleController extends Controller
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
             'post_to_facebook' => 'nullable|boolean',
+            'post_to_twitter' => 'nullable|boolean',
+            'post_to_instagram' => 'nullable|boolean',
+            'post_to_threads' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'sort_order' => 'nullable|integer',
             'tags' => 'nullable|array',
@@ -298,12 +310,20 @@ class ArticleController extends Controller
             }
         }
 
-        // Post to Facebook if article status changed to published, Facebook is enabled, and user opted in
-        if ($validated['status'] === 'published' && 
-            $article->wasChanged('status') && 
-            config('services.facebook.enabled', false) &&
-            ($request->has('post_to_facebook') && $request->post_to_facebook)) {
-            \App\Jobs\PostToFacebookJob::dispatch($article->fresh());
+        // Post to social media platforms if article status changed to published and user opted in
+        if ($validated['status'] === 'published' && $article->wasChanged('status')) {
+            if (config('services.facebook.enabled', false) && ($request->has('post_to_facebook') && $request->post_to_facebook)) {
+                \App\Jobs\PostToFacebookJob::dispatch($article->fresh());
+            }
+            if (config('services.twitter.enabled', false) && ($request->has('post_to_twitter') && $request->post_to_twitter)) {
+                \App\Jobs\PostToTwitterJob::dispatch($article->fresh());
+            }
+            if (config('services.instagram.enabled', false) && ($request->has('post_to_instagram') && $request->post_to_instagram)) {
+                \App\Jobs\PostToInstagramJob::dispatch($article->fresh());
+            }
+            if (config('services.threads.enabled', false) && ($request->has('post_to_threads') && $request->post_to_threads)) {
+                \App\Jobs\PostToThreadsJob::dispatch($article->fresh());
+            }
         }
 
         // Clear cache

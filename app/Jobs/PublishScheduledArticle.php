@@ -43,10 +43,9 @@ class PublishScheduledArticle implements ShouldQueue
 
             Log::info("Article #{$article->id} '{$article->title}' has been published successfully.");
 
-            // Post to Facebook if enabled
-            if (config('services.facebook.enabled', false)) {
-                \App\Jobs\PostToFacebookJob::dispatch($article->fresh());
-            }
+            // Note: Social media posting is optional and only happens when explicitly selected
+            // via checkboxes during manual article creation/editing. Scheduled articles
+            // will not automatically post to social media unless configured to do so.
         }
     }
 }

@@ -60,4 +60,24 @@ return [
         'api_version' => env('FACEBOOK_API_VERSION', 'v18.0'),
     ],
 
+    'twitter' => [
+        'enabled' => env('TWITTER_ENABLED', false),
+        'bearer_token' => env('TWITTER_BEARER_TOKEN'),
+        'api_version' => env('TWITTER_API_VERSION', '2'),
+    ],
+
+    'instagram' => [
+        'enabled' => env('INSTAGRAM_ENABLED', false),
+        'page_id' => env('INSTAGRAM_PAGE_ID'),
+        'access_token' => env('INSTAGRAM_ACCESS_TOKEN'),
+        'api_version' => env('INSTAGRAM_API_VERSION', 'v18.0'),
+    ],
+
+    'threads' => [
+        'enabled' => env('THREADS_ENABLED', false),
+        'page_id' => env('THREADS_PAGE_ID'),
+        'access_token' => env('THREADS_ACCESS_TOKEN'),
+        'api_version' => env('THREADS_API_VERSION', 'v18.0'),
+    ],
+
 ];

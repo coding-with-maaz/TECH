@@ -200,6 +200,27 @@
                             <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Post to Facebook</span>
                         </label>
                         @endif
+                        @if(config('services.twitter.enabled', false))
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="post_to_twitter" value="1" {{ old('post_to_twitter', false) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Post to Twitter/X</span>
+                        </label>
+                        @endif
+                        @if(config('services.instagram.enabled', false))
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="post_to_instagram" value="1" {{ old('post_to_instagram', false) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Post to Instagram</span>
+                        </label>
+                        @endif
+                        @if(config('services.threads.enabled', false))
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="post_to_threads" value="1" {{ old('post_to_threads', false) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Post to Threads</span>
+                        </label>
+                        @endif
                     </div>
 
                     <!-- Sort Order -->
