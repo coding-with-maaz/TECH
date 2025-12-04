@@ -3,19 +3,19 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
             Admin Dashboard
         </h1>
-        <p class="text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+        <p class="text-sm sm:text-base text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
             Welcome to the admin panel. Here's an overview of your tech blog management system.
         </p>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Total Articles -->
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 shadow-sm">
             <div class="flex items-center justify-between">
@@ -115,7 +115,7 @@
     </div>
 
     <!-- Secondary Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
         <!-- Published Articles -->
         <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4">
             <p class="text-sm text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Published</p>
@@ -159,9 +159,9 @@
     </div>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <!-- Recent Articles -->
-        <div class="lg:col-span-2 bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+        <div class="lg:col-span-2 bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4 sm:p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
                     Recent Articles
@@ -174,8 +174,8 @@
             @if($recentArticles->count() > 0)
                 <div class="space-y-4">
                     @foreach($recentArticles as $article)
-                        <div class="flex items-center gap-4 p-4 bg-gray-50 dark:!bg-bg-card-hover rounded-lg hover:bg-gray-100 dark:!hover:bg-bg-card-hover transition-colors">
-                            <div class="w-20 h-20 rounded overflow-hidden bg-gray-200 dark:!bg-gray-700 flex-shrink-0">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-gray-50 dark:!bg-bg-card-hover rounded-lg hover:bg-gray-100 dark:!hover:bg-bg-card-hover transition-colors">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded overflow-hidden bg-gray-200 dark:!bg-gray-700 flex-shrink-0">
                                 @if($article->featured_image)
                                     @php
                                         $imageUrl = str_starts_with($article->featured_image, 'http') 
@@ -208,8 +208,8 @@
                                     <span>{{ number_format($article->views) }} views</span>
                                 </div>
                             </div>
-                            <div>
-                                <a href="{{ route('admin.articles.edit', $article) }}" class="px-3 py-1 bg-accent hover:bg-accent-light text-white rounded text-sm transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            <div class="w-full sm:w-auto mt-2 sm:mt-0">
+                                <a href="{{ route('admin.articles.edit', $article) }}" class="block w-full sm:w-auto text-center px-3 py-1.5 sm:py-1 bg-accent hover:bg-accent-light text-white rounded text-sm transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                                     Edit
                                 </a>
                             </div>
@@ -257,6 +257,9 @@
                     <a href="{{ route('admin.series.index') }}" class="block w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Manage Series
                     </a>
+                    <a href="{{ route('admin.analytics.index') }}" class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        📊 View Analytics
+                    </a>
                 </div>
             </div>
 
@@ -276,6 +279,42 @@
                 </div>
             </div>
             @endif
+
+            <!-- Quick Analytics -->
+            <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Analytics
+                    </h2>
+                    <a href="{{ route('admin.analytics.index') }}" class="text-sm text-accent hover:underline font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        View All →
+                    </a>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                {{ number_format($quickAnalytics['realtime']['active_users'] ?? 0) }} active users (30min)
+                            </p>
+                            <p class="text-gray-600 dark:!text-text-secondary text-xs" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                {{ number_format($quickAnalytics['today_unique'] ?? 0) }} unique visitors today
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div>
+                            <p class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                {{ number_format($quickAnalytics['today_views'] ?? 0) }} page views today
+                            </p>
+                            <p class="text-gray-600 dark:!text-text-secondary text-xs" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                {{ number_format($quickAnalytics['realtime']['page_views'] ?? 0) }} in last 30 minutes
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Recent Activity -->
             <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
@@ -343,13 +382,13 @@
         </div>
     </div>
 
-    <!-- Top Viewed Articles -->
+        <!-- Top Viewed Articles -->
     @if($topViewedArticles->count() > 0)
-    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6 mb-8">
-        <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4 sm:p-6 mb-6 sm:mb-8">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:!text-white mb-4 sm:mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
             Most Viewed Articles
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             @foreach($topViewedArticles as $article)
                 <div class="group cursor-pointer">
                     <div class="relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 dark:!bg-gray-700 mb-2">
@@ -378,8 +417,8 @@
 
     <!-- Recent Comments -->
     @if($recentComments->count() > 0)
-    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
-        <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-4 sm:p-6">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900 dark:!text-white mb-4 sm:mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
             Recent Comments
         </h2>
         <div class="space-y-4">

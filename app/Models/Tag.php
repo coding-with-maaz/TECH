@@ -44,6 +44,19 @@ class Tag extends Model
                 $tag->slug = $tag->generateUniqueSlug();
             }
         });
+
+        // Clear sitemap cache when tag is saved or deleted
+        static::saved(function ($tag) {
+            if (app()->bound(\App\Services\SitemapService::class)) {
+                app(\App\Services\SitemapService::class)->clearCache();
+            }
+        });
+
+        static::deleted(function ($tag) {
+            if (app()->bound(\App\Services\SitemapService::class)) {
+                app(\App\Services\SitemapService::class)->clearCache();
+            }
+        });
     }
 
     /**

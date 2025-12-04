@@ -28,6 +28,19 @@
         </div>
     </div>
 
+    <!-- Success/Error Messages -->
+    @if(session('success'))
+        <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg dark:!bg-green-900/20 dark:!border-green-800 dark:!text-green-400" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+            {{ session('success') }}
+        </div>
+    @endif
+    
+    @if(session('error'))
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg dark:!bg-red-900/20 dark:!border-red-800 dark:!text-red-400" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <!-- Featured Image -->
@@ -52,11 +65,51 @@
             </div>
             @endif
 
-            <!-- Articles in Series -->
+            <!-- Add Article to Series -->
+            @if(isset($availableArticles) && $availableArticles->count() > 0)
             <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                    Articles in Series ({{ $series->articles->count() }})
+                    Add Article to Series
                 </h2>
+                <form method="POST" action="{{ route('admin.series.add-article', $series) }}" class="flex gap-3">
+                    @csrf
+                    <div class="flex-1">
+                        <select name="article_id" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                                style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                            <option value="">Select an article...</option>
+                            @foreach($availableArticles as $article)
+                                <option value="{{ $article->id }}">
+                                    {{ $article->title }} 
+                                    <span class="text-xs text-gray-500">({{ ucfirst($article->status) }})</span>
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-32">
+                        <input type="number" name="series_order" 
+                               value="{{ $series->articles->max('series_order') + 1 }}" 
+                               min="1"
+                               placeholder="Order"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    </div>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105"
+                            style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Add Article
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <!-- Articles in Series -->
+            <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Articles in Series ({{ $series->articles->count() }})
+                    </h2>
+                </div>
                 
                 @if($series->articles->count() > 0)
                     <div class="space-y-3">
@@ -79,11 +132,35 @@
                                     <span>{{ $article->created_at->format('M j, Y') }}</span>
                                 </div>
                             </div>
-                            <a href="{{ route('admin.articles.edit', $article) }}" 
-                               class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors dark:!bg-blue-900/20 dark:!text-blue-400 dark:!hover:bg-blue-900/30 text-sm font-semibold ml-4" 
-                               style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                Edit
-                            </a>
+                            <div class="flex items-center gap-2">
+                                <form method="POST" action="{{ route('admin.series.update-article-order', $series) }}" class="flex items-center gap-2">
+                                    @csrf
+                                    <input type="hidden" name="article_id" value="{{ $article->id }}">
+                                    <input type="number" name="series_order" 
+                                           value="{{ $article->series_order ?? $loop->iteration }}" 
+                                           min="1"
+                                           class="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card dark:!border-border-primary dark:!text-white"
+                                           style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                                           onchange="this.form.submit()">
+                                </form>
+                                <a href="{{ route('admin.articles.edit', $article) }}" 
+                                   class="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors dark:!bg-blue-900/20 dark:!text-blue-400 dark:!hover:bg-blue-900/30 text-sm font-semibold" 
+                                   style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                    Edit
+                                </a>
+                                <form method="POST" action="{{ route('admin.series.remove-article', [$series, $article]) }}" 
+                                      onsubmit="return confirm('Are you sure you want to remove this article from the series?');"
+                                      class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors dark:!bg-red-900/20 dark:!text-red-400 dark:!hover:bg-red-900/30 text-sm font-semibold" 
+                                            style="font-family: 'Poppins', sans-serif; font-weight: 600;"
+                                            title="Remove from series">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                         @endforeach
                     </div>

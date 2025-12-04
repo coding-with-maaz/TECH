@@ -59,16 +59,22 @@ class SitemapService
                 'priority' => '0.8',
             ],
             [
+                'loc' => route('series.index'),
+                'lastmod' => $this->getSiteLastModified(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ],
+            [
+                'loc' => route('tags.index'),
+                'lastmod' => $this->getTagsLastModified(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ],
+            [
                 'loc' => route('about'),
                 'lastmod' => $this->getSiteLastModified(),
                 'changefreq' => 'monthly',
                 'priority' => '0.5',
-            ],
-            [
-                'loc' => route('dmca'),
-                'lastmod' => $this->getSiteLastModified(),
-                'changefreq' => 'yearly',
-                'priority' => '0.3',
             ],
             [
                 'loc' => route('contact'),

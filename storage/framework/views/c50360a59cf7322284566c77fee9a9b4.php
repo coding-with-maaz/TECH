@@ -109,10 +109,17 @@
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     <?php endif; ?>
     <link rel="alternate" hreflang="x-default" href="<?php echo e(url()->current()); ?>">
+    <link rel="alternate" hreflang="<?php echo e(str_replace('_', '-', $seo['locale'] ?? 'en-US')); ?>" href="<?php echo e(url()->current()); ?>">
     
-    <!-- Preconnect for Performance -->
+    <!-- Preconnect for Performance (Core Web Vitals Optimization) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    
+    <!-- Resource Hints for Better Performance -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap">
+    <link rel="preload" as="script" href="https://cdn.tailwindcss.com">
     
     <!-- Structured Data (JSON-LD) -->
     <?php if(!empty($seo['schema'])): ?>
@@ -1070,6 +1077,7 @@
                     <li><a href="<?php echo e(route('articles.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Articles</a></li>
                     <li><a href="<?php echo e(route('categories.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Categories</a></li>
                     <li><a href="<?php echo e(route('tags.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Tags</a></li>
+                    <li><a href="<?php echo e(route('series.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Series</a></li>
                     <li><a href="<?php echo e(route('about')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
                     <li><a href="<?php echo e(route('contact')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Contact</a></li>
                 </ul>
@@ -1384,7 +1392,73 @@
 <?php endif; ?>
     <?php endif; ?>
     
+    <!-- Analytics Tracking (exclude admin pages) -->
+    <?php if(!request()->is('admin/*') && !request()->is('author/*')): ?>
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/js/analytics.js']); ?>
+    <?php endif; ?>
+    
     <?php echo $__env->yieldPushContent('scripts'); ?>
+    
+    <!-- Global Error Handler -->
+    <script>
+        // Global error handler to prevent uncaught exceptions from breaking the page
+        window.addEventListener('error', function(e) {
+            // Only log errors in development, silently fail in production
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.error('JavaScript error:', e.error);
+            }
+            // Prevent default error handling
+            e.preventDefault();
+            return true;
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            // Only log errors in development
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.error('Unhandled promise rejection:', e.reason);
+            }
+            // Prevent default error handling
+            e.preventDefault();
+        });
+    </script>
+    
+    <!-- Core Web Vitals Optimization -->
+    <script>
+        // Lazy load images for better LCP (Largest Contentful Paint)
+        if ('loading' in HTMLImageElement.prototype) {
+            const images = document.querySelectorAll('img[data-src]');
+            images.forEach(img => {
+                img.src = img.dataset.src;
+            });
+        } else {
+            // Fallback for browsers that don't support lazy loading
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+            document.body.appendChild(script);
+        }
+        
+        // Preload critical resources
+        const criticalResources = [
+            '<?php echo e(asset("css/theme.css")); ?>',
+            '<?php echo e(asset("css/components.css")); ?>'
+        ];
+        
+        criticalResources.forEach(resource => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'style';
+            link.href = resource;
+            document.head.appendChild(link);
+        });
+        
+        // Optimize font loading (FOUT prevention)
+        if (document.fonts) {
+            document.fonts.ready.then(() => {
+                document.documentElement.classList.add('fonts-loaded');
+            });
+        }
+    </script>
 </body>
 </html>
 

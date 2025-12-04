@@ -27,6 +27,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\AnalyticsTrackingController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -97,6 +99,9 @@ Route::post('/articles/{article}/comments/{comment}/reply', [CommentController::
 // Article show route (must be last to avoid conflicts)
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
+// AMP routes
+Route::get('/amp/articles/{slug}', [App\Http\Controllers\AmpController::class, 'article'])->name('amp.article');
+
 // Category routes
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
@@ -140,6 +145,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{username}/activity', [ActivityController::class, 'index'])->name('profile.activity');
 });
 
+// Analytics Tracking (public endpoints for JavaScript)
+Route::post('/analytics/track/view', [AnalyticsTrackingController::class, 'trackView'])->name('analytics.track.view');
+Route::post('/analytics/track/time', [AnalyticsTrackingController::class, 'trackTimeOnPage'])->name('analytics.track.time');
+Route::post('/analytics/track/event', [AnalyticsTrackingController::class, 'trackEvent'])->name('analytics.track.event');
+
 // Search
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
@@ -170,6 +180,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     
     // Series management
     Route::resource('series', App\Http\Controllers\Admin\SeriesController::class);
+    // Series article management (must be after resource route)
+    Route::post('series/{series}/add-article', [App\Http\Controllers\Admin\SeriesController::class, 'addArticle'])->name('series.add-article');
+    Route::post('series/{series}/update-article-order', [App\Http\Controllers\Admin\SeriesController::class, 'updateArticleOrder'])->name('series.update-article-order');
+    Route::delete('series/{series}/articles/{article}', [App\Http\Controllers\Admin\SeriesController::class, 'removeArticle'])->name('series.remove-article');
     
     // Author management
     Route::get('authors', [App\Http\Controllers\Admin\AuthorController::class, 'index'])->name('authors.index');
@@ -184,6 +198,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     
     // Public Pages SEO Management
     Route::resource('page-seo', PageSeoController::class);
+    
+    // Analytics Dashboard
+    Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+    Route::get('analytics/realtime', [AnalyticsController::class, 'realTime'])->name('analytics.realtime');
+    Route::get('articles/{article}/analytics', [AnalyticsController::class, 'articlePerformance'])->name('articles.analytics');
+    Route::get('analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
 });
 
 // Author article management routes (auth middleware, no admin required)

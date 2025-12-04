@@ -160,5 +160,149 @@ class SchemaHelper
 
         return $schema;
     }
+
+    /**
+     * Generate FAQPage schema
+     */
+    public static function faqPage(array $data): array
+    {
+        $faqItems = [];
+        foreach ($data['faqs'] ?? [] as $faq) {
+            $faqItems[] = [
+                '@type' => 'Question',
+                'name' => $faq['question'] ?? '',
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $faq['answer'] ?? '',
+                ],
+            ];
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $faqItems,
+        ];
+    }
+
+    /**
+     * Generate Review/Rating schema
+     */
+    public static function review(array $data): array
+    {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Review',
+            'itemReviewed' => [
+                '@type' => $data['item_type'] ?? 'Article',
+                'name' => $data['item_name'] ?? '',
+                'url' => $data['item_url'] ?? '',
+            ],
+            'reviewRating' => [
+                '@type' => 'Rating',
+                'ratingValue' => $data['rating'] ?? 5,
+                'bestRating' => $data['best_rating'] ?? 5,
+                'worstRating' => $data['worst_rating'] ?? 1,
+            ],
+            'author' => [
+                '@type' => 'Person',
+                'name' => $data['author_name'] ?? 'Anonymous',
+            ],
+        ];
+
+        if (isset($data['review_body'])) {
+            $schema['reviewBody'] = $data['review_body'];
+        }
+
+        if (isset($data['date_published'])) {
+            $schema['datePublished'] = $data['date_published'];
+        }
+
+        return $schema;
+    }
+
+    /**
+     * Generate AggregateRating schema
+     */
+    public static function aggregateRating(array $data): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'AggregateRating',
+            'ratingValue' => $data['rating_value'] ?? 0,
+            'bestRating' => $data['best_rating'] ?? 5,
+            'worstRating' => $data['worst_rating'] ?? 1,
+            'ratingCount' => $data['rating_count'] ?? 0,
+            'reviewCount' => $data['review_count'] ?? 0,
+        ];
+    }
+
+    /**
+     * Generate Person schema
+     */
+    public static function person(array $data): array
+    {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $data['name'] ?? '',
+        ];
+
+        if (isset($data['url'])) {
+            $schema['url'] = $data['url'];
+        }
+
+        if (isset($data['image'])) {
+            $schema['image'] = $data['image'];
+        }
+
+        if (isset($data['description'])) {
+            $schema['description'] = $data['description'];
+        }
+
+        if (isset($data['same_as']) && is_array($data['same_as'])) {
+            $schema['sameAs'] = $data['same_as'];
+        }
+
+        if (isset($data['job_title'])) {
+            $schema['jobTitle'] = $data['job_title'];
+        }
+
+        return $schema;
+    }
+
+    /**
+     * Generate LocalBusiness schema (for Local SEO)
+     */
+    public static function localBusiness(array $data): array
+    {
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'LocalBusiness',
+            'name' => $data['name'] ?? '',
+            'url' => $data['url'] ?? url('/'),
+        ];
+
+        if (isset($data['address'])) {
+            $schema['address'] = [
+                '@type' => 'PostalAddress',
+                'streetAddress' => $data['address']['street'] ?? '',
+                'addressLocality' => $data['address']['city'] ?? '',
+                'addressRegion' => $data['address']['region'] ?? '',
+                'postalCode' => $data['address']['postal_code'] ?? '',
+                'addressCountry' => $data['address']['country'] ?? '',
+            ];
+        }
+
+        if (isset($data['phone'])) {
+            $schema['telephone'] = $data['phone'];
+        }
+
+        if (isset($data['price_range'])) {
+            $schema['priceRange'] = $data['price_range'];
+        }
+
+        return $schema;
+    }
 }
 

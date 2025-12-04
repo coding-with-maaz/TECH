@@ -1,16 +1,75 @@
-
-
 <?php $__env->startSection('title', $article->title . ' - Tech Blog'); ?>
 
 <?php $__env->startPush('head'); ?>
 <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+<link rel="amphtml" href="<?php echo e(route('amp.article', $article->slug)); ?>">
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- Main Content -->
-        <div>
+        <article data-viewable-type="<?php echo e(addslashes(get_class($article))); ?>" data-viewable-id="<?php echo e($article->id); ?>">
+            <!-- Series Header (if article belongs to a series) -->
+            <?php if($article->series): ?>
+            <div class="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:!from-purple-900/10 dark:!to-blue-900/10 rounded-lg border border-purple-200 dark:!border-purple-800 p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <a href="<?php echo e(route('series.show', $article->series->slug)); ?>" class="inline-block px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-semibold mb-3 hover:bg-purple-700 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Series: <?php echo e($article->series->title); ?>
+
+                        </a>
+                        <?php if($article->series->description): ?>
+                            <p class="text-sm text-gray-600 dark:!text-text-secondary mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                <?php echo e($article->series->description); ?>
+
+                            </p>
+                        <?php endif; ?>
+                        <!-- Progress Indicator -->
+                        <?php if($totalSeriesArticles): ?>
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between text-xs text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    <span>Article <?php echo e($currentSeriesIndex ?? 1); ?> of <?php echo e($totalSeriesArticles); ?></span>
+                                    <span><?php echo e(round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100)); ?>% Complete</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:!bg-gray-700 rounded-full h-2">
+                                    <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: <?php echo e(($totalSeriesArticles ? round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) : 0)); ?>%"></div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <!-- Series Table of Contents -->
+                <?php if($seriesArticles && $seriesArticles->count() > 0): ?>
+                <div class="border-t border-purple-200 dark:!border-purple-800 pt-4">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:!text-white mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Table of Contents
+                    </h4>
+                    <div class="space-y-2">
+                        <?php $__currentLoopData = $seriesArticles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $seriesArticle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="flex items-center gap-3 <?php echo e($seriesArticle->id === $article->id ? 'bg-white dark:!bg-bg-card rounded-lg p-2' : ''); ?>">
+                                <span class="text-xs text-gray-500 dark:!text-text-secondary w-8 flex-shrink-0" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    <?php echo e($seriesArticle->series_order ?? $loop->iteration); ?>.
+                                </span>
+                                <?php if($seriesArticle->id === $article->id): ?>
+                                    <span class="text-sm font-semibold text-purple-600 dark:!text-purple-400 flex-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                        <?php echo e($seriesArticle->title); ?> (Current)
+                                    </span>
+                                <?php else: ?>
+                                    <a href="<?php echo e(route('articles.show', $seriesArticle->slug)); ?>" class="text-sm text-gray-700 hover:text-purple-600 dark:!text-text-secondary dark:!hover:text-purple-400 flex-1 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                        <?php echo e($seriesArticle->title); ?>
+
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
             <!-- Article Header -->
             <div class="mb-6">
                 <?php if($article->category): ?>
@@ -72,7 +131,56 @@
 
             </div>
 
-            <!-- Article Actions (Like Button) -->
+            <!-- Series Navigation (Previous/Next) -->
+            <?php if($article->series && ($previousArticle || $nextArticle)): ?>
+            <div class="mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Previous Article -->
+                    <?php if($previousArticle): ?>
+                    <a href="<?php echo e(route('articles.show', $previousArticle->slug)); ?>" class="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 dark:!bg-bg-card-hover dark:!hover:bg-bg-card rounded-lg transition-colors border border-gray-200 dark:!border-border-secondary">
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                Previous Article
+                            </p>
+                            <p class="text-sm font-semibold text-gray-900 dark:!text-white truncate group-hover:text-accent transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                <?php echo e($previousArticle->title); ?>
+
+                            </p>
+                        </div>
+                    </a>
+                    <?php else: ?>
+                    <div></div>
+                    <?php endif; ?>
+                    
+                    <!-- Next Article -->
+                    <?php if($nextArticle): ?>
+                    <a href="<?php echo e(route('articles.show', $nextArticle->slug)); ?>" class="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 dark:!bg-bg-card-hover dark:!hover:bg-bg-card rounded-lg transition-colors border border-gray-200 dark:!border-border-secondary text-right">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs text-gray-500 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                Next Article
+                            </p>
+                            <p class="text-sm font-semibold text-gray-900 dark:!text-white truncate group-hover:text-accent transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                <?php echo e($nextArticle->title); ?>
+
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Article Actions (Like & Bookmark Buttons) -->
             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">
                 <button id="likeButton" 
                         class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all <?php echo e($isLiked ?? false ? 'bg-red-100 text-red-600 dark:!bg-red-900/20 dark:!text-red-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card'); ?>"
@@ -86,6 +194,31 @@
 
                     </span>
                 </button>
+                
+                <?php if(auth()->guard()->check()): ?>
+                <button id="bookmarkButton" 
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all <?php echo e($isBookmarked ?? false ? 'bg-yellow-100 text-yellow-600 dark:!bg-yellow-900/20 dark:!text-yellow-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card'); ?>"
+                        data-article-id="<?php echo e($article->id); ?>"
+                        data-bookmarked="<?php echo e($isBookmarked ?? false ? 'true' : 'false'); ?>">
+                    <svg class="w-5 h-5" fill="<?php echo e($isBookmarked ?? false ? 'currentColor' : 'none'); ?>" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                    <span class="font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        <?php echo e($isBookmarked ?? false ? 'Bookmarked' : 'Bookmark'); ?>
+
+                    </span>
+                </button>
+                <?php else: ?>
+                <a href="<?php echo e(route('login')); ?>" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                    <span class="font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Bookmark
+                    </span>
+                </a>
+                <?php endif; ?>
             </div>
 
             <!-- Comments Section -->
@@ -337,22 +470,93 @@ unset($__errorArgs, $__bag); ?>
             </div>
             <?php endif; ?>
 
-            <!-- Related Articles -->
-            <?php if($relatedArticles->count() > 0): ?>
-            <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
-                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                    Related Articles
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <?php $__currentLoopData = $relatedArticles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $relatedArticle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <?php echo $__env->make('articles._card', ['article' => $relatedArticle], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        </article>
+
+                <!-- Related Articles -->
+                <?php if($relatedArticles->count() > 0): ?>
+                <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Related Articles
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <?php $__currentLoopData = $relatedArticles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $relatedArticle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php echo $__env->make('articles._card', ['article' => $relatedArticle], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+        </article>
+    </div>
+</div>
+
+<!-- Fixed Series Progress Widget (Bottom Right) -->
+<?php if($article->series && $seriesArticles && $seriesArticles->count() > 0): ?>
+<div class="hidden lg:block fixed bottom-4 right-4 z-40 w-72" x-data="{ open: false }">
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary shadow-xl overflow-hidden">
+        <!-- Header (Clickable to toggle) -->
+        <button @click="open = !open" class="w-full p-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all">
+            <div class="flex items-center justify-between">
+                <div class="text-left">
+                    <p class="text-xs font-semibold mb-0.5" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Article <?php echo e($currentSeriesIndex ?? 1); ?> of <?php echo e($totalSeriesArticles); ?>
+
+                    </p>
+                    <p class="text-xs opacity-90" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        <?php echo e(round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100)); ?>% Complete
+                    </p>
+                </div>
+                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <!-- Progress Bar -->
+            <div class="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                <div class="bg-white h-1.5 rounded-full transition-all duration-300" style="width: <?php echo e(($totalSeriesArticles ? round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) : 0)); ?>%"></div>
+            </div>
+        </button>
+        
+        <!-- Expandable Content -->
+        <div x-show="open" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             style="display: none;">
+            <div class="p-4 max-h-96 overflow-y-auto">
+                <a href="<?php echo e(route('series.show', $article->series->slug)); ?>" class="text-xs font-semibold text-purple-600 dark:!text-purple-400 hover:text-purple-700 dark:!hover:text-purple-300 transition-colors mb-3 block" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    <?php echo e($article->series->title); ?>
+
+                </a>
+                
+                <h4 class="text-xs font-semibold text-gray-900 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Table of Contents
+                </h4>
+                <div class="space-y-1.5">
+                    <?php $__currentLoopData = $seriesArticles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $seriesArticle): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div class="flex items-start gap-2 <?php echo e($seriesArticle->id === $article->id ? 'bg-purple-50 dark:!bg-purple-900/10 rounded p-1.5 -mx-1.5' : ''); ?>">
+                            <span class="text-xs text-gray-500 dark:!text-text-tertiary w-5 flex-shrink-0 pt-0.5" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                <?php echo e($seriesArticle->series_order ?? $loop->iteration); ?>.
+                            </span>
+                            <?php if($seriesArticle->id === $article->id): ?>
+                                <span class="text-xs font-semibold text-purple-600 dark:!text-purple-400 flex-1 line-clamp-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                    <?php echo e($seriesArticle->title); ?> <span class="text-purple-500">(Current)</span>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo e(route('articles.show', $seriesArticle->slug)); ?>" class="text-xs text-gray-700 hover:text-purple-600 dark:!text-text-secondary dark:!hover:text-purple-400 flex-1 line-clamp-2 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    <?php echo e($seriesArticle->title); ?>
+
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <script>
 // LocalStorage keys
@@ -810,6 +1014,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.disabled = false;
                 console.error('Error:', error);
                 alert('Failed to like article. Please try again.');
+            });
+        });
+    }
+
+    // Article Bookmark functionality
+    const bookmarkButton = document.getElementById('bookmarkButton');
+    if (bookmarkButton) {
+        bookmarkButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const articleId = this.getAttribute('data-article-id');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                             document.querySelector('input[name="_token"]')?.value ||
+                             document.querySelector('input[name="csrf_token"]')?.value;
+            
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                return;
+            }
+            
+            // Disable button during request
+            this.disabled = true;
+            
+            // Create form data for POST request
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
+            
+            const bookmarkUrl = `/articles/${articleId}/bookmark`;
+            fetch(bookmarkUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.disabled = false;
+                
+                if (data.success) {
+                    // Update button state
+                    const isBookmarked = data.bookmarked;
+                    this.setAttribute('data-bookmarked', isBookmarked ? 'true' : 'false');
+                    
+                    const buttonText = this.querySelector('span');
+                    const svg = this.querySelector('svg');
+                    
+                    if (isBookmarked) {
+                        this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200', 'dark:!bg-bg-card-hover', 'dark:!text-white', 'dark:!hover:bg-bg-card');
+                        this.classList.add('bg-yellow-100', 'text-yellow-600', 'dark:!bg-yellow-900/20', 'dark:!text-yellow-400');
+                        if (svg) svg.setAttribute('fill', 'currentColor');
+                        if (buttonText) buttonText.textContent = 'Bookmarked';
+                    } else {
+                        this.classList.remove('bg-yellow-100', 'text-yellow-600', 'dark:!bg-yellow-900/20', 'dark:!text-yellow-400');
+                        this.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200', 'dark:!bg-bg-card-hover', 'dark:!text-white', 'dark:!hover:bg-bg-card');
+                        if (svg) svg.setAttribute('fill', 'none');
+                        if (buttonText) buttonText.textContent = 'Bookmark';
+                    }
+                    
+                    // Show message if available
+                    if (data.message) {
+                        showMessage(data.message, 'success');
+                    }
+                }
+            })
+            .catch(error => {
+                this.disabled = false;
+                console.error('Error:', error);
+                alert('Failed to bookmark article. Please try again.');
             });
         });
     }

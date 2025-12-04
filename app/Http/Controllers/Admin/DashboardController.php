@@ -11,7 +11,10 @@ use App\Models\User;
 use App\Models\NewsletterSubscription;
 use App\Models\ContactMessage;
 use App\Models\AuthorRequest;
+use App\Models\AnalyticsView;
+use App\Services\AnalyticsService;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -98,6 +101,27 @@ class DashboardController extends Controller
         
         $pendingAuthorRequests = AuthorRequest::where('status', 'pending')->count();
 
+        // Quick Analytics Stats (last 24 hours)
+        try {
+            $analyticsService = app(AnalyticsService::class);
+            $yesterday = Carbon::now()->subDay();
+            $today = Carbon::now();
+            
+            $quickAnalytics = [
+                'today_views' => AnalyticsView::whereBetween('viewed_at', [$yesterday, $today])->count(),
+                'today_unique' => AnalyticsView::whereBetween('viewed_at', [$yesterday, $today])
+                    ->distinct('session_id')->count('session_id'),
+                'realtime' => $analyticsService->getRealTimeStats(30),
+            ];
+        } catch (\Exception $e) {
+            // Analytics might not be set up yet
+            $quickAnalytics = [
+                'today_views' => 0,
+                'today_unique' => 0,
+                'realtime' => ['active_users' => 0, 'page_views' => 0],
+            ];
+        }
+
         return view('admin.dashboard', compact(
             'totalArticles',
             'totalCategories',
@@ -121,7 +145,8 @@ class DashboardController extends Controller
             'unreadMessages',
             'totalMessages',
             'totalAuthors',
-            'pendingAuthorRequests'
+            'pendingAuthorRequests',
+            'quickAnalytics'
         ));
     }
 }

@@ -4,13 +4,14 @@
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="amphtml" href="{{ route('amp.article', $article->slug) }}">
 @endpush
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- Main Content -->
-        <div>
+        <article data-viewable-type="{{ addslashes(get_class($article)) }}" data-viewable-id="{{ $article->id }}">
             <!-- Series Header (if article belongs to a series) -->
             @if($article->series)
             <div class="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:!from-purple-900/10 dark:!to-blue-900/10 rounded-lg border border-purple-200 dark:!border-purple-800 p-6">
@@ -429,22 +430,90 @@
             </div>
             @endif
 
-            <!-- Related Articles -->
-            @if($relatedArticles->count() > 0)
-            <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
-                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                    Related Articles
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @foreach($relatedArticles as $relatedArticle)
-                        @include('articles._card', ['article' => $relatedArticle])
+        </article>
+
+                <!-- Related Articles -->
+                @if($relatedArticles->count() > 0)
+                <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Related Articles
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($relatedArticles as $relatedArticle)
+                            @include('articles._card', ['article' => $relatedArticle])
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+        </article>
+    </div>
+</div>
+
+<!-- Fixed Series Progress Widget (Bottom Right) -->
+@if($article->series && $seriesArticles && $seriesArticles->count() > 0)
+<div class="hidden lg:block fixed bottom-4 right-4 z-40 w-72" x-data="{ open: false }">
+    <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary shadow-xl overflow-hidden">
+        <!-- Header (Clickable to toggle) -->
+        <button @click="open = !open" class="w-full p-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all">
+            <div class="flex items-center justify-between">
+                <div class="text-left">
+                    <p class="text-xs font-semibold mb-0.5" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Article {{ $currentSeriesIndex ?? 1 }} of {{ $totalSeriesArticles }}
+                    </p>
+                    <p class="text-xs opacity-90" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        {{ round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) }}% Complete
+                    </p>
+                </div>
+                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <!-- Progress Bar -->
+            <div class="mt-2 w-full bg-white/20 rounded-full h-1.5">
+                <div class="bg-white h-1.5 rounded-full transition-all duration-300" style="width: {{ ($totalSeriesArticles ? round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) : 0) }}%"></div>
+            </div>
+        </button>
+        
+        <!-- Expandable Content -->
+        <div x-show="open" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             style="display: none;">
+            <div class="p-4 max-h-96 overflow-y-auto">
+                <a href="{{ route('series.show', $article->series->slug) }}" class="text-xs font-semibold text-purple-600 dark:!text-purple-400 hover:text-purple-700 dark:!hover:text-purple-300 transition-colors mb-3 block" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    {{ $article->series->title }}
+                </a>
+                
+                <h4 class="text-xs font-semibold text-gray-900 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Table of Contents
+                </h4>
+                <div class="space-y-1.5">
+                    @foreach($seriesArticles as $seriesArticle)
+                        <div class="flex items-start gap-2 {{ $seriesArticle->id === $article->id ? 'bg-purple-50 dark:!bg-purple-900/10 rounded p-1.5 -mx-1.5' : '' }}">
+                            <span class="text-xs text-gray-500 dark:!text-text-tertiary w-5 flex-shrink-0 pt-0.5" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                {{ $seriesArticle->series_order ?? $loop->iteration }}.
+                            </span>
+                            @if($seriesArticle->id === $article->id)
+                                <span class="text-xs font-semibold text-purple-600 dark:!text-purple-400 flex-1 line-clamp-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                    {{ $seriesArticle->title }} <span class="text-purple-500">(Current)</span>
+                                </span>
+                            @else
+                                <a href="{{ route('articles.show', $seriesArticle->slug) }}" class="text-xs text-gray-700 hover:text-purple-600 dark:!text-text-secondary dark:!hover:text-purple-400 flex-1 line-clamp-2 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                    {{ $seriesArticle->title }}
+                                </a>
+                            @endif
+                        </div>
                     @endforeach
                 </div>
             </div>
-            @endif
         </div>
     </div>
 </div>
+@endif
 
 <script>
 // LocalStorage keys

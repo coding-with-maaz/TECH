@@ -260,6 +260,45 @@ class SeoService
             'keywords' => $tags,
         ]);
 
+        // Generate breadcrumbs schema
+        $breadcrumbItems = [
+            ['name' => 'Home', 'url' => route('home')],
+            ['name' => 'Articles', 'url' => route('articles.index')],
+        ];
+        
+        if ($article->category) {
+            $breadcrumbItems[] = [
+                'name' => $article->category->name,
+                'url' => route('categories.show', $article->category->slug),
+            ];
+        }
+        
+        $breadcrumbItems[] = ['name' => $title, 'url' => $url];
+        
+        $breadcrumbSchema = SchemaHelper::breadcrumbList($breadcrumbItems);
+
+        // Generate aggregate rating if article has likes/comments
+        $schemas = [$articleSchema, $breadcrumbSchema];
+        
+        $likesCount = $article->likes()->count();
+        $commentsCount = $article->comments()->approved()->count();
+        
+        if ($likesCount > 0 || $commentsCount > 0) {
+            // Calculate average rating from likes (simplified: 5 stars if liked, 4 if commented)
+            $ratingValue = $likesCount > 0 ? 5 : 4;
+            $ratingCount = max($likesCount, $commentsCount);
+            
+            $aggregateRating = SchemaHelper::aggregateRating([
+                'rating_value' => $ratingValue,
+                'best_rating' => 5,
+                'worst_rating' => 1,
+                'rating_count' => $ratingCount,
+                'review_count' => $commentsCount,
+            ]);
+            
+            $schemas[] = $aggregateRating;
+        }
+
         return $this->generate([
             'title' => "{$title} | TechBlog",
             'description' => $description,
@@ -270,7 +309,7 @@ class SeoService
             'published_time' => $article->published_at ? $article->published_at->toIso8601String() : $article->created_at->toIso8601String(),
             'modified_time' => $article->updated_at->toIso8601String(),
             'author' => $author,
-            'schema' => [$articleSchema],
+            'schema' => $schemas,
         ]);
     }
 
