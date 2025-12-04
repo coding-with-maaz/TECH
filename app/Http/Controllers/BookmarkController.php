@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BookmarkController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth')->except(['index']); // Index can be accessed by authenticated users
-    }
+    // Middleware is applied in routes/web.php, no need to define it here
 
     /**
      * Display all bookmarks for the authenticated user
@@ -50,50 +47,76 @@ class BookmarkController extends Controller
      */
     public function toggle(Request $request, Article $article)
     {
-        $user = Auth::user();
-        
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You must be logged in to bookmark articles.',
-            ], 401);
-        }
-
-        $bookmark = Bookmark::where('user_id', $user->id)
-            ->where('article_id', $article->id)
-            ->first();
-
-        if ($bookmark) {
-            // Remove bookmark
-            $bookmark->delete();
+        try {
+            $user = Auth::user();
             
-            $isBookmarked = false;
-            $message = 'Article removed from bookmarks.';
-        } else {
-            // Add bookmark
-            Bookmark::create([
-                'user_id' => $user->id,
-                'article_id' => $article->id,
-                'notes' => $request->notes ?? null,
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be logged in to bookmark articles.',
+                ], 401);
+            }
+
+            $bookmark = Bookmark::where('user_id', $user->id)
+                ->where('article_id', $article->id)
+                ->first();
+
+            if ($bookmark) {
+                // Remove bookmark
+                $bookmark->delete();
+                
+                $isBookmarked = false;
+                $message = 'Article removed from bookmarks.';
+            } else {
+                // Add bookmark
+                Bookmark::create([
+                    'user_id' => $user->id,
+                    'article_id' => $article->id,
+                    'notes' => $request->notes ?? null,
+                ]);
+                
+                // Record activity (if method exists)
+                if (method_exists($user, 'recordActivity')) {
+                    try {
+                        $user->recordActivity('article_bookmarked', "Bookmarked: {$article->title}", $article);
+                    } catch (\Exception $e) {
+                        // Activity recording failed, but bookmark was created - continue
+                        \Log::warning('Failed to record bookmark activity: ' . $e->getMessage());
+                    }
+                }
+                
+                $isBookmarked = true;
+                $message = 'Article bookmarked successfully!';
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'bookmarked' => $isBookmarked,
+                    'bookmarks_count' => $article->bookmarks()->count(),
+                ]);
+            }
+
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            \Log::error('Bookmark toggle error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'article_id' => $article->id ?? null,
+                'article_slug' => $article->slug ?? null,
+                'exception' => $e
             ]);
             
-            // Record activity
-            $user->recordActivity('article_bookmarked', "Bookmarked: {$article->title}", $article);
-            
-            $isBookmarked = true;
-            $message = 'Article bookmarked successfully!';
-        }
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to bookmark article. Please try again.',
+                    'error' => config('app.debug') ? $e->getMessage() : null,
+                ], 500);
+            }
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'bookmarked' => $isBookmarked,
-                'bookmarks_count' => $article->bookmarks()->count(),
-            ]);
+            return redirect()->back()->with('error', 'Failed to bookmark article. Please try again.');
         }
-
-        return redirect()->back()->with('success', $message);
     }
 
     /**

@@ -12,63 +12,6 @@
     <div class="max-w-4xl mx-auto">
         <!-- Main Content -->
         <article data-viewable-type="{{ addslashes(get_class($article)) }}" data-viewable-id="{{ $article->id }}">
-            <!-- Series Header (if article belongs to a series) -->
-            @if($article->series)
-            <div class="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:!from-purple-900/10 dark:!to-blue-900/10 rounded-lg border border-purple-200 dark:!border-purple-800 p-6">
-                <div class="flex items-start justify-between mb-4">
-                    <div>
-                        <a href="{{ route('series.show', $article->series->slug) }}" class="inline-block px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-semibold mb-3 hover:bg-purple-700 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Series: {{ $article->series->title }}
-                        </a>
-                        @if($article->series->description)
-                            <p class="text-sm text-gray-600 dark:!text-text-secondary mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                {{ $article->series->description }}
-                            </p>
-                        @endif
-                        <!-- Progress Indicator -->
-                        @if($totalSeriesArticles)
-                            <div class="mb-3">
-                                <div class="flex items-center justify-between text-xs text-gray-600 dark:!text-text-secondary mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                    <span>Article {{ $currentSeriesIndex ?? 1 }} of {{ $totalSeriesArticles }}</span>
-                                    <span>{{ round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) }}% Complete</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:!bg-gray-700 rounded-full h-2">
-                                    <div class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ ($totalSeriesArticles ? round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) : 0) }}%"></div>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                
-                <!-- Series Table of Contents -->
-                @if($seriesArticles && $seriesArticles->count() > 0)
-                <div class="border-t border-purple-200 dark:!border-purple-800 pt-4">
-                    <h4 class="text-sm font-semibold text-gray-900 dark:!text-white mb-3" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                        Table of Contents
-                    </h4>
-                    <div class="space-y-2">
-                        @foreach($seriesArticles as $seriesArticle)
-                            <div class="flex items-center gap-3 {{ $seriesArticle->id === $article->id ? 'bg-white dark:!bg-bg-card rounded-lg p-2' : '' }}">
-                                <span class="text-xs text-gray-500 dark:!text-text-secondary w-8 flex-shrink-0" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                    {{ $seriesArticle->series_order ?? $loop->iteration }}.
-                                </span>
-                                @if($seriesArticle->id === $article->id)
-                                    <span class="text-sm font-semibold text-purple-600 dark:!text-purple-400 flex-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                        {{ $seriesArticle->title }} (Current)
-                                    </span>
-                                @else
-                                    <a href="{{ route('articles.show', $seriesArticle->slug) }}" class="text-sm text-gray-700 hover:text-purple-600 dark:!text-text-secondary dark:!hover:text-purple-400 flex-1 transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                                        {{ $seriesArticle->title }}
-                                    </a>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-            </div>
-            @endif
-
             <!-- Article Header -->
             <div class="mb-6">
                 @if($article->category)
@@ -177,7 +120,7 @@
             <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-200 dark:!border-border-secondary">
                 <button id="likeButton" 
                         class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $isLiked ?? false ? 'bg-red-100 text-red-600 dark:!bg-red-900/20 dark:!text-red-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card' }}"
-                        data-article-id="{{ $article->id }}"
+                        data-article-slug="{{ $article->slug }}"
                         data-liked="{{ $isLiked ?? false ? 'true' : 'false' }}">
                     <svg class="w-5 h-5" fill="{{ $isLiked ?? false ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -190,7 +133,7 @@
                 @auth
                 <button id="bookmarkButton" 
                         class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $isBookmarked ?? false ? 'bg-yellow-100 text-yellow-600 dark:!bg-yellow-900/20 dark:!text-yellow-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:!bg-bg-card-hover dark:!text-white dark:!hover:bg-bg-card' }}"
-                        data-article-id="{{ $article->id }}"
+                        data-article-slug="{{ $article->slug }}"
                         data-bookmarked="{{ $isBookmarked ?? false ? 'true' : 'false' }}">
                     <svg class="w-5 h-5" fill="{{ $isBookmarked ?? false ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
@@ -903,13 +846,20 @@ document.addEventListener('DOMContentLoaded', function() {
         likeButton.addEventListener('click', function(e) {
             e.preventDefault();
             
-            const articleId = this.getAttribute('data-article-id');
+            const articleSlug = this.getAttribute('data-article-slug');
+            if (!articleSlug) {
+                console.error('Article slug not found');
+                alert('Failed to like article. Article information is missing.');
+                return;
+            }
+            
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                              document.querySelector('input[name="_token"]')?.value ||
                              document.querySelector('input[name="csrf_token"]')?.value;
             
             if (!csrfToken) {
                 console.error('CSRF token not found');
+                alert('Security token missing. Please refresh the page and try again.');
                 return;
             }
             
@@ -920,7 +870,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('_token', csrfToken);
             
-            const likeUrl = `/articles/${articleId}/like`;
+            // Construct the like URL using article slug (route model binding uses slug)
+            const likeUrl = `/articles/${articleSlug}/like`;
             fetch(likeUrl, {
                 method: 'POST',
                 body: formData,
@@ -931,9 +882,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
+                // Handle different response statuses
+                if (response.status === 404) {
+                    console.error('Like route not found:', likeUrl);
+                    alert('Like feature is not available. Please try again later.');
+                    throw new Error('Route not found');
                 }
+                
+                if (!response.ok) {
+                    // Try to parse error response
+                    return response.text().then(text => {
+                        let errorData;
+                        try {
+                            errorData = JSON.parse(text);
+                        } catch (e) {
+                            errorData = { message: text || 'Failed to like article' };
+                        }
+                        console.error('Server error response:', errorData);
+                        throw new Error(errorData.message || errorData.error || 'Failed to like article');
+                    });
+                }
+                
                 return response.json();
             })
             .then(data => {
@@ -969,8 +938,19 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 this.disabled = false;
-                console.error('Error:', error);
-                alert('Failed to like article. Please try again.');
+                console.error('Like error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    likeUrl: likeUrl,
+                    articleSlug: articleSlug
+                });
+                
+                // Don't show alert if it's already been shown (e.g., for 404)
+                if (error.message !== 'Route not found') {
+                    const errorMessage = error.message || 'Failed to like article. Please try again.';
+                    alert(errorMessage);
+                }
             });
         });
     }
@@ -981,13 +961,20 @@ document.addEventListener('DOMContentLoaded', function() {
         bookmarkButton.addEventListener('click', function(e) {
             e.preventDefault();
             
-            const articleId = this.getAttribute('data-article-id');
+            const articleSlug = this.getAttribute('data-article-slug');
+            if (!articleSlug) {
+                console.error('Article slug not found');
+                alert('Failed to bookmark article. Article information is missing.');
+                return;
+            }
+            
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                              document.querySelector('input[name="_token"]')?.value ||
                              document.querySelector('input[name="csrf_token"]')?.value;
             
             if (!csrfToken) {
                 console.error('CSRF token not found');
+                alert('Security token missing. Please refresh the page and try again.');
                 return;
             }
             
@@ -998,7 +985,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData();
             formData.append('_token', csrfToken);
             
-            const bookmarkUrl = `/articles/${articleId}/bookmark`;
+            // Construct the bookmark URL using article slug (route model binding uses slug)
+            const bookmarkUrl = `/articles/${articleSlug}/bookmark`;
+            
             fetch(bookmarkUrl, {
                 method: 'POST',
                 body: formData,
@@ -1009,9 +998,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
             })
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
+                // Handle authentication errors
+                if (response.status === 401) {
+                    return response.json().then(err => {
+                        alert(err.message || 'You must be logged in to bookmark articles.');
+                        window.location.href = '{{ route("login") }}';
+                        throw new Error('Unauthorized');
+                    });
                 }
+                
+                // Handle 404 errors
+                if (response.status === 404) {
+                    console.error('Bookmark route not found:', bookmarkUrl);
+                    alert('Bookmark feature is not available. Please try again later.');
+                    throw new Error('Route not found');
+                }
+                
+                if (!response.ok) {
+                    // Try to parse error response
+                    return response.text().then(text => {
+                        let errorData;
+                        try {
+                            errorData = JSON.parse(text);
+                        } catch (e) {
+                            errorData = { message: text || 'Failed to bookmark article' };
+                        }
+                        console.error('Server error response:', errorData);
+                        throw new Error(errorData.message || errorData.error || 'Failed to bookmark article');
+                    });
+                }
+                
                 return response.json();
             })
             .then(data => {
@@ -1045,8 +1061,20 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 this.disabled = false;
-                console.error('Error:', error);
-                alert('Failed to bookmark article. Please try again.');
+                console.error('Bookmark error:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    bookmarkUrl: bookmarkUrl,
+                    articleSlug: articleSlug
+                });
+                
+                // Don't show alert if it's already been shown (e.g., for 401 or 404)
+                if (error.message !== 'Unauthorized' && error.message !== 'Route not found') {
+                    // Try to get more details from the error
+                    const errorMessage = error.message || 'Failed to bookmark article. Please try again.';
+                    alert(errorMessage);
+                }
             });
         });
     }

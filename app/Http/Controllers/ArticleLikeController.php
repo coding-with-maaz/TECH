@@ -12,11 +12,9 @@ class ArticleLikeController extends Controller
     /**
      * Toggle like on an article
      */
-    public function toggle(Request $request, $articleId)
+    public function toggle(Request $request, Article $article)
     {
         try {
-            // Find article by ID (not slug)
-            $article = Article::findOrFail($articleId);
             
             $userId = Auth::id();
             $ipAddress = request()->ip();
