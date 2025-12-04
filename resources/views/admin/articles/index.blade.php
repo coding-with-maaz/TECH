@@ -148,6 +148,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end gap-2">
+                                    <button onclick="copyTokenUrl('{{ $article->token_url ?? '' }}', this)" 
+                                            class="text-purple-600 hover:text-purple-900 dark:!text-purple-400 dark:!hover:text-purple-300" 
+                                            title="Copy Token URL">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    </button>
                                     <a href="{{ route('articles.show', $article->slug) }}" target="_blank" class="text-blue-600 hover:text-blue-900 dark:!text-blue-400 dark:!hover:text-blue-300" title="View">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -190,5 +197,58 @@
         @endif
     </div>
 </div>
+
+<script>
+function copyTokenUrl(url, button) {
+    if (!url) {
+        alert('Token URL not available for this article.');
+        return;
+    }
+    
+    // Use modern Clipboard API if available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            showCopySuccess(button);
+        }).catch(() => {
+            // Fallback to execCommand
+            copyToClipboardFallback(url, button);
+        });
+    } else {
+        // Fallback for older browsers
+        copyToClipboardFallback(url, button);
+    }
+}
+
+function copyToClipboardFallback(url, button) {
+    const textarea = document.createElement('textarea');
+    textarea.value = url;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopySuccess(button);
+    } catch (err) {
+        alert('Failed to copy. Please copy manually: ' + url);
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+function showCopySuccess(button) {
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>';
+    button.classList.remove('text-purple-600', 'hover:text-purple-900', 'dark:!text-purple-400', 'dark:!hover:text-purple-300');
+    button.classList.add('text-green-600', 'dark:!text-green-400');
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('text-green-600', 'dark:!text-green-400');
+        button.classList.add('text-purple-600', 'hover:text-purple-900', 'dark:!text-purple-400', 'dark:!hover:text-purple-300');
+    }, 2000);
+}
+</script>
 @endsection
 

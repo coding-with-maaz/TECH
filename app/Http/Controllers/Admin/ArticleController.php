@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
 use App\Services\ArticleService;
+use App\Services\DownloadTokenService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,12 @@ use Illuminate\Support\Facades\Auth;
 class ArticleController extends Controller
 {
     protected $articleService;
+    protected $tokenService;
 
-    public function __construct(ArticleService $articleService)
+    public function __construct(ArticleService $articleService, DownloadTokenService $tokenService)
     {
         $this->articleService = $articleService;
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -57,6 +60,19 @@ class ArticleController extends Controller
 
         $categories = Category::where('is_active', true)->orderBy('name')->get();
 
+        // Generate token URLs for each article (use permanent token if exists)
+        $articles->getCollection()->transform(function ($article) {
+            $downloadLink = $article->download_link ?? 'https://mega.nz/file/example#test-link';
+            // Use permanent token if exists, otherwise generate temporary one
+            if ($article->download_token) {
+                $token = $article->download_token;
+            } else {
+                $token = $this->tokenService->createToken($downloadLink, $article->id, 30);
+            }
+            $article->token_url = route('articles.show', $article->slug) . '?dl=' . urlencode($token);
+            return $article;
+        });
+
         return view('admin.articles.index', compact('articles', 'categories'));
     }
 
@@ -82,6 +98,8 @@ class ArticleController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
             'featured_image' => 'nullable|string|max:500',
+            'download_link' => 'nullable|string|max:1000',
+            'download_token' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'series_id' => 'nullable|exists:article_series,id',
             'series_order' => 'nullable|integer|min:1',
@@ -120,6 +138,15 @@ class ArticleController extends Controller
         unset($validated['tags']);
 
         $article = Article::create($validated);
+        
+        // Generate permanent token if download_link is provided (after article is created so we have the ID)
+        if (!empty($validated['download_link']) && !$article->download_token) {
+            $article->download_token = $this->tokenService->createPermanentToken(
+                $validated['download_link'],
+                $article->id
+            );
+            $article->save();
+        }
 
         // Attach tags
         if (!empty($tags)) {
@@ -180,6 +207,8 @@ class ArticleController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'content' => 'nullable|string',
             'featured_image' => 'nullable|string|max:500',
+            'download_link' => 'nullable|string|max:1000',
+            'download_token' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
         ]);
 
@@ -193,11 +222,29 @@ class ArticleController extends Controller
             $article->update(array_merge($validated, [
                 'status' => 'draft', // Always save as draft when auto-saving
             ]));
+            
+            // Generate permanent token if download_link is provided and token doesn't exist
+            if (!empty($validated['download_link']) && !$article->download_token) {
+                $article->download_token = $this->tokenService->createPermanentToken(
+                    $validated['download_link'],
+                    $article->id
+                );
+                $article->save();
+            }
         } else {
             $article = Article::create(array_merge($validated, [
                 'author_id' => Auth::id(),
                 'status' => 'draft',
             ]));
+            
+            // Generate permanent token if download_link is provided
+            if (!empty($validated['download_link'])) {
+                $article->download_token = $this->tokenService->createPermanentToken(
+                    $validated['download_link'],
+                    $article->id
+                );
+                $article->save();
+            }
         }
 
         return response()->json([
@@ -213,7 +260,24 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         $article->load(['category', 'author', 'tags', 'comments']);
-        return view('admin.articles.show', compact('article'));
+        
+        // Use article's download link if available, otherwise use test link
+        $downloadLink = $article->download_link ?? 'https://mega.nz/file/example#test-link';
+        $isTestLink = empty($article->download_link);
+        
+        // Use permanent token if exists, otherwise generate a temporary one for display
+        if ($article->download_token) {
+            $testToken = $article->download_token; // Use permanent token
+        } else {
+            // Generate a temporary token for display (only if no permanent token exists)
+            $testToken = $this->tokenService->createToken($downloadLink, $article->id, 30);
+        }
+        
+        // Generate URLs
+        $articleUrl = route('articles.show', $article->slug);
+        $articleUrlWithToken = $articleUrl . '?dl=' . urlencode($testToken);
+        
+        return view('admin.articles.show', compact('article', 'testToken', 'articleUrl', 'articleUrlWithToken', 'downloadLink', 'isTestLink'));
     }
 
     /**
@@ -249,6 +313,8 @@ class ArticleController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'content' => 'required|string',
             'featured_image' => 'nullable|string|max:500',
+            'download_link' => 'nullable|string|max:1000',
+            'download_token' => 'nullable|string',
             'category_id' => 'nullable|exists:categories,id',
             'series_id' => 'nullable|exists:article_series,id',
             'series_order' => 'nullable|integer|min:1',
@@ -296,6 +362,23 @@ class ArticleController extends Controller
 
         $tags = $validated['tags'] ?? [];
         unset($validated['tags']);
+
+        // Generate or update permanent token if download_link is provided/changed
+        if (!empty($validated['download_link'])) {
+            // Only generate new token if download_link changed or token doesn't exist
+            if ($article->download_link !== $validated['download_link'] || !$article->download_token) {
+                $validated['download_token'] = $this->tokenService->createPermanentToken(
+                    $validated['download_link'],
+                    $article->id
+                );
+            } else {
+                // Keep existing token if download_link hasn't changed
+                unset($validated['download_token']);
+            }
+        } elseif (empty($validated['download_link']) && $article->download_link) {
+            // If download_link is removed, remove token too
+            $validated['download_token'] = null;
+        }
 
         $article->update($validated);
 

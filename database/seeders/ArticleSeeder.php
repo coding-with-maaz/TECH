@@ -28,180 +28,425 @@ class ArticleSeeder extends Seeder
         );
 
         // Get categories
-        $programmingCategory = Category::where('slug', 'programming')->first();
         $webDevCategory = Category::where('slug', 'web-development')->first();
-        $aiCategory = Category::where('slug', 'artificial-intelligence')->first();
-
-        // Get some tags
-        $laravelTag = Tag::where('slug', 'laravel')->first();
-        $phpTag = Tag::where('slug', 'php')->first();
-        $javascriptTag = Tag::where('slug', 'javascript')->first();
-        $reactTag = Tag::where('slug', 'react')->first();
-        $pythonTag = Tag::where('slug', 'python')->first();
-
-        $articles = [
-            [
-                'title' => 'Getting Started with Laravel 12',
-                'slug' => 'getting-started-with-laravel-12',
-                'excerpt' => 'Learn the fundamentals of Laravel 12, the latest version of the popular PHP framework. This comprehensive guide covers installation, routing, controllers, and more.',
-                'content' => self::getLaravelArticleContent(),
-                'category_id' => $programmingCategory?->id,
-                'author_id' => $author->id,
-                'status' => 'published',
-                'is_featured' => true,
-                'published_at' => Carbon::now()->subDays(2),
-                'featured_image' => 'https://via.placeholder.com/1200x630?text=Laravel+12',
-            ],
-            [
-                'title' => 'Building Modern Web Applications with React',
-                'slug' => 'building-modern-web-applications-with-react',
-                'excerpt' => 'Discover how to build scalable and maintainable web applications using React. Learn about components, hooks, state management, and best practices.',
-                'content' => self::getReactArticleContent(),
-                'category_id' => $webDevCategory?->id,
-                'author_id' => $author->id,
-                'status' => 'published',
-                'is_featured' => true,
-                'published_at' => Carbon::now()->subDays(5),
-                'featured_image' => 'https://via.placeholder.com/1200x630?text=React+Development',
-            ],
-            [
-                'title' => 'Introduction to Machine Learning with Python',
-                'slug' => 'introduction-to-machine-learning-with-python',
-                'excerpt' => 'A beginner-friendly guide to machine learning using Python. Learn about data preprocessing, model training, and evaluation techniques.',
-                'content' => self::getMLArticleContent(),
-                'category_id' => $aiCategory?->id,
-                'author_id' => $author->id,
-                'status' => 'published',
-                'is_featured' => false,
-                'published_at' => Carbon::now()->subWeek(),
-                'featured_image' => 'https://via.placeholder.com/1200x630?text=Machine+Learning',
-            ],
-            [
-                'title' => 'Mastering JavaScript ES6+ Features',
-                'slug' => 'mastering-javascript-es6-features',
-                'excerpt' => 'Explore the powerful features introduced in ES6 and beyond. Learn about arrow functions, destructuring, async/await, and more modern JavaScript concepts.',
-                'content' => self::getJavaScriptArticleContent(),
-                'category_id' => $webDevCategory?->id,
-                'author_id' => $author->id,
-                'status' => 'published',
-                'is_featured' => false,
-                'published_at' => Carbon::now()->subDays(10),
-                'featured_image' => 'https://via.placeholder.com/1200x630?text=JavaScript+ES6',
-            ],
-        ];
-
-        foreach ($articles as $articleData) {
-            $article = Article::firstOrCreate(
-                ['slug' => $articleData['slug']],
-                $articleData
-            );
-
-            // Attach tags based on article
-            if ($article->slug === 'getting-started-with-laravel-12' && $laravelTag && $phpTag) {
-                $article->tags()->syncWithoutDetaching([$laravelTag->id, $phpTag->id]);
-            } elseif ($article->slug === 'building-modern-web-applications-with-react' && $reactTag && $javascriptTag) {
-                $article->tags()->syncWithoutDetaching([$reactTag->id, $javascriptTag->id]);
-            } elseif ($article->slug === 'introduction-to-machine-learning-with-python' && $pythonTag) {
-                $article->tags()->syncWithoutDetaching([$pythonTag->id]);
-            } elseif ($article->slug === 'mastering-javascript-es6-features' && $javascriptTag) {
-                $article->tags()->syncWithoutDetaching([$javascriptTag->id]);
-            }
-
-            $this->command->info("Created article: {$article->title}");
+        if (!$webDevCategory) {
+            $webDevCategory = Category::first(); // Fallback to first category
         }
 
+        // Get JavaScript tag
+        $javascriptTag = Tag::where('slug', 'javascript')->first();
+
+        // Single article with content from SAMPLE_CODING_ARTICLE.html
+        $article = Article::firstOrCreate(
+            ['slug' => 'mastering-javascript-es6-features'],
+            [
+                'title' => 'Mastering JavaScript ES6+ Features: A Complete Guide',
+                'slug' => 'mastering-javascript-es6-features',
+                'excerpt' => 'JavaScript has evolved significantly since ES6 (ECMAScript 2015), introducing powerful features that make code more readable, maintainable, and efficient. In this comprehensive guide, we\'ll explore the most important ES6+ features that every modern JavaScript developer should know.',
+                'content' => self::getJavaScriptES6ArticleContent(),
+                'category_id' => $webDevCategory?->id,
+                'author_id' => $author->id,
+                'status' => 'published',
+                'is_featured' => true,
+                'published_at' => Carbon::now(),
+                'featured_image' => 'https://images.unsplash.com/photo-1579468118864-7b3a3c9d93ef?w=1200&h=630&fit=crop',
+                'download_link' => 'https://mega.nz/file/example#JavaScript-ES6-Complete-Guide',
+            ]
+        );
+
+        // Generate permanent token if download_link exists
+        if ($article->download_link && !$article->download_token) {
+            $tokenService = app(\App\Services\DownloadTokenService::class);
+            $article->download_token = $tokenService->createPermanentToken(
+                $article->download_link,
+                $article->id
+            );
+            $article->save();
+        }
+
+        // Attach JavaScript tag if available
+        if ($javascriptTag) {
+            $article->tags()->syncWithoutDetaching([$javascriptTag->id]);
+        }
+
+        $this->command->info("Created article: {$article->title}");
         $this->command->info('✅ Articles seeded successfully!');
     }
 
-    private static function getLaravelArticleContent(): string
+    private static function getJavaScriptES6ArticleContent(): string
     {
         return <<<'HTML'
-<h2>Introduction</h2>
-<p>Laravel 12 is the latest version of the popular PHP framework, bringing new features and improvements to help developers build better applications faster.</p>
+<h1>Mastering JavaScript ES6+ Features: A Complete Guide</h1>
 
-<h2>Installation</h2>
-<p>To get started with Laravel 12, you can install it using Composer:</p>
-<pre><code>composer create-project laravel/laravel my-project</code></pre>
+<p>JavaScript has evolved significantly since ES6 (ECMAScript 2015), introducing powerful features that make code more readable, maintainable, and efficient. In this comprehensive guide, we'll explore the most important ES6+ features that every modern JavaScript developer should know.</p>
 
-<h2>Key Features</h2>
+<h2>What is ES6?</h2>
+
+<p>ES6, also known as ECMAScript 2015, was a major update to JavaScript that introduced many new features. Since then, JavaScript has continued to evolve with annual updates, bringing even more powerful capabilities to the language.</p>
+
+<figure class="image"><img title="JavaScript ES6 Features" src="https://images.unsplash.com/photo-1579468118864-7b3a3c9d93ef?w=1200&h=630&fit=crop" alt="JavaScript ES6 Features" width="1200" height="630">
+<figcaption>Modern JavaScript development with ES6+ features</figcaption>
+</figure>
+
+<h2>1. Arrow Functions</h2>
+
+<p>Arrow functions provide a more concise syntax for writing functions. They're especially useful for callbacks and array methods.</p>
+
+<h3>Traditional Function vs Arrow Function</h3>
+
+<pre><code class="language-javascript">// Traditional function
+function multiply(a, b) {
+    return a * b;
+}
+
+// Arrow function
+const multiply = (a, b) => a * b;
+
+// Arrow function with multiple statements
+const greet = (name) => {
+    const message = `Hello, ${name}!`;
+    return message;
+};
+</code></pre>
+
+<h3>Benefits of Arrow Functions</h3>
+
 <ul>
-    <li>Improved performance and speed</li>
-    <li>Enhanced security features</li>
-    <li>Better developer experience</li>
-    <li>Modern PHP 8.2+ support</li>
+<li>Shorter syntax</li>
+<li>Lexical <code>this</code> binding</li>
+<li>Implicit return for single expressions</li>
+</ul>
+
+<h2>2. Destructuring Assignment</h2>
+
+<p>Destructuring allows you to extract values from arrays or objects into distinct variables.</p>
+
+<h3>Array Destructuring</h3>
+
+<pre><code class="language-javascript">// Basic array destructuring
+const numbers = [1, 2, 3, 4, 5];
+const [first, second, ...rest] = numbers;
+console.log(first);  // 1
+console.log(second); // 2
+console.log(rest);   // [3, 4, 5]
+
+// Swapping variables
+let a = 10;
+let b = 20;
+[a, b] = [b, a];
+console.log(a, b); // 20, 10
+</code></pre>
+
+<h3>Object Destructuring</h3>
+
+<pre><code class="language-javascript">// Basic object destructuring
+const user = {
+    name: 'John Doe',
+    age: 30,
+    email: 'john@example.com'
+};
+
+const { name, age, email } = user;
+console.log(name);  // John Doe
+console.log(age);   // 30
+
+// Destructuring with default values
+const { name, city = 'Unknown' } = user;
+
+// Renaming variables
+const { name: fullName, age: userAge } = user;
+</code></pre>
+
+<h2>3. Template Literals</h2>
+
+<p>Template literals provide an elegant way to work with strings, allowing embedded expressions and multi-line strings.</p>
+
+<pre><code class="language-javascript">// Basic template literal
+const name = 'World';
+const greeting = `Hello, ${name}!`;
+
+// Multi-line strings
+const html = `
+    &lt;div&gt;
+        &lt;h1&gt;Welcome&lt;/h1&gt;
+        &lt;p&gt;This is a multi-line string&lt;/p&gt;
+    &lt;/div&gt;
+`;
+
+// Expression evaluation
+const a = 10;
+const b = 20;
+const result = `The sum of ${a} and ${b} is ${a + b}`;
+// "The sum of 10 and 20 is 30"
+</code></pre>
+
+<h2>4. Spread and Rest Operators</h2>
+
+<p>The spread operator (<code>...</code>) allows you to expand arrays or objects, while the rest operator collects remaining elements.</p>
+
+<h3>Spread Operator</h3>
+
+<pre><code class="language-javascript">// Copying arrays
+const original = [1, 2, 3];
+const copy = [...original];
+
+// Combining arrays
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+const combined = [...arr1, ...arr2]; // [1, 2, 3, 4, 5, 6]
+
+// Spreading objects
+const user = { name: 'John', age: 30 };
+const updatedUser = { ...user, email: 'john@example.com' };
+
+// Function arguments
+const numbers = [1, 2, 3, 4, 5];
+Math.max(...numbers); // 5
+</code></pre>
+
+<h3>Rest Operator</h3>
+
+<pre><code class="language-javascript">// Collecting function arguments
+function sum(...numbers) {
+    return numbers.reduce((total, num) => total + num, 0);
+}
+
+sum(1, 2, 3, 4, 5); // 15
+
+// Destructuring with rest
+const [first, ...rest] = [1, 2, 3, 4, 5];
+console.log(first); // 1
+console.log(rest);  // [2, 3, 4, 5]
+</code></pre>
+
+<h2>5. Promises and Async/Await</h2>
+
+<p>ES6 introduced Promises, and ES2017 added async/await, making asynchronous code much more readable.</p>
+
+<h3>Promises</h3>
+
+<pre><code class="language-javascript">// Creating a Promise
+const fetchData = () => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('Data fetched successfully');
+        }, 1000);
+    });
+};
+
+// Using Promises
+fetchData()
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+</code></pre>
+
+<h3>Async/Await</h3>
+
+<pre><code class="language-javascript">// Async function
+async function fetchUserData(userId) {
+    try {
+        const response = await fetch(`/api/users/${userId}`);
+        const user = await response.json();
+        return user;
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        throw error;
+    }
+}
+
+// Using async/await
+async function displayUser(userId) {
+    const user = await fetchUserData(userId);
+    console.log(user.name);
+}
+</code></pre>
+
+<h2>6. Classes</h2>
+
+<p>ES6 introduced class syntax, providing a cleaner way to work with object-oriented programming in JavaScript.</p>
+
+<pre><code class="language-javascript">// Class definition
+class User {
+    constructor(name, email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    // Method
+    greet() {
+        return `Hello, I'm ${this.name}`;
+    }
+
+    // Static method
+    static createAdmin(name, email) {
+        const admin = new User(name, email);
+        admin.role = 'admin';
+        return admin;
+    }
+}
+
+// Inheritance
+class Admin extends User {
+    constructor(name, email, permissions) {
+        super(name, email);
+        this.permissions = permissions;
+    }
+
+    deleteUser(userId) {
+        console.log(`Deleting user ${userId}`);
+    }
+}
+
+// Usage
+const admin = new Admin('John', 'john@example.com', ['read', 'write', 'delete']);
+console.log(admin.greet());
+</code></pre>
+
+<h2>7. Modules (import/export)</h2>
+
+<p>ES6 modules provide a standardized way to organize and share code between files.</p>
+
+<h3>Exporting</h3>
+
+<pre><code class="language-javascript">// math.js
+export const PI = 3.14159;
+
+export function add(a, b) {
+    return a + b;
+}
+
+export function subtract(a, b) {
+    return a - b;
+}
+
+// Default export
+export default class Calculator {
+    multiply(a, b) {
+        return a * b;
+    }
+}
+</code></pre>
+
+<h3>Importing</h3>
+
+<pre><code class="language-javascript">// app.js
+import Calculator, { PI, add, subtract } from './math.js';
+
+console.log(PI); // 3.14159
+console.log(add(5, 3)); // 8
+
+const calc = new Calculator();
+console.log(calc.multiply(4, 5)); // 20
+</code></pre>
+
+<h2>8. Map and Set</h2>
+
+<p>ES6 introduced Map and Set data structures, providing better alternatives to objects and arrays in certain scenarios.</p>
+
+<h3>Map</h3>
+
+<pre><code class="language-javascript">// Creating a Map
+const userMap = new Map();
+
+// Adding entries
+userMap.set('name', 'John');
+userMap.set('age', 30);
+userMap.set(1, 'One'); // Keys can be any type
+
+// Getting values
+console.log(userMap.get('name')); // John
+
+// Iterating
+userMap.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+});
+</code></pre>
+
+<h3>Set</h3>
+
+<pre><code class="language-javascript">// Creating a Set
+const uniqueNumbers = new Set([1, 2, 3, 3, 4, 4, 5]);
+console.log(uniqueNumbers); // Set {1, 2, 3, 4, 5}
+
+// Adding values
+uniqueNumbers.add(6);
+
+// Checking existence
+console.log(uniqueNumbers.has(3)); // true
+
+// Removing values
+uniqueNumbers.delete(3);
+</code></pre>
+
+<h2>9. Array Methods</h2>
+
+<p>ES6 introduced several powerful array methods that make data manipulation easier.</p>
+
+<pre><code class="language-javascript">const numbers = [1, 2, 3, 4, 5];
+
+// map() - Transform each element
+const doubled = numbers.map(n => n * 2); // [2, 4, 6, 8, 10]
+
+// filter() - Filter elements
+const evens = numbers.filter(n => n % 2 === 0); // [2, 4]
+
+// reduce() - Reduce to a single value
+const sum = numbers.reduce((acc, n) => acc + n, 0); // 15
+
+// find() - Find first matching element
+const found = numbers.find(n => n > 3); // 4
+
+// some() - Check if any element matches
+const hasEven = numbers.some(n => n % 2 === 0); // true
+
+// every() - Check if all elements match
+const allPositive = numbers.every(n => n > 0); // true
+</code></pre>
+
+<h2>10. Optional Chaining and Nullish Coalescing</h2>
+
+<p>ES2020 introduced optional chaining (<code>?.</code>) and nullish coalescing (<code>??</code>) operators for safer property access and default values.</p>
+
+<pre><code class="language-javascript">// Optional chaining
+const user = {
+    profile: {
+        name: 'John',
+        address: {
+            city: 'New York'
+        }
+    }
+};
+
+// Safe property access
+const city = user?.profile?.address?.city; // 'New York'
+const zip = user?.profile?.address?.zip; // undefined (no error)
+
+// Nullish coalescing
+const name = user?.name ?? 'Anonymous';
+const age = user?.age ?? 0; // Only uses default if null or undefined
+
+// Combined
+const displayName = user?.profile?.name ?? 'Guest';
+</code></pre>
+
+<h2>Best Practices</h2>
+
+<p>When using ES6+ features, keep these best practices in mind:</p>
+
+<ul>
+<li>Use <code>const</code> by default, <code>let</code> when reassignment is needed</li>
+<li>Prefer arrow functions for callbacks and short functions</li>
+<li>Use template literals instead of string concatenation</li>
+<li>Leverage destructuring for cleaner code</li>
+<li>Use async/await for better readability with Promises</li>
+<li>Take advantage of array methods for data manipulation</li>
 </ul>
 
 <h2>Conclusion</h2>
-<p>Laravel 12 continues to be one of the best PHP frameworks for building modern web applications. Start your journey today!</p>
-HTML;
-    }
 
-    private static function getReactArticleContent(): string
-    {
-        return <<<'HTML'
-<h2>Why React?</h2>
-<p>React has become the go-to library for building user interfaces. Its component-based architecture makes it easy to build and maintain complex applications.</p>
+<p>ES6+ features have transformed JavaScript into a modern, powerful language. By mastering these features, you'll write more efficient, readable, and maintainable code. Start incorporating these features into your projects gradually, and you'll see significant improvements in your code quality.</p>
 
-<h2>Core Concepts</h2>
-<p>Understanding React's core concepts is essential:</p>
-<ul>
-    <li>Components and Props</li>
-    <li>State Management</li>
-    <li>Hooks (useState, useEffect, etc.)</li>
-    <li>Event Handling</li>
-</ul>
-
-<h2>Best Practices</h2>
-<p>Follow these best practices to write better React code:</p>
-<ul>
-    <li>Keep components small and focused</li>
-    <li>Use functional components with hooks</li>
-    <li>Implement proper error boundaries</li>
-    <li>Optimize performance with memoization</li>
-</ul>
-HTML;
-    }
-
-    private static function getMLArticleContent(): string
-    {
-        return <<<'HTML'
-<h2>What is Machine Learning?</h2>
-<p>Machine Learning is a subset of artificial intelligence that enables computers to learn and make decisions from data without being explicitly programmed.</p>
-
-<h2>Getting Started</h2>
-<p>Python is the most popular language for machine learning. Start by installing essential libraries:</p>
-<pre><code>pip install numpy pandas scikit-learn matplotlib</code></pre>
-
-<h2>Basic Workflow</h2>
-<ol>
-    <li>Data Collection and Preprocessing</li>
-    <li>Feature Selection</li>
-    <li>Model Training</li>
-    <li>Model Evaluation</li>
-    <li>Prediction</li>
-</ol>
-HTML;
-    }
-
-    private static function getJavaScriptArticleContent(): string
-    {
-        return <<<'HTML'
-<h2>ES6 and Beyond</h2>
-<p>Modern JavaScript has evolved significantly with ES6 and subsequent versions, introducing powerful features that make development more efficient.</p>
-
-<h2>Key Features</h2>
-<ul>
-    <li><strong>Arrow Functions:</strong> Concise function syntax</li>
-    <li><strong>Destructuring:</strong> Extract values from arrays and objects</li>
-    <li><strong>Template Literals:</strong> Enhanced string interpolation</li>
-    <li><strong>Async/Await:</strong> Better asynchronous programming</li>
-    <li><strong>Modules:</strong> Import and export functionality</li>
-</ul>
-
-<h2>Examples</h2>
-<p>Here's an example of arrow functions and destructuring:</p>
-<pre><code>const greet = (name) => `Hello, ${name}!`;
-const { firstName, lastName } = user;</code></pre>
+<p>Remember, the best way to learn is by doing. Try implementing these features in your next project and see how they can improve your development workflow!</p>
 HTML;
     }
 }

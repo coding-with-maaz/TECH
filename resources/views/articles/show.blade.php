@@ -5,9 +5,244 @@
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="amphtml" href="{{ route('amp.article', $article->slug) }}">
+@if(config('services.adsense.client_id'))
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client_id') }}" crossorigin="anonymous"></script>
+@endif
 @endpush
 
 @section('content')
+@if($hasValidToken && $downloadLink)
+<!-- Download Processing Section - Shows on article page -->
+<div id="downloadProcessing" class="w-full mb-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white" style="display: block;">
+    <div class="text-center">
+        <!-- Phase 1: Generating Link (0-15 seconds) -->
+        <div id="phase1" class="mb-6">
+            <div class="w-20 h-20 mx-auto mb-4 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <h2 class="text-2xl font-bold mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                Please Wait
+            </h2>
+            <p class="text-purple-100 mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                Generating your download link...
+            </p>
+            <div class="text-4xl font-bold mb-2" id="phase1Countdown" style="font-family: 'Poppins', sans-serif; font-weight: 700;">15</div>
+            <p class="text-sm text-purple-200" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                seconds remaining
+            </p>
+            <div class="w-full max-w-xs mx-auto bg-white/30 rounded-full h-2 mt-4">
+                <div id="phase1Progress" class="bg-white h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                </div>
+
+        <!-- Phase 2: Scroll Down Button (after 15 seconds) -->
+        <div id="phase2" class="mb-6" style="display: none;">
+            <div class="mb-4">
+                <svg class="w-16 h-16 mx-auto mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                </svg>
+                <h2 class="text-2xl font-bold mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Link Generated!
+                </h2>
+                <p class="text-purple-100 mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Scroll down to finalize your download
+                </p>
+                <button id="scrollDownBtn" 
+                        class="px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-purple-50 transition-colors shadow-lg" 
+                        style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                    Scroll Down ↓
+                </button>
+                    </div>
+                </div>
+                
+        <!-- Phase 3: Finalizing Download (after scroll, 15 more seconds) -->
+        <div id="phase3" class="mb-6" style="display: none;">
+            <div class="w-20 h-20 mx-auto mb-4 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <h2 class="text-2xl font-bold mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                Finalizing Download
+            </h2>
+            <p class="text-purple-100 mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                Generating final download link...
+            </p>
+            <div class="text-4xl font-bold mb-2" id="phase3Countdown" style="font-family: 'Poppins', sans-serif; font-weight: 700;">15</div>
+            <p class="text-sm text-purple-200" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                seconds remaining
+            </p>
+            <div class="w-full max-w-xs mx-auto bg-white/30 rounded-full h-2 mt-4">
+                <div id="phase3Progress" class="bg-white h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+
+<script>
+(function() {
+    // Only run if we have a valid download link
+    const downloadLink = @json($downloadLink);
+    if (!downloadLink) {
+        return; // Exit if no valid download link
+    }
+    
+    const phase1 = document.getElementById('phase1');
+    const phase2 = document.getElementById('phase2');
+    const phase3 = document.getElementById('phase3');
+    const phase1Countdown = document.getElementById('phase1Countdown');
+    const phase1Progress = document.getElementById('phase1Progress');
+    const phase3Countdown = document.getElementById('phase3Countdown');
+    const phase3Progress = document.getElementById('phase3Progress');
+    const phase3CountdownFinal = document.getElementById('phase3CountdownFinal');
+    const phase3ProgressFinal = document.getElementById('phase3ProgressFinal');
+    const phase3CountdownSection = document.getElementById('phase3CountdownSection');
+    const phase4DownloadButton = document.getElementById('phase4DownloadButton');
+    const downloadButtonLink = document.getElementById('downloadButtonLink');
+    
+    let phase1Seconds = 15;
+    let phase3Seconds = 15;
+    let phase1Interval = null;
+    let phase3Interval = null;
+    let hasScrolled = false;
+    
+    // Function to start Phase 3 countdown
+    function startPhase3Countdown() {
+        console.log('Starting Phase 3 countdown');
+        
+        // Get fresh references to elements
+        const countdownEl = document.getElementById('phase3CountdownFinal');
+        const progressEl = document.getElementById('phase3ProgressFinal');
+        const countdownSection = document.getElementById('phase3CountdownSection');
+        const downloadButton = document.getElementById('phase4DownloadButton');
+        const downloadLinkEl = document.getElementById('downloadButtonLink');
+        
+        // Reset seconds
+        let currentSeconds = 15;
+        
+        // Clear any existing interval
+        if (phase3Interval) {
+            clearInterval(phase3Interval);
+            phase3Interval = null;
+        }
+        
+        // Update initial display
+        if (countdownEl) {
+            countdownEl.textContent = currentSeconds;
+            console.log('Initial countdown set to:', currentSeconds);
+        }
+        if (progressEl) {
+            progressEl.style.width = '0%';
+        }
+        
+        // Start the countdown interval
+        phase3Interval = setInterval(function() {
+            currentSeconds--;
+            console.log('Phase 3 countdown:', currentSeconds);
+            
+            // Update countdown display
+            if (countdownEl) {
+                countdownEl.textContent = currentSeconds;
+            }
+            
+            // Update progress bar
+            if (progressEl) {
+                const progress = ((15 - currentSeconds) / 15 * 100);
+                progressEl.style.width = progress + '%';
+            }
+            
+            // Check if countdown is complete
+            if (currentSeconds <= 0) {
+                console.log('Phase 3 countdown complete');
+                
+                // Clear interval
+                if (phase3Interval) {
+                    clearInterval(phase3Interval);
+                    phase3Interval = null;
+                }
+                
+                // Hide countdown section
+                if (countdownSection) {
+                    countdownSection.style.display = 'none';
+                }
+                
+                // Show download button
+                if (downloadButton) {
+                    downloadButton.style.display = 'block';
+                }
+                
+                // Set download link
+                if (downloadLinkEl && downloadLink) {
+                    downloadLinkEl.href = downloadLink;
+                    console.log('Download link set:', downloadLink);
+                }
+            }
+        }, 1000);
+        
+        console.log('Phase 3 interval created:', phase3Interval);
+    }
+    
+    // Function to scroll down and start Phase 3 - Define it first
+    window.scrollToDownload = function() {
+        console.log('scrollToDownload called');
+        if (hasScrolled) {
+            console.log('Already scrolled, returning');
+            return; // Prevent multiple clicks
+        }
+        hasScrolled = true;
+        
+        // Hide Phase 2
+        if (phase2) {
+            phase2.style.display = 'none';
+        }
+        
+        // Find download finalize section (it's placed after article content)
+        const downloadFinalize = document.getElementById('downloadFinalize');
+        console.log('downloadFinalize element:', downloadFinalize);
+        
+        if (downloadFinalize) {
+            // Show the finalize section
+            downloadFinalize.style.display = 'block';
+            
+            // Wait a bit for display to take effect, then scroll
+            setTimeout(function() {
+                downloadFinalize.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Start Phase 3 countdown after scroll completes
+                setTimeout(function() {
+                    startPhase3Countdown();
+                }, 500);
+            }, 300);
+        } else {
+            console.error('downloadFinalize element not found');
+            // Fallback: try to find it again or show error
+            alert('Download section not found. Please refresh the page.');
+        }
+    };
+    
+    // Phase 1: Generate link (15 seconds)
+    phase1Interval = setInterval(function() {
+        phase1Seconds--;
+        if (phase1Countdown) {
+            phase1Countdown.textContent = phase1Seconds;
+        }
+        if (phase1Progress) {
+            phase1Progress.style.width = ((15 - phase1Seconds) / 15 * 100) + '%';
+        }
+        
+        if (phase1Seconds <= 0) {
+            clearInterval(phase1Interval);
+            // Show Phase 2 (Scroll Down button)
+            if (phase1) phase1.style.display = 'none';
+            if (phase2) phase2.style.display = 'block';
+            
+            // Add event listener to scroll button
+            const scrollBtn = document.getElementById('scrollDownBtn');
+            if (scrollBtn) {
+                scrollBtn.addEventListener('click', window.scrollToDownload);
+                // Also add onclick as backup
+                scrollBtn.setAttribute('onclick', 'window.scrollToDownload()');
+            }
+        }
+    }, 1000);
+})();
+</script>
+@endif
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- Main Content -->
@@ -68,6 +303,51 @@
             <div class="prose prose-lg dark:prose-invert max-w-none mb-8 article-content" style="font-family: 'Poppins', sans-serif;">
                 {!! $article->rendered_content !!}
             </div>
+
+            <!-- Download Finalize Section (shown after scroll) - Placed after article content -->
+            @if($hasValidToken && $downloadLink)
+            <div id="downloadFinalize" class="w-full mb-8 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg p-6 text-white" style="display: none;">
+                <div class="text-center">
+                    <!-- Phase 3: Countdown -->
+                    <div id="phase3CountdownSection">
+                        <div class="w-20 h-20 mx-auto mb-4 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <h2 class="text-2xl font-bold mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                            Finalizing Download
+                        </h2>
+                        <p class="text-green-100 mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                            Generating final download link...
+                        </p>
+                        <div class="text-4xl font-bold mb-2" id="phase3CountdownFinal" style="font-family: 'Poppins', sans-serif; font-weight: 700;">15</div>
+                        <p class="text-sm text-green-200" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                            seconds remaining
+                        </p>
+                        <div class="w-full max-w-xs mx-auto bg-white/30 rounded-full h-2 mt-4">
+                            <div id="phase3ProgressFinal" class="bg-white h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Phase 4: Download Button (shown after countdown) -->
+                    <div id="phase4DownloadButton" style="display: none;">
+                        <div class="mb-6">
+                            <svg class="w-20 h-20 mx-auto mb-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <h2 class="text-2xl font-bold mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                                Download Ready!
+                            </h2>
+                            <p class="text-green-100 mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                                Your download link is ready. Click the button below to download.
+                            </p>
+                            <a id="downloadButtonLink" href="#" target="_blank" 
+                               class="inline-block px-8 py-4 bg-white text-green-600 rounded-lg font-bold hover:bg-green-50 transition-colors shadow-lg text-lg" 
+                               style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                                📥 Download Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Series Navigation (Previous/Next) -->
             @if($article->series && ($previousArticle || $nextArticle))
@@ -154,6 +434,21 @@
                 </a>
                 @endauth
             </div>
+
+            <!-- AdSense Unit 4 - Before Comments -->
+            @if(config('services.adsense.client_id'))
+            <div class="mb-8 text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="{{ config('services.adsense.client_id') }}"
+                     data-ad-slot="{{ config('services.adsense.unit_4', '') }}"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            @endif
 
             <!-- Comments Section -->
             @if($article->allow_comments)
@@ -375,22 +670,37 @@
 
         </article>
 
-                <!-- Related Articles -->
-                @if($relatedArticles->count() > 0)
-                <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                        Related Articles
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($relatedArticles as $relatedArticle)
-                            @include('articles._card', ['article' => $relatedArticle])
-                        @endforeach
-                    </div>
+            <!-- AdSense Unit 5 - Before Related Articles -->
+            @if(config('services.adsense.client_id'))
+            <div class="mb-8 text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="{{ config('services.adsense.client_id') }}"
+                     data-ad-slot="{{ config('services.adsense.unit_5', '') }}"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            @endif
+
+            <!-- Related Articles -->
+            @if($relatedArticles->count() > 0)
+            <div class="mt-12 pt-8 border-t border-gray-200 dark:!border-border-secondary">
+                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-6" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Related Articles
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($relatedArticles as $relatedArticle)
+                        @include('articles._card', ['article' => $relatedArticle])
+                    @endforeach
                 </div>
-                @endif
+            </div>
+            @endif
         </article>
+        </div>
     </div>
-</div>
 
 <!-- Fixed Series Progress Widget (Bottom Right) -->
 @if($article->series && $seriesArticles && $seriesArticles->count() > 0)
@@ -406,7 +716,7 @@
                     <p class="text-xs opacity-90" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                         {{ round((($currentSeriesIndex ?? 1) / $totalSeriesArticles) * 100) }}% Complete
                     </p>
-                </div>
+</div>
                 <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
@@ -1077,6 +1387,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    }
+});
+
+// Inject AdSense after first paragraph
+document.addEventListener('DOMContentLoaded', function() {
+    const articleContent = document.querySelector('.article-content');
+    if (articleContent) {
+        const paragraphs = articleContent.querySelectorAll('p');
+        if (paragraphs.length > 0 && document.getElementById('adsense-unit-2')) {
+            // Insert ad after first paragraph
+            paragraphs[0].insertAdjacentElement('afterend', document.getElementById('adsense-unit-2'));
+            document.getElementById('adsense-unit-2').style.display = 'block';
+        }
     }
 });
 </script>

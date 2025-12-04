@@ -189,8 +189,166 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Download Token Generator -->
+            <div class="bg-white dark:!bg-bg-card rounded-lg border border-gray-200 dark:!border-border-secondary p-6">
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                    Download Token
+                </h2>
+                <p class="text-sm text-gray-600 dark:!text-text-secondary mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Use this token to create download links for movies. Copy the URL below to use on your movie website.
+                </p>
+                
+                <!-- Article URL -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Article URL
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" 
+                               id="articleUrl" 
+                               value="{{ $articleUrl }}" 
+                               readonly
+                               class="flex-1 px-3 py-2 bg-gray-50 dark:!bg-bg-card-hover border border-gray-300 dark:!border-border-primary rounded-lg text-sm text-gray-900 dark:!text-white focus:outline-none focus:ring-2 focus:ring-accent"
+                               style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        <button onclick="copyToClipboard(event, 'articleUrl', 'Article URL')" 
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm" 
+                                style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Token -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Download Token
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" 
+                               id="downloadToken" 
+                               value="{{ $testToken }}" 
+                               readonly
+                               class="flex-1 px-3 py-2 bg-gray-50 dark:!bg-bg-card-hover border border-gray-300 dark:!border-border-primary rounded-lg text-sm text-gray-900 dark:!text-white focus:outline-none focus:ring-2 focus:ring-accent font-mono text-xs"
+                               style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        <button onclick="copyToClipboard(event, 'downloadToken', 'Token')" 
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm" 
+                                style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Full URL with Token -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Full URL with Token
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" 
+                               id="articleUrlWithToken" 
+                               value="{{ $articleUrlWithToken }}" 
+                               readonly
+                               class="flex-1 px-3 py-2 bg-gray-50 dark:!bg-bg-card-hover border border-gray-300 dark:!border-border-primary rounded-lg text-sm text-gray-900 dark:!text-white focus:outline-none focus:ring-2 focus:ring-accent font-mono text-xs break-all"
+                               style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        <button onclick="copyToClipboard(event, 'articleUrlWithToken', 'Full URL')" 
+                                class="px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors text-sm" 
+                                style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Copy
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:!text-text-tertiary mt-2" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        This is the complete URL to use on your movie website. Users will see the download overlay when visiting this URL.
+                    </p>
+                </div>
+
+                <!-- Download Link Info -->
+                @if($isTestLink)
+                <div class="mb-4 p-3 bg-yellow-50 dark:!bg-yellow-900/10 border border-yellow-200 dark:!border-yellow-800 rounded-lg">
+                    <p class="text-xs text-yellow-800 dark:!text-yellow-400 mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        ⚠️ Note: This token uses a test download link
+                    </p>
+                    <p class="text-xs text-yellow-700 dark:!text-yellow-300" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        Test Link: <code class="bg-yellow-100 dark:!bg-yellow-900/20 px-1 rounded">{{ $downloadLink }}</code>
+                    </p>
+                    <p class="text-xs text-yellow-700 dark:!text-yellow-300 mt-2" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        Add a download link in the article edit form to use a real download link.
+                    </p>
+                </div>
+                @else
+                <div class="mb-4 p-3 bg-green-50 dark:!bg-green-900/10 border border-green-200 dark:!border-green-800 rounded-lg">
+                    <p class="text-xs text-green-800 dark:!text-green-400 mb-1" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        ✅ Using article's download link
+                    </p>
+                    <p class="text-xs text-green-700 dark:!text-green-300 break-all" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                        Link: <code class="bg-green-100 dark:!bg-green-900/20 px-1 rounded break-all">{{ $downloadLink }}</code>
+                    </p>
+                </div>
+                @endif
+
+                <!-- Quick Actions -->
+                <div class="flex gap-2">
+                    <a href="{{ $articleUrlWithToken }}" 
+                       target="_blank" 
+                       class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm text-center" 
+                       style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        Test Download Flow
+                    </a>
+                    <a href="{{ $articleUrl }}" 
+                       target="_blank" 
+                       class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm text-center" 
+                       style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        View Normal Article
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+function copyToClipboard(event, elementId, label) {
+    const element = document.getElementById(elementId);
+    element.select();
+    element.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        // Use modern Clipboard API if available
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(element.value).then(() => {
+                showCopySuccess(event, label);
+            }).catch(() => {
+                // Fallback to execCommand
+                document.execCommand('copy');
+                showCopySuccess(event, label);
+            });
+        } else {
+            // Fallback for older browsers
+            document.execCommand('copy');
+            showCopySuccess(event, label);
+        }
+    } catch (err) {
+        alert('Failed to copy. Please select and copy manually.');
+    }
+}
+
+function showCopySuccess(event, label) {
+    const button = event.target;
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.classList.add('bg-green-600', 'hover:bg-green-700');
+    button.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'bg-accent', 'hover:bg-accent-light');
+    
+    setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-600', 'hover:bg-green-700');
+        if (label === 'Full URL') {
+            button.classList.add('bg-accent', 'hover:bg-accent-light');
+        } else {
+            button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+        }
+    }, 2000);
+}
+</script>
 @endsection
 

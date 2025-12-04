@@ -99,6 +99,9 @@ Route::post('/articles/{article}/comments/{comment}/reply', [CommentController::
 // Article show route (must be last to avoid conflicts)
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
+// Movie download redirect (from movie site)
+Route::get('/go/{slug}', [App\Http\Controllers\MovieRedirectController::class, 'redirect'])->name('movie.redirect');
+
 // AMP routes
 Route::get('/amp/articles/{slug}', [App\Http\Controllers\AmpController::class, 'article'])->name('amp.article');
 

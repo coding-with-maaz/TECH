@@ -96,6 +96,19 @@
                             </div>
                         @endif
                     </div>
+
+                    <!-- Download Link -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Download Link (Optional)
+                        </label>
+                        <input type="text" name="download_link" value="{{ old('download_link', $article->download_link) }}"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent dark:!bg-bg-card-hover dark:!border-border-primary dark:!text-white"
+                               placeholder="https://mega.nz/file/... or https://drive.google.com/...">
+                        <p class="mt-1 text-xs text-gray-500 dark:!text-text-tertiary">
+                            Optional: Add a download link for this article. This will be used when generating download tokens.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="space-y-6">

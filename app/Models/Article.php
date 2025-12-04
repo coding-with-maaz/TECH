@@ -19,6 +19,8 @@ class Article extends Model
         'excerpt',
         'content',
         'featured_image',
+        'download_link',
+        'download_token',
         'category_id',
         'author_id',
         'series_id',

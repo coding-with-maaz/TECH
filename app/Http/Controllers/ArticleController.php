@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Tag;
 use App\Services\ArticleService;
 use App\Services\SeoService;
+use App\Services\DownloadTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,11 +15,13 @@ class ArticleController extends Controller
 {
     protected $articleService;
     protected $seoService;
+    protected $tokenService;
 
-    public function __construct(ArticleService $articleService, SeoService $seoService)
+    public function __construct(ArticleService $articleService, SeoService $seoService, DownloadTokenService $tokenService)
     {
         $this->articleService = $articleService;
         $this->seoService = $seoService;
+        $this->tokenService = $tokenService;
     }
 
     /**
@@ -49,7 +52,7 @@ class ArticleController extends Controller
     /**
      * Display the specified article
      */
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
         $article = Article::published()
             ->where('slug', $slug)
@@ -108,6 +111,17 @@ class ArticleController extends Controller
         $categories = $this->articleService->getCategoriesWithCounts();
         $popularTags = $this->articleService->getPopularTags(10);
 
+        // Check for download token - only show download overlay if valid token exists
+        $downloadToken = $request->query('dl');
+        $downloadLink = null;
+        $hasValidToken = false;
+        
+        if ($downloadToken) {
+            $downloadLink = $this->tokenService->getDownloadLink($downloadToken);
+            // Only set hasValidToken if token is valid and download link was successfully decrypted
+            $hasValidToken = !empty($downloadLink);
+        }
+
         return view('articles.show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles,
@@ -122,6 +136,9 @@ class ArticleController extends Controller
             'totalSeriesArticles' => $seriesArticles ? $seriesArticles->count() : null,
             'isBookmarked' => $isBookmarked,
             'seo' => $this->seoService->forArticle($article),
+            'downloadToken' => $downloadToken,
+            'downloadLink' => $downloadLink,
+            'hasValidToken' => $hasValidToken, // Only true if token exists and is valid
         ]);
     }
 }
