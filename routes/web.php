@@ -185,6 +185,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('series/{series}/update-article-order', [App\Http\Controllers\Admin\SeriesController::class, 'updateArticleOrder'])->name('series.update-article-order');
     Route::delete('series/{series}/articles/{article}', [App\Http\Controllers\Admin\SeriesController::class, 'removeArticle'])->name('series.remove-article');
     
+    // Settings management
+    Route::get('settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/facebook', [App\Http\Controllers\Admin\SettingsController::class, 'updateFacebook'])->name('settings.facebook.update');
+    Route::post('settings/facebook/test', [App\Http\Controllers\Admin\SettingsController::class, 'testFacebook'])->name('settings.facebook.test');
+    
     // Author management
     Route::get('authors', [App\Http\Controllers\Admin\AuthorController::class, 'index'])->name('authors.index');
     // Author requests routes (must come before {author} route to avoid conflicts)

@@ -193,6 +193,13 @@
                                    class="rounded border-gray-300 text-accent focus:ring-accent">
                             <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Allow Comments</span>
                         </label>
+                        @if(config('services.facebook.enabled', false))
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="post_to_facebook" value="1" {{ old('post_to_facebook', false) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-accent focus:ring-accent">
+                            <span class="text-sm font-semibold text-gray-700 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Post to Facebook</span>
+                        </label>
+                        @endif
                     </div>
 
                     <!-- Sort Order -->

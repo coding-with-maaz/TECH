@@ -260,6 +260,9 @@
                     <a href="{{ route('admin.analytics.index') }}" class="block w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         📊 View Analytics
                     </a>
+                    <a href="{{ route('admin.settings.index') }}" class="block w-full px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white text-center rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                        ⚙️ Settings
+                    </a>
                 </div>
             </div>
 

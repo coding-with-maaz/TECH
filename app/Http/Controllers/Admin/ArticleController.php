@@ -89,6 +89,7 @@ class ArticleController extends Controller
             'status' => 'required|string|in:published,draft,scheduled',
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
+            'post_to_facebook' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'sort_order' => 'nullable|integer',
             'tags' => 'nullable|array',
@@ -136,6 +137,13 @@ class ArticleController extends Controller
             if ($publishDate->isFuture()) {
                 \App\Jobs\PublishScheduledArticle::dispatch($article)->delay($publishDate);
             }
+        }
+
+        // Post to Facebook if article is published, Facebook is enabled, and user opted in
+        if ($validated['status'] === 'published' && 
+            config('services.facebook.enabled', false) && 
+            ($request->has('post_to_facebook') && $request->post_to_facebook)) {
+            \App\Jobs\PostToFacebookJob::dispatch($article);
         }
 
         // Clear cache
@@ -239,6 +247,7 @@ class ArticleController extends Controller
             'status' => 'required|string|in:published,draft,scheduled',
             'is_featured' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
+            'post_to_facebook' => 'nullable|boolean',
             'published_at' => 'nullable|date',
             'sort_order' => 'nullable|integer',
             'tags' => 'nullable|array',
@@ -287,6 +296,14 @@ class ArticleController extends Controller
             if ($publishDate->isFuture()) {
                 \App\Jobs\PublishScheduledArticle::dispatch($article)->delay($publishDate);
             }
+        }
+
+        // Post to Facebook if article status changed to published, Facebook is enabled, and user opted in
+        if ($validated['status'] === 'published' && 
+            $article->wasChanged('status') && 
+            config('services.facebook.enabled', false) &&
+            ($request->has('post_to_facebook') && $request->post_to_facebook)) {
+            \App\Jobs\PostToFacebookJob::dispatch($article->fresh());
         }
 
         // Clear cache

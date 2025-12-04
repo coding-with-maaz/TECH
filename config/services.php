@@ -53,4 +53,11 @@ return [
         'measurement_id' => env('FIREBASE_MEASUREMENT_ID', 'G-HCVYF6TM81'),
     ],
 
+    'facebook' => [
+        'enabled' => env('FACEBOOK_ENABLED', false),
+        'page_id' => env('FACEBOOK_PAGE_ID'),
+        'page_access_token' => env('FACEBOOK_PAGE_ACCESS_TOKEN'),
+        'api_version' => env('FACEBOOK_API_VERSION', 'v18.0'),
+    ],
+
 ];

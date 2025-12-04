@@ -294,8 +294,8 @@ unset($__errorArgs, $__bag); ?>
 
                                             </span>
                                         </div>
-                                        <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-wrap text-sm" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                                            <?php echo e($comment->content); ?>
+                                        <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-line text-sm break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                                            <?php echo e(trim($comment->content)); ?>
 
                                         </p>
 
@@ -380,8 +380,8 @@ unset($__errorArgs, $__bag); ?>
                                                                 <?php echo e($reply->created_at->format('M d, Y \a\t g:i A')); ?>
 
                                                             </p>
-                                                            <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-wrap" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
-                                                                <?php echo e($reply->content); ?>
+                                                            <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-line break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                                                                <?php echo e(trim($reply->content)); ?>
 
                                                             </p>
                                                         </div>
@@ -714,8 +714,8 @@ function addCommentToPage(comment) {
                             • ${comment.created_at}
                         </span>
                     </div>
-                    <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-wrap text-sm" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                        ${comment.content}
+                    <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-line text-sm break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                        ${comment.content.trim()}
                     </p>
                     <button onclick="showReplyForm(${comment.id})" class="text-sm text-accent hover:text-accent-light font-semibold transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Reply
@@ -784,8 +784,8 @@ function addReplyToPage(reply, parentId) {
                         • ${reply.created_at}
                             </span>
                 </div>
-                <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-wrap mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                    ${reply.content}
+                <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-line break-words mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                    ${reply.content.trim()}
                 </p>
             </div>
         </div>

@@ -42,6 +42,11 @@ class PublishScheduledArticle implements ShouldQueue
             ]);
 
             Log::info("Article #{$article->id} '{$article->title}' has been published successfully.");
+
+            // Post to Facebook if enabled
+            if (config('services.facebook.enabled', false)) {
+                \App\Jobs\PostToFacebookJob::dispatch($article->fresh());
+            }
         }
     }
 }

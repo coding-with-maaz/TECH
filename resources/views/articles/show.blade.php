@@ -262,8 +262,8 @@
                                                 • {{ $comment->created_at->diffForHumans() }}
                                             </span>
                                         </div>
-                                        <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-wrap text-sm" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                                            {{ $comment->content }}
+                                        <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-line text-sm break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                                            {{ trim($comment->content) }}
                                         </p>
 
                                         <!-- Reply Button -->
@@ -344,8 +344,8 @@
                                                             <p class="text-xs text-gray-500 dark:!text-text-secondary mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
                                                                 {{ $reply->created_at->format('M d, Y \a\t g:i A') }}
                                                             </p>
-                                                            <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-wrap" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
-                                                                {{ $reply->content }}
+                                                            <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-line break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                                                                {{ trim($reply->content) }}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -674,8 +674,8 @@ function addCommentToPage(comment) {
                             • ${comment.created_at}
                         </span>
                     </div>
-                    <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-wrap text-sm" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                        ${comment.content}
+                    <p class="text-gray-700 dark:!text-text-primary mb-2 whitespace-pre-line text-sm break-words" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                        ${comment.content.trim()}
                     </p>
                     <button onclick="showReplyForm(${comment.id})" class="text-sm text-accent hover:text-accent-light font-semibold transition-colors" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                         Reply
@@ -744,8 +744,8 @@ function addReplyToPage(reply, parentId) {
                         • ${reply.created_at}
                             </span>
                 </div>
-                <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-wrap mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.5;">
-                    ${reply.content}
+                <p class="text-gray-700 dark:!text-text-primary text-sm whitespace-pre-line break-words mb-2" style="font-family: 'Poppins', sans-serif; font-weight: 400; line-height: 1.6;">
+                    ${reply.content.trim()}
                 </p>
             </div>
         </div>
