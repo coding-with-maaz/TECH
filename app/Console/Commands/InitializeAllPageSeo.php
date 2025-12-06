@@ -78,7 +78,7 @@ class InitializeAllPageSeo extends Command
     protected function createPageSeo(string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Tech Blog');
+        $siteName = config('app.name', 'HARPALJOB TECH');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
         PageSeo::create($defaults);
@@ -90,16 +90,17 @@ class InitializeAllPageSeo extends Command
     protected function updatePageSeo(PageSeo $pageSeo, string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Tech Blog');
+        $siteName = config('app.name', 'HARPALJOB TECH');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
-        // Only update fields that are empty
+        // Update all fields with new defaults (force update)
         foreach ($defaults as $key => $value) {
             if ($key === 'page_key' || $key === 'is_active') {
                 continue; // Skip these fields
             }
             
-            if (empty($pageSeo->$key) && !empty($value)) {
+            // Always update URL-related fields to ensure they use the correct domain
+            if (in_array($key, ['canonical_url', 'og_url']) || !empty($value)) {
                 $pageSeo->$key = $value;
             }
         }
@@ -129,11 +130,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'technology, programming, web development, tutorials, tech news, coding, software development, AI, machine learning',
                 'og_title' => "{$siteName} - Latest Technology News & Tutorials",
                 'og_description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights.',
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl,
                 'twitter_title' => "{$siteName} - Latest Technology News & Tutorials",
                 'twitter_description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights.',
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
                 'schema_markup' => json_encode([
                     '@context' => 'https://schema.org',
                     '@type' => 'WebSite',
@@ -155,11 +156,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'tech articles, programming tutorials, web development guides, technology news, coding tutorials',
                 'og_title' => "Articles - Browse All Tech Articles | {$siteName}",
                 'og_description' => 'Browse our complete collection of technology articles, tutorials, and guides.',
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/articles',
                 'twitter_title' => "Articles - Browse All Tech Articles | {$siteName}",
                 'twitter_description' => 'Browse our complete collection of technology articles, tutorials, and guides.',
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
             ],
             'categories.index' => [
                 'meta_title' => "Categories - Browse Tech Categories | {$siteName}",
@@ -167,11 +168,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'tech categories, programming categories, web development, AI, machine learning, tutorials',
                 'og_title' => "Categories - Browse Tech Categories | {$siteName}",
                 'og_description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more.',
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/categories',
                 'twitter_title' => "Categories - Browse Tech Categories | {$siteName}",
                 'twitter_description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more.',
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
             ],
             'tags.index' => [
                 'meta_title' => "Tags - Browse All Tags | {$siteName}",
@@ -179,11 +180,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'tags, tech tags, programming tags, technology topics',
                 'og_title' => "Tags - Browse All Tags | {$siteName}",
                 'og_description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/tags',
                 'twitter_title' => "Tags - Browse All Tags | {$siteName}",
                 'twitter_description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
             ],
             'search' => [
                 'meta_title' => "Search Articles | {$siteName}",
@@ -191,24 +192,24 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'search articles, search tutorials, find tech articles, article search',
                 'og_title' => "Search Articles | {$siteName}",
                 'og_description' => 'Search for technology articles, tutorials, and guides. Find exactly what you\'re looking for.',
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/search',
                 'twitter_title' => "Search Articles | {$siteName}",
                 'twitter_description' => 'Search for technology articles, tutorials, and guides. Find exactly what you\'re looking for.',
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
                 'meta_robots' => 'noindex, follow',
             ],
             'about' => [
                 'meta_title' => "About Us | {$siteName}",
                 'meta_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
-                'meta_keywords' => 'about us, company information, mission, values, tech blog',
+                'meta_keywords' => 'about us, company information, mission, values, HARPALJOB TECH',
                 'og_title' => "About Us | {$siteName}",
                 'og_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/about',
                 'twitter_title' => "About Us | {$siteName}",
                 'twitter_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
             ],
             'contact' => [
                 'meta_title' => "Contact Us | {$siteName}",
@@ -216,11 +217,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'contact, contact us, get in touch, support, feedback',
                 'og_title' => "Contact Us | {$siteName}",
                 'og_description' => "Get in touch with {$siteName}. We'd love to hear from you.",
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/contact',
                 'twitter_title' => "Contact Us | {$siteName}",
                 'twitter_description' => "Get in touch with {$siteName}. We'd love to hear from you.",
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
             ],
             'privacy' => [
                 'meta_title' => "Privacy Policy | {$siteName}",
@@ -228,11 +229,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'privacy policy, data protection, privacy, personal information',
                 'og_title' => "Privacy Policy | {$siteName}",
                 'og_description' => "Read our privacy policy to understand how we collect, use, and protect your personal information.",
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/privacy',
                 'twitter_title' => "Privacy Policy | {$siteName}",
                 'twitter_description' => "Read our privacy policy to understand how we collect, use, and protect your personal information.",
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
                 'meta_robots' => 'noindex, follow',
             ],
             'terms' => [
@@ -241,11 +242,11 @@ class InitializeAllPageSeo extends Command
                 'meta_keywords' => 'terms of service, terms and conditions, usage policy, terms',
                 'og_title' => "Terms of Service | {$siteName}",
                 'og_description' => "Read our terms of service to understand the rules and guidelines for using our website.",
-                'og_image' => asset('favicon.ico'),
+                'og_image' => asset('icon.png'),
                 'og_url' => $siteUrl . '/terms',
                 'twitter_title' => "Terms of Service | {$siteName}",
                 'twitter_description' => "Read our terms of service to understand the rules and guidelines for using our website.",
-                'twitter_image' => asset('favicon.ico'),
+                'twitter_image' => asset('icon.png'),
                 'meta_robots' => 'noindex, follow',
             ],
         ];

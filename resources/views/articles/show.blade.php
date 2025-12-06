@@ -1,13 +1,10 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - Tech Blog')
+@section('title', $article->title . ' - HARPALJOB TECH')
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="amphtml" href="{{ route('amp.article', $article->slug) }}">
-@if(config('services.adsense.client_id'))
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client_id') }}" crossorigin="anonymous"></script>
-@endif
 @endpush
 
 @section('content')

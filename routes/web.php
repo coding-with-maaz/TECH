@@ -80,6 +80,11 @@ Route::middleware('auth')->group(function () {
 // SEO routes (must be before other routes for proper matching)
 Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots');
 
+// RSS Feed routes
+Route::get('/feed', [App\Http\Controllers\RssFeedController::class, 'index'])->name('feed');
+Route::get('/feed/category/{slug}', [App\Http\Controllers\RssFeedController::class, 'category'])->name('feed.category');
+Route::get('/feed/author/{username}', [App\Http\Controllers\RssFeedController::class, 'author'])->name('feed.author');
+
 // Sitemap routes
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
 Route::get('/sitemap/index.xml', [SitemapController::class, 'sitemapIndex'])->name('sitemap.sitemap-index');
@@ -159,6 +164,7 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 // Static pages
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 
@@ -218,6 +224,26 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('analytics/realtime', [AnalyticsController::class, 'realTime'])->name('analytics.realtime');
     Route::get('articles/{article}/analytics', [AnalyticsController::class, 'articlePerformance'])->name('articles.analytics');
     Route::get('analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
+    
+    // Contact Messages Management
+    Route::get('contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index');
+    Route::get('contacts/{contact}', [App\Http\Controllers\Admin\ContactController::class, 'show'])->name('contacts.show');
+    Route::post('contacts/{contact}/mark-read', [App\Http\Controllers\Admin\ContactController::class, 'markAsRead'])->name('contacts.mark-read');
+    Route::post('contacts/{contact}/reply', [App\Http\Controllers\Admin\ContactController::class, 'reply'])->name('contacts.reply');
+    Route::post('contacts/bulk-action', [App\Http\Controllers\Admin\ContactController::class, 'bulkAction'])->name('contacts.bulk-action');
+    Route::delete('contacts/{contact}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('contacts.destroy');
+    
+    // User Management
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    
+    // Comments Moderation
+    Route::get('comments', [App\Http\Controllers\Admin\CommentController::class, 'index'])->name('comments.index');
+    Route::post('comments/{comment}/approve', [App\Http\Controllers\Admin\CommentController::class, 'approve'])->name('comments.approve');
+    Route::post('comments/{comment}/reject', [App\Http\Controllers\Admin\CommentController::class, 'reject'])->name('comments.reject');
+    Route::post('comments/{comment}/spam', [App\Http\Controllers\Admin\CommentController::class, 'markSpam'])->name('comments.mark-spam');
+    Route::put('comments/{comment}', [App\Http\Controllers\Admin\CommentController::class, 'update'])->name('comments.update');
+    Route::post('comments/bulk-action', [App\Http\Controllers\Admin\CommentController::class, 'bulkAction'])->name('comments.bulk-action');
+    Route::delete('comments/{comment}', [App\Http\Controllers\Admin\CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 // Author article management routes (auth middleware, no admin required)

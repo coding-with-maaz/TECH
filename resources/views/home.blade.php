@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home - Tech Blog')
+@section('title', 'Home - HARPALJOB TECH')
 
 @section('content')
 <!-- Hero Section with Search -->

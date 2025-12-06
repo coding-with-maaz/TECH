@@ -45,18 +45,36 @@ class AnalyticsController extends Controller
         // Device analytics
         $deviceAnalytics = $this->analyticsService->getDeviceAnalytics($startDateCarbon, $endDateCarbon);
 
-        // Popular articles
-        $popularArticles = Article::select('articles.*', DB::raw('COUNT(analytics_views.id) as views_count'))
+        // Popular articles - Get article IDs with view counts first, then load full articles
+        $popularArticleIds = DB::table('articles')
+            ->select('articles.id', DB::raw('COUNT(analytics_views.id) as views_count'))
             ->leftJoin('analytics_views', function($join) use ($startDateCarbon, $endDateCarbon) {
                 $join->on('analytics_views.viewable_id', '=', 'articles.id')
                      ->where('analytics_views.viewable_type', '=', Article::class)
                      ->whereBetween('analytics_views.viewed_at', [$startDateCarbon, $endDateCarbon]);
             })
             ->where('articles.status', 'published')
+            ->whereNull('articles.deleted_at')
             ->groupBy('articles.id')
             ->orderBy('views_count', 'desc')
             ->limit(10)
-            ->get();
+            ->pluck('id')
+            ->toArray();
+
+        // Load full article models with relationships
+        $popularArticles = Article::with(['category', 'author'])
+            ->whereIn('id', $popularArticleIds)
+            ->get()
+            ->map(function($article) use ($startDateCarbon, $endDateCarbon) {
+                // Add views_count to each article
+                $article->views_count = AnalyticsView::where('viewable_id', $article->id)
+                    ->where('viewable_type', Article::class)
+                    ->whereBetween('viewed_at', [$startDateCarbon, $endDateCarbon])
+                    ->count();
+                return $article;
+            })
+            ->sortByDesc('views_count')
+            ->values();
 
         // Views over time (for chart)
         $viewsOverTime = AnalyticsView::whereBetween('viewed_at', [$startDateCarbon, $endDateCarbon])

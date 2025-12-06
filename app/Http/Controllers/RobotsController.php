@@ -14,7 +14,7 @@ class RobotsController extends Controller
         // Use current request URL to work in both local and production
         // Use url() helper which automatically respects the current request including port
         $siteUrl = rtrim(url('/'), '/');
-        $siteName = config('app.name', 'Tech Blog');
+        $siteName = config('app.name', 'HARPALJOB TECH');
         
         $content = "# ============================================\n";
         $content .= "# Robots.txt for {$siteName}\n";

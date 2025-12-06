@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us - Tech Blog')
+@section('title', 'Contact Us - HARPALJOB TECH')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -30,7 +30,24 @@
 
             <section>
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Contact Form</h2>
-                <form action="#" method="POST" class="space-y-4">
+                
+                @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        <ul class="list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('contact.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="name" class="block text-sm font-semibold text-gray-700 dark:!text-white mb-2" style="font-weight: 600;">

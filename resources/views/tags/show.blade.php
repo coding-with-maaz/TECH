@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $tag->name . ' - Tech Blog')
+@section('title', $tag->name . ' - HARPALJOB TECH')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
