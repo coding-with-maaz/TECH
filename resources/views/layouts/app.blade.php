@@ -135,12 +135,6 @@
     <link rel="apple-touch-icon" href="{{ asset('icon.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('icon.png') }}">
     
-    <!-- Google AdSense -->
-    @if(config('services.adsense.client_id'))
-    <meta name="google-adsense-account" content="{{ config('services.adsense.client_id') }}">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client_id') }}" crossorigin="anonymous"></script>
-    @endif
-    
     <!-- Google Fonts - Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
