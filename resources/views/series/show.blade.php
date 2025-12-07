@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $series->title . ' - Series - HARPALJOB TECH')
+@section('title', $series->title . ' - Series - TECHNAZAARA')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">

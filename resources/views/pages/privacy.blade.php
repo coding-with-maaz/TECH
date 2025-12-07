@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Privacy Policy - HARPALJOB TECH')
+@section('title', 'Privacy Policy - TECHNAZAARA')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -15,7 +15,7 @@
                     <strong>Last Updated:</strong> {{ date('F d, Y') }}
                 </p>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    At HARPALJOB TECH, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.
+                    At TECHNAZAARA, we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.
                 </p>
             </section>
 

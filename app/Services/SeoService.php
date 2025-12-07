@@ -19,10 +19,10 @@ class SeoService
 
     public function __construct()
     {
-        $this->siteName = config('app.name', 'HARPALJOB TECH');
+        $this->siteName = config('app.name', 'TECHNAZAARA');
         $this->siteUrl = config('app.url', url('/'));
         $this->defaultImage = asset('icon.png');
-        $this->twitterHandle = '@harpaljobtech'; // Update with your Twitter handle
+        $this->twitterHandle = '@technazaara'; // Update with your Twitter handle
         $this->facebookAppId = ''; // Add your Facebook App ID if available
     }
 
@@ -42,8 +42,8 @@ class SeoService
         }
 
         $title = $data['title'] ?? $this->siteName;
-        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from HARPALJOB TECH. Stay updated with the latest trends in programming, web development, AI, and more.';
-        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, HARPALJOB TECH';
+        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from TECHNAZAARA. Stay updated with the latest trends in programming, web development, AI, and more.';
+        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, TECHNAZAARA';
         $image = $data['image'] ?? $this->defaultImage;
         $url = $data['url'] ?? url()->current();
         $type = $data['type'] ?? 'website';

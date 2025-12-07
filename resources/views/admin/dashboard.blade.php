@@ -10,7 +10,7 @@
             Admin Dashboard
         </h1>
         <p class="text-sm sm:text-base text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-            Welcome to the admin panel. Here's an overview of your HARPALJOB TECH management system.
+            Welcome to the admin panel. Here's an overview of your TECHNAZAARA management system.
         </p>
     </div>
 

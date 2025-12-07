@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - HARPALJOB TECH')
+@section('title', $article->title . ' - TECHNAZAARA')
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">

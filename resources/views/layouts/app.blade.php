@@ -48,11 +48,11 @@
     @endphp
     
     <!-- Primary Meta Tags -->
-    <title>{{ $seo['title'] ?? 'HARPALJOB TECH - Articles & Tutorials' }}</title>
-    <meta name="title" content="{{ $seo['title'] ?? 'HARPALJOB TECH - Articles & Tutorials' }}">
+    <title>{{ $seo['title'] ?? 'TECHNAZAARA - Articles & Tutorials' }}</title>
+    <meta name="title" content="{{ $seo['title'] ?? 'TECHNAZAARA - Articles & Tutorials' }}">
     <meta name="description" content="{{ $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
-    <meta name="keywords" content="{{ $seo['keywords'] ?? 'HARPALJOB TECH, programming, tutorials, technology, articles, web development, software' }}">
-    <meta name="author" content="{{ $seo['author'] ?? 'HARPALJOB TECH' }}">
+    <meta name="keywords" content="{{ $seo['keywords'] ?? 'TECHNAZAARA, programming, tutorials, technology, articles, web development, software' }}">
+    <meta name="author" content="{{ $seo['author'] ?? 'TECHNAZAARA' }}">
     <meta name="robots" content="{{ $seo['robots'] ?? 'index, follow' }}">
     <meta name="language" content="{{ $seo['locale'] ?? 'en' }}">
     <meta name="revisit-after" content="7 days">
@@ -63,13 +63,13 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
     <meta property="og:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'HARPALJOB TECH - Articles & Tutorials' }}">
+    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'TECHNAZAARA - Articles & Tutorials' }}">
     <meta property="og:description" content="{{ $seo['og_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta property="og:image" content="{{ $seo['og_image'] ?? $seo['image'] ?? asset('icon.png') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'HARPALJOB TECH' }}">
-    <meta property="og:site_name" content="HARPALJOB TECH">
+    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'TECHNAZAARA' }}">
+    <meta property="og:site_name" content="TECHNAZAARA">
     <meta property="og:locale" content="{{ $seo['locale'] ?? 'en_US' }}">
     @if(!empty($seo['published_time']))
     <meta property="og:published_time" content="{{ $seo['published_time'] }}">
@@ -84,10 +84,10 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="{{ $seo['twitter_card'] ?? 'summary_large_image' }}">
     <meta name="twitter:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'HARPALJOB TECH - Articles & Tutorials' }}">
+    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'TECHNAZAARA - Articles & Tutorials' }}">
     <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta name="twitter:image" content="{{ $seo['twitter_image'] ?? $seo['image'] ?? asset('icon.png') }}">
-    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'HARPALJOB TECH' }}">
+    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'TECHNAZAARA' }}">
     @if($seoService->getTwitterHandle())
     <meta name="twitter:site" content="{{ $seoService->getTwitterHandle() }}">
     <meta name="twitter:creator" content="{{ $seoService->getTwitterHandle() }}">
@@ -98,7 +98,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <meta name="application-name" content="HARPALJOB TECH">
+    <meta name="application-name" content="TECHNAZAARA">
     <meta name="msapplication-TileColor" content="#E50914">
     <meta name="msapplication-config" content="{{ asset('browserconfig.xml') }}">
     
@@ -1077,7 +1077,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <a href="{{ route('home') }}" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
-                    HARPALJOB TECH
+                    TECHNAZAARA
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
                     <li><a href="{{ route('home') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
@@ -1241,7 +1241,7 @@
                     </a>
                 </div>
                 <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    Copyright © {{ date('Y') }} - HARPALJOB TECH
+                    Copyright © {{ date('Y') }} - TECHNAZAARA
                 </p>
             </div>
         </div>
