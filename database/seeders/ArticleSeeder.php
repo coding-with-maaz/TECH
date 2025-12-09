@@ -18,7 +18,7 @@ class ArticleSeeder extends Seeder
     {
         // Get or create an author
         $author = User::firstOrCreate(
-            ['email' => 'admin@techblog.com'],
+            ['email' => 'admin@nazaaracircle.com'],
             [
                 'name' => 'Admin User',
                 'password' => bcrypt('password'),

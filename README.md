@@ -1,4 +1,4 @@
-# TechBlog - Technology Blog Platform
+# Nazaaracircle - Technology Blog Platform
 
 A modern Laravel-based technology blog platform for publishing articles, tutorials, and tech news with categories, tags, and SEO optimization.
 
@@ -53,7 +53,7 @@ DB_CONNECTION=sqlite
 # DB_CONNECTION=mysql
 # DB_HOST=127.0.0.1
 # DB_PORT=3306
-# DB_DATABASE=techblog
+# DB_DATABASE=nazaaracircle
 # DB_USERNAME=root
 # DB_PASSWORD=
 ```

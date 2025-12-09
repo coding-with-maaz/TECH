@@ -11,6 +11,8 @@
                 <img src="{{ $imageUrl }}" 
                      alt="{{ $article->title }}" 
                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                     loading="lazy"
+                     decoding="async"
                      onerror="this.src='https://via.placeholder.com/800x450?text=No+Image'">
             @else
                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-800">

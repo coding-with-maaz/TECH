@@ -12,7 +12,7 @@ class SchemaHelper
         $defaults = [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'name' => $data['name'] ?? 'TECHNAZAARA',
+            'name' => $data['name'] ?? 'Nazaaracircle',
             'url' => $data['url'] ?? url('/'),
             'logo' => $data['logo'] ?? url('/images/logo.png'),
             'sameAs' => $data['social_links'] ?? [],
@@ -37,7 +37,7 @@ class SchemaHelper
         return array_merge([
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
-            'name' => $data['name'] ?? 'TECHNAZAARA',
+            'name' => $data['name'] ?? 'Nazaaracircle',
             'url' => $data['url'] ?? url('/'),
             'potentialAction' => [
                 '@type' => 'SearchAction',

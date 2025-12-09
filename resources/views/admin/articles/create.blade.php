@@ -15,7 +15,7 @@
                 Create New Article
             </h1>
             <p class="text-gray-600 dark:!text-text-secondary mt-1" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                Add a new article to TECHNAZAARA
+                Add a new article to Nazaaracircle
             </p>
         </div>
     </div>

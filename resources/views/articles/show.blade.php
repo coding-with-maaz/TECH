@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - TECHNAZAARA')
+@section('title', $article->title . ' - Nazaaracircle')
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -292,7 +292,13 @@
                             ? $article->featured_image 
                             : asset('storage/' . $article->featured_image);
                     @endphp
-                    <img src="{{ $imageUrl }}" alt="{{ $article->title }}" class="w-full h-auto" onerror="this.style.display='none'">
+                    <img src="{{ $imageUrl }}" 
+                         alt="{{ $article->title }}" 
+                         class="w-full h-auto" 
+                         fetchpriority="high"
+                         loading="eager"
+                         decoding="async"
+                         onerror="this.style.display='none'">
                 </div>
             @endif
 

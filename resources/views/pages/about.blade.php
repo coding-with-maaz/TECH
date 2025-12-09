@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - TECHNAZAARA')
+@section('title', 'About Us - Nazaaracircle')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -12,7 +12,7 @@
         <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 md:p-8 space-y-6" style="font-family: 'Poppins', sans-serif;">
             <section>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    Welcome to TECHNAZAARA! We are passionate about technology, programming, and sharing knowledge with the developer community. Our mission is to provide high-quality articles, tutorials, and insights about the latest trends in technology, web development, programming languages, and software engineering.
+                    Welcome to Nazaaracircle! We are passionate about technology, programming, and sharing knowledge with the developer community. Our mission is to provide high-quality articles, tutorials, and insights about the latest trends in technology, web development, programming languages, and software engineering.
                 </p>
             </section>
 

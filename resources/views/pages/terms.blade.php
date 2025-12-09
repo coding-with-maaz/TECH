@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Terms of Service - TECHNAZAARA')
+@section('title', 'Terms of Service - Nazaaracircle')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -15,7 +15,7 @@
                     <strong>Last Updated:</strong> {{ date('F d, Y') }}
                 </p>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    Please read these Terms of Service carefully before using our website. By accessing or using TECHNAZAARA, you agree to be bound by these terms.
+                    Please read these Terms of Service carefully before using our website. By accessing or using Nazaaracircle, you agree to be bound by these terms.
                 </p>
             </section>
 
@@ -29,7 +29,7 @@
             <section>
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Use License</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    Permission is granted to temporarily access the materials on TECHNAZAARA for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+                    Permission is granted to temporarily access the materials on Nazaaracircle for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
                 </p>
                 <ul class="list-disc list-inside text-gray-700 dark:!text-text-secondary space-y-2 mb-4" style="font-weight: 400;">
                     <li>Modify or copy the materials</li>
@@ -49,21 +49,21 @@
             <section>
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Disclaimer</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    The materials on TECHNAZAARA are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
+                    The materials on Nazaaracircle are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
                 </p>
             </section>
 
             <section>
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Limitations</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    In no event shall TECHNAZAARA or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website.
+                    In no event shall Nazaaracircle or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website.
                 </p>
             </section>
 
             <section>
                 <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Revisions</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    TECHNAZAARA may revise these terms of service at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.
+                    Nazaaracircle may revise these terms of service at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.
                 </p>
             </section>
 

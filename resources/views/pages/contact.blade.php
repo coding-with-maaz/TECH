@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us - TECHNAZAARA')
+@section('title', 'Contact Us - Nazaaracircle')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -22,7 +22,7 @@
                     You can contact us through the following methods:
                 </p>
                 <ul class="list-disc list-inside text-gray-700 dark:!text-text-secondary space-y-2 mb-4" style="font-weight: 400;">
-                    <li>Email us at: <a href="mailto:contact@techblog.com" class="text-accent hover:text-accent-light underline" style="font-weight: 600;">contact@techblog.com</a></li>
+                    <li>Email us at: <a href="mailto:contact@nazaaracircle.com" class="text-accent hover:text-accent-light underline" style="font-weight: 600;">contact@nazaaracircle.com</a></li>
                     <li>Follow us on social media for updates and announcements</li>
                     <li>Submit article ideas or guest post proposals</li>
                 </ul>
