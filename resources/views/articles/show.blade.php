@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - Nazaaracircle')
+@section('title', $article->title . ' - HARPALJOB TECH')
 
 @push('head')
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -292,13 +292,7 @@
                             ? $article->featured_image 
                             : asset('storage/' . $article->featured_image);
                     @endphp
-                    <img src="{{ $imageUrl }}" 
-                         alt="{{ $article->title }}" 
-                         class="w-full h-auto" 
-                         fetchpriority="high"
-                         loading="eager"
-                         decoding="async"
-                         onerror="this.style.display='none'">
+                    <img src="{{ $imageUrl }}" alt="{{ $article->title }}" class="w-full h-auto" onerror="this.style.display='none'">
                 </div>
             @endif
 
@@ -438,6 +432,20 @@
                 @endauth
             </div>
 
+            <!-- AdSense Unit 4 - Before Comments -->
+            @if(config('services.adsense.client_id'))
+            <div class="mb-8 text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="{{ config('services.adsense.client_id') }}"
+                     data-ad-slot="{{ config('services.adsense.unit_4', '') }}"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            @endif
 
             <!-- Comments Section -->
             @if($article->allow_comments)
@@ -659,6 +667,20 @@
 
         </article>
 
+            <!-- AdSense Unit 5 - Before Related Articles -->
+            @if(config('services.adsense.client_id'))
+            <div class="mb-8 text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="{{ config('services.adsense.client_id') }}"
+                     data-ad-slot="{{ config('services.adsense.unit_5', '') }}"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            @endif
 
             <!-- Related Articles -->
             @if($relatedArticles->count() > 0)
@@ -1365,6 +1387,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Inject AdSense after first paragraph
+document.addEventListener('DOMContentLoaded', function() {
+    const articleContent = document.querySelector('.article-content');
+    if (articleContent) {
+        const paragraphs = articleContent.querySelectorAll('p');
+        if (paragraphs.length > 0 && document.getElementById('adsense-unit-2')) {
+            // Insert ad after first paragraph
+            paragraphs[0].insertAdjacentElement('afterend', document.getElementById('adsense-unit-2'));
+            document.getElementById('adsense-unit-2').style.display = 'block';
+        }
+    }
+});
 </script>
 @endsection
 

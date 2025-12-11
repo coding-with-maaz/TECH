@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         // Create admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@nazaaracircle.com'],
+            ['email' => 'admin@techblog.com'],
             [
                 'name' => 'Admin User',
                 'username' => 'admin',
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
 
         // Create author user
         $author = User::firstOrCreate(
-            ['email' => 'author@nazaaracircle.com'],
+            ['email' => 'author@techblog.com'],
             [
                 'name' => 'John Doe',
                 'username' => 'johndoe',
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
 
         // Create regular user
         $user = User::firstOrCreate(
-            ['email' => 'user@nazaaracircle.com'],
+            ['email' => 'user@techblog.com'],
             [
                 'name' => 'Jane Smith',
                 'username' => 'janesmith',
@@ -59,9 +59,9 @@ class UserSeeder extends Seeder
         );
 
         $this->command->info('✅ Users seeded successfully!');
-        $this->command->info("Admin: admin@nazaaracircle.com / password");
-        $this->command->info("Author: author@nazaaracircle.com / password");
-        $this->command->info("User: user@nazaaracircle.com / password");
+        $this->command->info("Admin: admin@techblog.com / password");
+        $this->command->info("Author: author@techblog.com / password");
+        $this->command->info("User: user@techblog.com / password");
     }
 }
 

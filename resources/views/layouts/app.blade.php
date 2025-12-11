@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', $seo['locale'] ?? 'en') }}">
+<html lang="{{ $seo['locale'] ?? 'en' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,19 +114,12 @@
     <!-- Preconnect for Performance (Core Web Vitals Optimization) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://images.unsplash.com">
     
     <!-- Resource Hints for Better Performance -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap">
-    <link rel="preload" as="style" href="{{ asset('css/theme.css') }}">
-    <link rel="preload" as="style" href="{{ asset('css/components.css') }}">
+    <link rel="preload" as="script" href="https://cdn.tailwindcss.com">
     
     <!-- Structured Data (JSON-LD) -->
     @if(!empty($seo['schema']))
@@ -142,16 +135,56 @@
     <link rel="apple-touch-icon" href="{{ asset('icon.png') }}">
     <link rel="shortcut icon" type="image/png" href="{{ asset('icon.png') }}">
     
-    <!-- Google Fonts - Poppins (Non-blocking) -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <!-- Google AdSense -->
+    @if(config('services.adsense.client_id'))
+    <meta name="google-adsense-account" content="{{ config('services.adsense.client_id') }}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.adsense.client_id') }}" crossorigin="anonymous"></script>
+    @endif
     
-    <!-- CSS Files (Non-blocking) -->
-    <link rel="stylesheet" href="{{ asset('css/theme.css') }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/theme.css') }}"></noscript>
-    
-    <link rel="stylesheet" href="{{ asset('css/components.css') }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/components.css') }}"></noscript>
+    <!-- Google Fonts - Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                    },
+                    colors: {
+                        'bg-primary': '#0D0D0D',
+                        'bg-secondary': '#181818',
+                        'bg-card': '#1F1F1F',
+                        'bg-card-hover': '#2A2A2A',
+                        'accent': '#E50914',
+                        'accent-dark': '#B20710',
+                        'accent-light': '#F40612',
+                        'text-primary': '#FFFFFF',
+                        'text-secondary': '#B3B3B3',
+                        'text-tertiary': '#808080',
+                        'text-muted': '#666666',
+                        'border-primary': 'rgba(255, 255, 255, 0.1)',
+                        'border-secondary': 'rgba(255, 255, 255, 0.05)',
+                        'rating': '#FFD700',
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, #E50914 0%, #B20710 100%)',
+                        'gradient-overlay': 'linear-gradient(180deg, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.9) 100%)',
+                    },
+                    boxShadow: {
+                        'accent': '0 10px 30px rgba(229, 9, 20, 0.3)',
+                        'accent-lg': '0 10px 30px rgba(229, 9, 20, 0.4)',
+                        'card': '0 4px 12px rgba(0, 0, 0, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components.css') }}">
     <style>
         :root {
             /* ============================================
@@ -1185,7 +1218,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-<<<<<<< HEAD
                     
                     <!-- Mobile Menu Button -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg text-gray-900 hover:text-accent dark:!text-white transition-colors" aria-label="Toggle menu">
@@ -1329,13 +1361,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center space-y-4">
                 <div class="flex justify-center items-center gap-4 mb-4">
-                    <a href="#" class="text-gray-600 hover:text-accent transition-colors dark:!text-text-secondary" aria-label="Visit our Instagram page">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <a href="#" class="text-gray-600 hover:text-accent transition-colors dark:!text-text-secondary">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
                         </svg>
                     </a>
-                    <a href="#" class="text-gray-600 hover:text-accent transition-colors dark:!text-text-secondary" aria-label="Visit our Facebook page">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <a href="#" class="text-gray-600 hover:text-accent transition-colors dark:!text-text-secondary">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221c.328 0 .593.266.593.593v2.716c0 .327-.265.593-.593.593h-1.306v1.306h1.306c.327 0 .593.265.593.593v2.716c0 .327-.266.593-.593.593h-2.716c-.328 0-.593-.266-.593-.593v-1.306H9.221v1.306c0 .327-.265.593-.593.593H5.912c-.327 0-.593-.266-.593-.593v-2.716c0-.328.266-.593.593-.593h1.306V9.221H5.912c-.327 0-.593-.265-.593-.593V5.912c0-.327.266-.593.593-.593h2.716c.328 0 .593.266.593.593v1.306h5.557V5.912c0-.327.265-.593.593-.593h2.716c.327 0 .593.266.593.593v2.716c0 .328-.266.593-.593.593h-1.306v1.306h1.306z"/>
                         </svg>
                     </a>
@@ -1624,55 +1656,26 @@
             document.body.appendChild(script);
         }
         
+        // Preload critical resources
+        const criticalResources = [
+            '{{ asset("css/theme.css") }}',
+            '{{ asset("css/components.css") }}'
+        ];
+        
+        criticalResources.forEach(resource => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'style';
+            link.href = resource;
+            document.head.appendChild(link);
+        });
+        
         // Optimize font loading (FOUT prevention)
         if (document.fonts) {
             document.fonts.ready.then(() => {
                 document.documentElement.classList.add('fonts-loaded');
             });
         }
-    </script>
-    
-    <!-- Tailwind CSS CDN (Deferred) -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <script defer>
-        window.addEventListener('DOMContentLoaded', function() {
-            if (typeof tailwind !== 'undefined') {
-                tailwind.config = {
-                    theme: {
-                        extend: {
-                            fontFamily: {
-                                'sans': ['Poppins', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-                            },
-                            colors: {
-                                'bg-primary': '#0D0D0D',
-                                'bg-secondary': '#181818',
-                                'bg-card': '#1F1F1F',
-                                'bg-card-hover': '#2A2A2A',
-                                'accent': '#E50914',
-                                'accent-dark': '#B20710',
-                                'accent-light': '#F40612',
-                                'text-primary': '#FFFFFF',
-                                'text-secondary': '#B3B3B3',
-                                'text-tertiary': '#808080',
-                                'text-muted': '#666666',
-                                'border-primary': 'rgba(255, 255, 255, 0.1)',
-                                'border-secondary': 'rgba(255, 255, 255, 0.05)',
-                                'rating': '#FFD700',
-                            },
-                            backgroundImage: {
-                                'gradient-primary': 'linear-gradient(135deg, #E50914 0%, #B20710 100%)',
-                                'gradient-overlay': 'linear-gradient(180deg, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.9) 100%)',
-                            },
-                            boxShadow: {
-                                'accent': '0 10px 30px rgba(229, 9, 20, 0.3)',
-                                'accent-lg': '0 10px 30px rgba(229, 9, 20, 0.4)',
-                                'card': '0 4px 12px rgba(0, 0, 0, 0.3)',
-                            }
-                        }
-                    }
-                };
-            }
-        });
     </script>
 </body>
 </html>
