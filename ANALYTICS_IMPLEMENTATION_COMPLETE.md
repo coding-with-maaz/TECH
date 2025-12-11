@@ -2,7 +2,7 @@
 
 ## 🎉 Overview
 
-A comprehensive analytics system has been successfully implemented for the Nazaarabox tech blog platform. This system provides real-time tracking, detailed metrics, and visualizations to help you understand your audience and optimize content performance.
+A comprehensive analytics system has been successfully implemented for the Nazaaracircle tech blog platform. This system provides real-time tracking, detailed metrics, and visualizations to help you understand your audience and optimize content performance.
 
 ## ✅ What's Been Implemented
 

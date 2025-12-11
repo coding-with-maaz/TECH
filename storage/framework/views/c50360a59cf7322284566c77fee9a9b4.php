@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', $seo['locale'] ?? 'en') }}">
+<html lang="<?php echo e(str_replace('_', '-', $seo['locale'] ?? 'en')); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     
-    @php
+    <?php
         // ALWAYS prioritize PageSeo from database - ignore controller SEO if PageSeo exists
         $seoService = app(\App\Services\SeoService::class);
         
@@ -45,53 +45,53 @@
             // Unknown route - use controller SEO or auto-detect
             $seo = $seo ?? $seoService->forCurrentRoute();
         }
-    @endphp
+    ?>
     
     <!-- Primary Meta Tags -->
-    <title>{{ $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}</title>
-    <meta name="title" content="{{ $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
-    <meta name="description" content="{{ $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
-    <meta name="keywords" content="{{ $seo['keywords'] ?? 'Nazaaracircle, programming, tutorials, technology, articles, web development, software' }}">
-    <meta name="author" content="{{ $seo['author'] ?? 'Nazaaracircle' }}">
-    <meta name="robots" content="{{ $seo['robots'] ?? 'index, follow' }}">
-    <meta name="language" content="{{ $seo['locale'] ?? 'en' }}">
+    <title><?php echo e($seo['title'] ?? 'Nazaaracircle - Articles & Tutorials'); ?></title>
+    <meta name="title" content="<?php echo e($seo['title'] ?? 'Nazaaracircle - Articles & Tutorials'); ?>">
+    <meta name="description" content="<?php echo e($seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.'); ?>">
+    <meta name="keywords" content="<?php echo e($seo['keywords'] ?? 'Nazaaracircle, programming, tutorials, technology, articles, web development, software'); ?>">
+    <meta name="author" content="<?php echo e($seo['author'] ?? 'Nazaaracircle'); ?>">
+    <meta name="robots" content="<?php echo e($seo['robots'] ?? 'index, follow'); ?>">
+    <meta name="language" content="<?php echo e($seo['locale'] ?? 'en'); ?>">
     <meta name="revisit-after" content="7 days">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="{{ $seo['canonical'] ?? url()->current() }}">
+    <link rel="canonical" href="<?php echo e($seo['canonical'] ?? url()->current()); ?>">
     
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
-    <meta property="og:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
-    <meta property="og:description" content="{{ $seo['og_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
-    <meta property="og:image" content="{{ $seo['og_image'] ?? $seo['image'] ?? asset('icon.png') }}">
+    <meta property="og:type" content="<?php echo e($seo['type'] ?? 'website'); ?>">
+    <meta property="og:url" content="<?php echo e($seo['url'] ?? url()->current()); ?>">
+    <meta property="og:title" content="<?php echo e($seo['og_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials'); ?>">
+    <meta property="og:description" content="<?php echo e($seo['og_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.'); ?>">
+    <meta property="og:image" content="<?php echo e($seo['og_image'] ?? $seo['image'] ?? asset('icon.png')); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'Nazaaracircle' }}">
+    <meta property="og:image:alt" content="<?php echo e($seo['title'] ?? 'Nazaaracircle'); ?>">
     <meta property="og:site_name" content="Nazaaracircle">
-    <meta property="og:locale" content="{{ $seo['locale'] ?? 'en_US' }}">
-    @if(!empty($seo['published_time']))
-    <meta property="og:published_time" content="{{ $seo['published_time'] }}">
-    @endif
-    @if(!empty($seo['modified_time']))
-    <meta property="og:modified_time" content="{{ $seo['modified_time'] }}">
-    @endif
-    @if($seoService->getFacebookAppId())
-    <meta property="fb:app_id" content="{{ $seoService->getFacebookAppId() }}">
-    @endif
+    <meta property="og:locale" content="<?php echo e($seo['locale'] ?? 'en_US'); ?>">
+    <?php if(!empty($seo['published_time'])): ?>
+    <meta property="og:published_time" content="<?php echo e($seo['published_time']); ?>">
+    <?php endif; ?>
+    <?php if(!empty($seo['modified_time'])): ?>
+    <meta property="og:modified_time" content="<?php echo e($seo['modified_time']); ?>">
+    <?php endif; ?>
+    <?php if($seoService->getFacebookAppId()): ?>
+    <meta property="fb:app_id" content="<?php echo e($seoService->getFacebookAppId()); ?>">
+    <?php endif; ?>
     
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="{{ $seo['twitter_card'] ?? 'summary_large_image' }}">
-    <meta name="twitter:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
-    <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
-    <meta name="twitter:image" content="{{ $seo['twitter_image'] ?? $seo['image'] ?? asset('icon.png') }}">
-    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle' }}">
-    @if($seoService->getTwitterHandle())
-    <meta name="twitter:site" content="{{ $seoService->getTwitterHandle() }}">
-    <meta name="twitter:creator" content="{{ $seoService->getTwitterHandle() }}">
-    @endif
+    <meta name="twitter:card" content="<?php echo e($seo['twitter_card'] ?? 'summary_large_image'); ?>">
+    <meta name="twitter:url" content="<?php echo e($seo['url'] ?? url()->current()); ?>">
+    <meta name="twitter:title" content="<?php echo e($seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials'); ?>">
+    <meta name="twitter:description" content="<?php echo e($seo['twitter_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.'); ?>">
+    <meta name="twitter:image" content="<?php echo e($seo['twitter_image'] ?? $seo['image'] ?? asset('icon.png')); ?>">
+    <meta name="twitter:image:alt" content="<?php echo e($seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle'); ?>">
+    <?php if($seoService->getTwitterHandle()): ?>
+    <meta name="twitter:site" content="<?php echo e($seoService->getTwitterHandle()); ?>">
+    <meta name="twitter:creator" content="<?php echo e($seoService->getTwitterHandle()); ?>">
+    <?php endif; ?>
     
     <!-- Additional SEO Enhancements -->
     <meta name="theme-color" content="#E50914">
@@ -100,16 +100,16 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="application-name" content="Nazaaracircle">
     <meta name="msapplication-TileColor" content="#E50914">
-    <meta name="msapplication-config" content="{{ asset('browserconfig.xml') }}">
+    <meta name="msapplication-config" content="<?php echo e(asset('browserconfig.xml')); ?>">
     
     <!-- Alternate Languages (Hreflang) -->
-    @if(!empty($seo['alternate_locales']))
-        @foreach($seo['alternate_locales'] as $locale => $url)
-        <link rel="alternate" hreflang="{{ $locale }}" href="{{ $url }}">
-        @endforeach
-    @endif
-    <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
-    <link rel="alternate" hreflang="{{ str_replace('_', '-', $seo['locale'] ?? 'en-US') }}" href="{{ url()->current() }}">
+    <?php if(!empty($seo['alternate_locales'])): ?>
+        <?php $__currentLoopData = $seo['alternate_locales']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $locale => $url): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <link rel="alternate" hreflang="<?php echo e($locale); ?>" href="<?php echo e($url); ?>">
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
+    <link rel="alternate" hreflang="x-default" href="<?php echo e(url()->current()); ?>">
+    <link rel="alternate" hreflang="<?php echo e(str_replace('_', '-', $seo['locale'] ?? 'en-US')); ?>" href="<?php echo e(url()->current()); ?>">
     
     <!-- Preconnect for Performance (Core Web Vitals Optimization) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -125,33 +125,34 @@
     
     <!-- Resource Hints for Better Performance -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap">
-    <link rel="preload" as="style" href="{{ asset('css/theme.css') }}">
-    <link rel="preload" as="style" href="{{ asset('css/components.css') }}">
+    <link rel="preload" as="style" href="<?php echo e(asset('css/theme.css')); ?>">
+    <link rel="preload" as="style" href="<?php echo e(asset('css/components.css')); ?>">
     
     <!-- Structured Data (JSON-LD) -->
-    @if(!empty($seo['schema']))
-        @foreach($seo['schema'] as $schema)
+    <?php if(!empty($seo['schema'])): ?>
+        <?php $__currentLoopData = $seo['schema']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $schema): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <script type="application/ld+json">
-        {!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+        <?php echo json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT); ?>
+
         </script>
-        @endforeach
-    @endif
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('icon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('icon.png') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('icon.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('icon.png')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('icon.png')); ?>">
+    <link rel="shortcut icon" type="image/png" href="<?php echo e(asset('icon.png')); ?>">
     
     <!-- Google Fonts - Poppins (Non-blocking) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
     
     <!-- CSS Files (Non-blocking) -->
-    <link rel="stylesheet" href="{{ asset('css/theme.css') }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/theme.css') }}"></noscript>
+    <link rel="stylesheet" href="<?php echo e(asset('css/theme.css')); ?>" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="<?php echo e(asset('css/theme.css')); ?>"></noscript>
     
-    <link rel="stylesheet" href="{{ asset('css/components.css') }}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/components.css') }}"></noscript>
+    <link rel="stylesheet" href="<?php echo e(asset('css/components.css')); ?>" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="<?php echo e(asset('css/components.css')); ?>"></noscript>
     <style>
         :root {
             /* ============================================
@@ -669,25 +670,6 @@
             color: #B3B3B3 !important;
         }
         
-        /* Alpine.js x-cloak - Hide elements before Alpine initializes */
-        [x-cloak] {
-            display: none !important;
-        }
-        
-        /* Mobile Menu Styles */
-        @media (max-width: 767px) {
-            body.mobile-menu-open {
-                overflow: hidden;
-                position: fixed;
-                width: 100%;
-            }
-            
-            nav[x-data] [x-show] {
-                max-height: calc(100vh - 4rem);
-                overflow-y: auto;
-            }
-        }
-        
         /* Filter tabs styling - Light mode */
         .flex-wrap a.bg-white {
             background-color: #FFFFFF !important;
@@ -1059,35 +1041,39 @@
     </style>
 </head>
 <body>
-    <nav class="sticky top-0 z-50 bg-white backdrop-blur-lg shadow-lg border-b border-gray-200 dark:!bg-bg-primary/95 dark:!border-border-primary" x-data="{ mobileMenuOpen: false }">
+    <nav class="sticky top-0 z-50 bg-white backdrop-blur-lg shadow-lg border-b border-gray-200 dark:!bg-bg-primary/95 dark:!border-border-primary">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <a href="{{ route('home') }}" class="text-xl sm:text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
+                <a href="<?php echo e(route('home')); ?>" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
                     Nazaaracircle
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
-                    <li><a href="{{ route('home') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
-                    <li><a href="{{ route('articles.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Articles</a></li>
-                    <li><a href="{{ route('categories.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Categories</a></li>
-                    <li><a href="{{ route('tags.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Tags</a></li>
-                    <li><a href="{{ route('series.index') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Series</a></li>
-                    <li><a href="{{ route('about') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
-                    <li><a href="{{ route('contact') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Contact</a></li>
+                    <li><a href="<?php echo e(route('home')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
+                    <li><a href="<?php echo e(route('articles.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Articles</a></li>
+                    <li><a href="<?php echo e(route('categories.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Categories</a></li>
+                    <li><a href="<?php echo e(route('tags.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Tags</a></li>
+                    <li><a href="<?php echo e(route('series.index')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Series</a></li>
+                    <li><a href="<?php echo e(route('about')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
+                    <li><a href="<?php echo e(route('contact')); ?>" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Contact</a></li>
                 </ul>
-                <div class="flex items-center gap-2 sm:gap-4">
-                    @auth
-                        <!-- User Dropdown - Desktop -->
-                        <div class="relative hidden md:block" x-data="{ open: false }">
+                
+                
+                <div class="flex items-center gap-4">
+                    <?php if(auth()->guard()->check()): ?>
+                        <!-- User Dropdown -->
+                        <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all dark:!bg-bg-card dark:!border-border-primary dark:!hover:bg-bg-card-hover">
-                                @if(auth()->user()->avatar)
-                                    <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full object-cover">
-                                @else
+                                <?php if(auth()->user()->avatar): ?>
+                                    <img src="<?php echo e(auth()->user()->avatar); ?>" alt="<?php echo e(auth()->user()->name); ?>" class="w-8 h-8 rounded-full object-cover">
+                                <?php else: ?>
                                     <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white font-semibold">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                                     </div>
-                                @endif
-                                <span class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif;">
-                                    {{ auth()->user()->name }}
+                                <?php endif; ?>
+                                <span class="hidden md:block text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif;">
+                                    <?php echo e(auth()->user()->name); ?>
+
                                 </span>
                                 <svg class="w-4 h-4 text-gray-900 dark:!text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -1108,13 +1094,15 @@
                                 <div class="py-1">
                                     <div class="px-4 py-2 border-b border-gray-200 dark:!border-border-primary">
                                         <p class="text-sm font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif;">
-                                            {{ auth()->user()->name }}
+                                            <?php echo e(auth()->user()->name); ?>
+
                                         </p>
                                         <p class="text-xs text-gray-500 dark:!text-text-muted" style="font-family: 'Poppins', sans-serif;">
-                                            {{ auth()->user()->email }}
+                                            <?php echo e(auth()->user()->email); ?>
+
                                         </p>
                                     </div>
-                                    <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                    <a href="<?php echo e(route('user.dashboard')); ?>" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
                                         <div class="flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
@@ -1122,8 +1110,8 @@
                                             My Dashboard
                                         </div>
                                     </a>
-                                    @if(auth()->user()->isAuthor())
-                                        <a href="{{ route('author.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                    <?php if(auth()->user()->isAuthor()): ?>
+                                        <a href="<?php echo e(route('author.dashboard')); ?>" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -1131,7 +1119,7 @@
                                                 Author Dashboard
                                             </div>
                                         </a>
-                                        <a href="{{ route('admin.articles.index') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                        <a href="<?php echo e(route('admin.articles.index')); ?>" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -1139,9 +1127,9 @@
                                                 My Articles
                                             </div>
                                         </a>
-                                    @endif
-                                    @if(auth()->user()->isAdmin())
-                                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                    <?php endif; ?>
+                                    <?php if(auth()->user()->isAdmin()): ?>
+                                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -1149,9 +1137,9 @@
                                                 Admin Dashboard
                                             </div>
                                         </a>
-                                    @endif
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
+                                    <?php endif; ?>
+                                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:!text-red-400 dark:!hover:bg-bg-card-hover transition-colors" style="font-family: 'Poppins', sans-serif;">
                                             <div class="flex items-center gap-2">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1164,17 +1152,17 @@
                                 </div>
                             </div>
                         </div>
-                    @else
-                        <!-- Login/Register Buttons - Desktop -->
+                    <?php else: ?>
+                        <!-- Login/Register Buttons -->
                         <div class="hidden md:flex items-center gap-3">
-                            <a href="{{ route('login') }}" class="px-4 py-2 text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                                 Login
                             </a>
-                            <a href="{{ route('register') }}" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            <a href="<?php echo e(route('register')); ?>" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                                 Sign Up
                             </a>
                         </div>
-                    @endauth
+                    <?php endif; ?>
                     
                     <!-- Theme Toggle -->
                     <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all dark:!bg-bg-card dark:!border-border-primary dark:!hover:bg-bg-card-hover" title="Toggle Theme">
@@ -1185,143 +1173,18 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-<<<<<<< HEAD
-                    
-                    <!-- Mobile Menu Button -->
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg text-gray-900 hover:text-accent dark:!text-white transition-colors" aria-label="Toggle menu">
-                        <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: block;">
+                    <button class="md:hidden text-gray-900 hover:text-accent dark:!text-white" aria-label="Toggle mobile menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                        <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
-            </div>
-            
-            <!-- Mobile Menu Backdrop -->
-            <div x-show="mobileMenuOpen"
-                 @click="mobileMenuOpen = false"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 bg-black/50 z-40 md:hidden"
-                 style="display: none;"
-                 x-cloak></div>
-            
-            <!-- Mobile Menu -->
-            <div x-show="mobileMenuOpen" 
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 transform translate-y-0"
-                 x-transition:leave-end="opacity-0 transform -translate-y-2"
-                 class="md:hidden border-t border-gray-200 dark:!border-border-primary py-4 bg-white dark:!bg-bg-primary relative z-50"
-                 style="display: none;"
-                 x-cloak>
-                <ul class="space-y-2">
-                    <li>
-                        <a href="{{ route('home') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('articles.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Articles
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('categories.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Categories
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('tags.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Tags
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('series.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Series
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('about') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            About Us
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('contact') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                            Contact
-                        </a>
-                    </li>
-                    @auth
-                        <li class="border-t border-gray-200 dark:!border-border-primary pt-2 mt-2">
-                            <div class="px-4 py-2">
-                                <div class="flex items-center gap-3 mb-3">
-                                    @if(auth()->user()->avatar)
-                                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover">
-                                    @else
-                                        <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-semibold">
-                                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif;">
-                                            {{ auth()->user()->name }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 dark:!text-text-muted" style="font-family: 'Poppins', sans-serif;">
-                                            {{ auth()->user()->email }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <a href="{{ route('user.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
-                                    My Dashboard
-                                </a>
-                                @if(auth()->user()->isAuthor())
-                                    <a href="{{ route('author.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
-                                        Author Dashboard
-                                    </a>
-                                    <a href="{{ route('admin.articles.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
-                                        My Articles
-                                    </a>
-                                @endif
-                                @if(auth()->user()->isAdmin())
-                                    <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
-                                        Admin Dashboard
-                                    </a>
-                                @endif
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" @click="mobileMenuOpen = false" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:!text-red-400 dark:!hover:bg-bg-card-hover rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif;">
-                                        Logout
-                                    </button>
-                                </form>
-                            </div>
-                        </li>
-                    @else
-                        <li class="border-t border-gray-200 dark:!border-border-primary pt-2 mt-2">
-                            <div class="px-4 py-2 space-y-2">
-                                <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="block w-full text-center px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                    Login
-                                </a>
-                                <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="block w-full text-center px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-all font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                                    Sign Up
-                                </a>
-                            </div>
-                        </li>
-                    @endauth
-                </ul>
             </div>
         </div>
     </nav>
     
     <main style="overflow-x: visible;">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
     
     <!-- Footer -->
@@ -1341,7 +1204,7 @@
                     </a>
                 </div>
                 <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    Copyright © {{ date('Y') }} - Nazaaracircle
+                    Copyright © <?php echo e(date('Y')); ?> - Nazaaracircle
                 </p>
             </div>
         </div>
@@ -1384,49 +1247,6 @@
                 sunIcon.classList.remove('hidden');
                 moonIcon.classList.add('hidden');
             }
-        });
-        
-        // Mobile Menu Body Scroll Lock
-        document.addEventListener('DOMContentLoaded', () => {
-            const nav = document.querySelector('nav[x-data]');
-            if (nav) {
-                // Watch for mobile menu visibility changes
-                const mobileMenu = nav.querySelector('[x-show]');
-                if (mobileMenu) {
-                    const observer = new MutationObserver(() => {
-                        const isVisible = !mobileMenu.hasAttribute('style') || 
-                                        mobileMenu.style.display !== 'none';
-                        if (isVisible && window.innerWidth < 768) {
-                            body.classList.add('mobile-menu-open');
-                        } else {
-                            body.classList.remove('mobile-menu-open');
-                        }
-                    });
-                    
-                    observer.observe(mobileMenu, {
-                        attributes: true,
-                        attributeFilter: ['style']
-                    });
-                }
-            }
-            
-            // Close mobile menu on window resize to desktop size
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) {
-                    body.classList.remove('mobile-menu-open');
-                    // Close menu via Alpine if available
-                    if (typeof Alpine !== 'undefined' && nav) {
-                        try {
-                            const navData = Alpine.$data(nav);
-                            if (navData && navData.mobileMenuOpen) {
-                                navData.mobileMenuOpen = false;
-                            }
-                        } catch (e) {
-                            // Alpine not ready yet
-                        }
-                    }
-                }
-            });
         });
     </script>
     
@@ -1524,44 +1344,43 @@
     </script>
     
     <!-- TinyMCE Editor Component -->
-    @if(request()->is('admin/articles/*') || request()->is('author/*'))
-        <x-head.tinymce-config />
-    @endif
+    <?php if(request()->is('admin/articles/*') || request()->is('author/*')): ?>
+        <?php if (isset($component)) { $__componentOriginal64ae506d51b70549a46b57e3bed1687c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal64ae506d51b70549a46b57e3bed1687c = $attributes; } ?>
+<?php $component = App\View\Components\Head\TinymceConfig::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('head.tinymce-config'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\Head\TinymceConfig::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal64ae506d51b70549a46b57e3bed1687c)): ?>
+<?php $attributes = $__attributesOriginal64ae506d51b70549a46b57e3bed1687c; ?>
+<?php unset($__attributesOriginal64ae506d51b70549a46b57e3bed1687c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal64ae506d51b70549a46b57e3bed1687c)): ?>
+<?php $component = $__componentOriginal64ae506d51b70549a46b57e3bed1687c; ?>
+<?php unset($__componentOriginal64ae506d51b70549a46b57e3bed1687c); ?>
+<?php endif; ?>
+    <?php endif; ?>
     
     <!-- Analytics Tracking (exclude admin pages) -->
-    @if(!request()->is('admin/*') && !request()->is('author/*'))
-        @vite(['resources/js/analytics.js'])
-    @endif
+    <?php if(!request()->is('admin/*') && !request()->is('author/*')): ?>
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/js/analytics.js']); ?>
+    <?php endif; ?>
     
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
     
     <!-- Global Error Handler -->
     <script>
         // Global error handler to prevent uncaught exceptions from breaking the page
         window.addEventListener('error', function(e) {
-            // Ignore errors from blocked scripts (ad blockers, privacy tools)
-            const blockedDomains = [
-                'googletagmanager.com',
-                'google-analytics.com',
-                'googlesyndication.com',
-                'doubleclick.net',
-                'facebook.com',
-                'facebook.net'
-            ];
-            
-            const isBlockedScript = blockedDomains.some(domain => 
-                e.filename && e.filename.includes(domain)
-            );
-            
-            if (isBlockedScript) {
-                // Silently ignore blocked script errors (ad blockers)
-                e.preventDefault();
-                return true;
-            }
-            
-            // Only log other errors in development
+            // Only log errors in development, silently fail in production
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.warn('JavaScript error:', e.message, e.filename);
+                console.error('JavaScript error:', e.error);
             }
             // Prevent default error handling
             e.preventDefault();
@@ -1570,43 +1389,13 @@
 
         // Handle unhandled promise rejections
         window.addEventListener('unhandledrejection', function(e) {
-            // Ignore Firebase/Google auth errors that are expected (unauthorized domain, etc.)
-            if (e.reason && (
-                e.reason.message && (
-                    e.reason.message.includes('unauthorized-domain') ||
-                    e.reason.message.includes('auth/unauthorized-domain') ||
-                    e.reason.message.includes('ERR_BLOCKED_BY_CLIENT')
-                )
-            )) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Only log other errors in development
+            // Only log errors in development
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.warn('Unhandled promise rejection:', e.reason);
+                console.error('Unhandled promise rejection:', e.reason);
             }
             // Prevent default error handling
             e.preventDefault();
         });
-        
-        // Handle resource loading errors (for blocked scripts)
-        window.addEventListener('error', function(e) {
-            if (e.target && e.target.tagName === 'SCRIPT') {
-                const src = e.target.src || '';
-                const blockedDomains = [
-                    'googletagmanager.com',
-                    'google-analytics.com',
-                    'googlesyndication.com'
-                ];
-                
-                if (blockedDomains.some(domain => src.includes(domain))) {
-                    // Silently ignore - this is expected with ad blockers
-                    e.preventDefault();
-                    return true;
-                }
-            }
-        }, true); // Use capture phase
     </script>
     
     <!-- Core Web Vitals Optimization -->
@@ -1677,3 +1466,4 @@
 </body>
 </html>
 
+<?php /**PATH C:\Users\k\Desktop\Nazaarabox - Copy\resources\views/layouts/app.blade.php ENDPATH**/ ?>
