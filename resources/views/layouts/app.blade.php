@@ -48,11 +48,11 @@
     @endphp
     
     <!-- Primary Meta Tags -->
-    <title>{{ $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}</title>
-    <meta name="title" content="{{ $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
+    <title>{{ $seo['title'] ?? 'Nazaara Circle - Articles & Tutorials' }}</title>
+    <meta name="title" content="{{ $seo['title'] ?? 'Nazaara Circle - Articles & Tutorials' }}">
     <meta name="description" content="{{ $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
-    <meta name="keywords" content="{{ $seo['keywords'] ?? 'Nazaaracircle, programming, tutorials, technology, articles, web development, software' }}">
-    <meta name="author" content="{{ $seo['author'] ?? 'Nazaaracircle' }}">
+    <meta name="keywords" content="{{ $seo['keywords'] ?? 'Nazaara Circle, programming, tutorials, technology, articles, web development, software' }}">
+    <meta name="author" content="{{ $seo['author'] ?? 'Nazaara Circle' }}">
     <meta name="robots" content="{{ $seo['robots'] ?? 'index, follow' }}">
     <meta name="language" content="{{ $seo['locale'] ?? 'en' }}">
     <meta name="revisit-after" content="7 days">
@@ -63,13 +63,13 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{{ $seo['type'] ?? 'website' }}">
     <meta property="og:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
+    <meta property="og:title" content="{{ $seo['og_title'] ?? $seo['title'] ?? 'Nazaara Circle - Articles & Tutorials' }}">
     <meta property="og:description" content="{{ $seo['og_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta property="og:image" content="{{ $seo['og_image'] ?? $seo['image'] ?? asset('icon.png') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'Nazaaracircle' }}">
-    <meta property="og:site_name" content="Nazaaracircle">
+    <meta property="og:image:alt" content="{{ $seo['title'] ?? 'Nazaara Circle' }}">
+    <meta property="og:site_name" content="Nazaara Circle">
     <meta property="og:locale" content="{{ $seo['locale'] ?? 'en_US' }}">
     @if(!empty($seo['published_time']))
     <meta property="og:published_time" content="{{ $seo['published_time'] }}">
@@ -84,10 +84,10 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="{{ $seo['twitter_card'] ?? 'summary_large_image' }}">
     <meta name="twitter:url" content="{{ $seo['url'] ?? url()->current() }}">
-    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle - Articles & Tutorials' }}">
+    <meta name="twitter:title" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaara Circle - Articles & Tutorials' }}">
     <meta name="twitter:description" content="{{ $seo['twitter_description'] ?? $seo['description'] ?? 'Explore the latest technology articles, programming tutorials, and tech insights. Stay updated with cutting-edge developments.' }}">
     <meta name="twitter:image" content="{{ $seo['twitter_image'] ?? $seo['image'] ?? asset('icon.png') }}">
-    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaaracircle' }}">
+    <meta name="twitter:image:alt" content="{{ $seo['twitter_title'] ?? $seo['title'] ?? 'Nazaara Circle' }}">
     @if($seoService->getTwitterHandle())
     <meta name="twitter:site" content="{{ $seoService->getTwitterHandle() }}">
     <meta name="twitter:creator" content="{{ $seoService->getTwitterHandle() }}">
@@ -98,12 +98,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
-    <meta name="application-name" content="Nazaaracircle">
+    <meta name="application-name" content="Nazaara Circle">
     <meta name="msapplication-TileColor" content="#E50914">
     <meta name="msapplication-config" content="{{ asset('browserconfig.xml') }}">
     
     <!-- Alternate Languages (Hreflang) -->
-    @if(!empty($seo['alternate_locales']))
+    @if(!empty($seo['alternate_locales']) && is_array($seo['alternate_locales']))
         @foreach($seo['alternate_locales'] as $locale => $url)
         <link rel="alternate" hreflang="{{ $locale }}" href="{{ $url }}">
         @endforeach
@@ -388,13 +388,19 @@
         /* Dark Mode Styles */
         body.dark-mode,
         html.dark body {
-            background: linear-gradient(135deg, #0D0D0D 0%, #181818 100%) !important;
+            background: #000000 !important;
             color: #FFFFFF !important;
         }
         
         body.dark-mode .bg-bg-primary,
         html.dark .bg-bg-primary {
-            background-color: #0D0D0D !important;
+            background-color: #000000 !important;
+        }
+        
+        /* Main element background in dark mode */
+        body.dark-mode main,
+        html.dark main {
+            background-color: #000000 !important;
         }
         
         body.dark-mode .bg-bg-card,
@@ -440,7 +446,7 @@
         
         body.dark-mode nav,
         html.dark nav {
-            background-color: rgba(13, 13, 13, 0.95) !important;
+            background-color: rgba(0, 0, 0, 0.95) !important;
             border-bottom-color: rgba(255, 255, 255, 0.1) !important;
         }
         
@@ -451,7 +457,7 @@
         
         body.dark-mode footer,
         html.dark footer {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
             border-top-color: rgba(255, 255, 255, 0.1) !important;
         }
         
@@ -481,7 +487,7 @@
         /* Additional Dark Mode Rules for Cards and Text */
         body.dark-mode article,
         html.dark article {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
         }
         
         body.dark-mode article h2,
@@ -511,7 +517,7 @@
         
         body.dark-mode .bg-white,
         html.dark .bg-white {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
         }
         
         body.dark-mode .text-gray-900,
@@ -552,14 +558,14 @@
         /* Force dark mode styles for all elements */
         html.dark body article,
         body.dark-mode article {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
         }
         
         /* Apply dark background to article divs, but exclude image containers and their children */
         html.dark body article > div:not(.aspect-video),
         body.dark-mode article > div:not(.aspect-video),
         html.dark body article div:not(.aspect-video):not(.aspect-video *) {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
         }
         
         /* Explicitly exclude image containers from dark background */
@@ -629,7 +635,7 @@
         
         html.dark body .bg-white,
         body.dark-mode .bg-white {
-            background-color: #1F1F1F !important;
+            background-color: #000000 !important;
         }
         
         html.dark body .text-gray-900,
@@ -1027,40 +1033,70 @@
             color: #b8070f;
         }
         
-        /* Dark mode for article content */
+        /* Dark mode for article content - Force text visibility */
         html.dark .article-content,
         body.dark-mode .article-content {
-            color: #e5e7eb;
+            color: #FFFFFF !important;
+        }
+        
+        /* Ensure all text elements in article content are visible in dark mode */
+        html.dark .article-content p,
+        body.dark-mode .article-content p,
+        html.dark .article-content div,
+        body.dark-mode .article-content div,
+        html.dark .article-content span,
+        body.dark-mode .article-content span,
+        html.dark .article-content li,
+        body.dark-mode .article-content li,
+        html.dark .article-content td,
+        body.dark-mode .article-content td {
+            color: #B3B3B3 !important;
+        }
+        
+        /* Headings in dark mode */
+        html.dark .article-content h1,
+        html.dark .article-content h2,
+        html.dark .article-content h3,
+        html.dark .article-content h4,
+        html.dark .article-content h5,
+        html.dark .article-content h6,
+        body.dark-mode .article-content h1,
+        body.dark-mode .article-content h2,
+        body.dark-mode .article-content h3,
+        body.dark-mode .article-content h4,
+        body.dark-mode .article-content h5,
+        body.dark-mode .article-content h6 {
+            color: #FFFFFF !important;
         }
         
         html.dark .article-content figcaption,
         body.dark-mode .article-content figcaption {
-            color: #9ca3af;
+            color: #9ca3af !important;
         }
         
         html.dark .article-content blockquote,
         body.dark-mode .article-content blockquote {
-            color: #d1d5db;
-            border-left-color: #E50914;
+            color: #d1d5db !important;
+            border-left-color: #E50914 !important;
         }
         
         html.dark .article-content pre,
         body.dark-mode .article-content pre {
-            background-color: #1f2937;
-            border-color: #374151;
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
         }
         
         html.dark .article-content pre[class*="language-"],
         body.dark-mode .article-content pre[class*="language-"] {
-            background-color: #1e1e1e;
-            border-color: #3d3d3d;
-            color: #d4d4d4;
+            background-color: #1e1e1e !important;
+            border-color: #3d3d3d !important;
+            color: #d4d4d4 !important;
         }
         
         html.dark .article-content code,
         body.dark-mode .article-content code {
-            background-color: #1f2937;
-            color: #e5e7eb;
+            background-color: #1f2937 !important;
+            color: #e5e7eb !important;
         }
         
         html.dark .article-content p code,
@@ -1069,25 +1105,31 @@
         body.dark-mode .article-content p code,
         body.dark-mode .article-content li code,
         body.dark-mode .article-content td code {
-            background-color: #374151;
-            color: #f472b6;
+            background-color: #374151 !important;
+            color: #f472b6 !important;
         }
         
         html.dark .article-content pre code[class*="language-"],
         body.dark-mode .article-content pre code[class*="language-"] {
-            color: #d4d4d4;
+            color: #d4d4d4 !important;
         }
         
         html.dark .article-content table td,
         html.dark .article-content table th,
         body.dark-mode .article-content table td,
         body.dark-mode .article-content table th {
-            border-color: #4b5563;
+            border-color: #4b5563 !important;
         }
         
         html.dark .article-content table th,
         body.dark-mode .article-content table th {
-            background-color: #374151;
+            background-color: #374151 !important;
+        }
+        
+        /* Override any inline styles that might hide text in dark mode */
+        html.dark .article-content [style*="color"],
+        body.dark-mode .article-content [style*="color"] {
+            color: inherit !important;
         }
     </style>
 </head>
@@ -1096,7 +1138,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <a href="{{ route('home') }}" class="text-xl sm:text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
-                    Nazaaracircle
+                    Nazaara Circle
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
                     <li><a href="{{ route('home') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Home</a></li>
@@ -1373,7 +1415,7 @@
                     </a>
                 </div>
                 <p class="text-gray-600 text-sm dark:!text-text-secondary" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    Copyright © {{ date('Y') }} - Nazaaracircle
+                    Copyright © {{ date('Y') }} - Nazaara Circle
                 </p>
             </div>
         </div>

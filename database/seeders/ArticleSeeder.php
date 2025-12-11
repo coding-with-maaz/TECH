@@ -16,16 +16,13 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Delete all existing articles
-        Article::query()->delete();
-        $this->command->info('🗑️  Deleted all existing articles');
-
         // Get or create an author
+        $authorEmail = env('AUTHOR_EMAIL', 'author@example.com');
         $author = User::firstOrCreate(
-            ['email' => 'admin@techblog.com'],
+            ['email' => $authorEmail],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'password' => bcrypt(env('AUTHOR_PASSWORD', 'ChangeThisPassword123!')),
                 'is_author' => true,
                 'role' => 'admin',
             ]
@@ -43,10 +40,9 @@ class ArticleSeeder extends Seeder
         $smartphoneTag = Tag::firstOrCreate(['slug' => 'smartphone'], ['name' => 'Smartphone']);
         $reviewTag = Tag::firstOrCreate(['slug' => 'review'], ['name' => 'Review']);
 
-        // Create Pixel 9 Pro Review article
-        $article = Article::create([
+        // Create or update Pixel 9 Pro Review article
+        $articleData = [
             'title' => 'Pixel 9 Pro Review: Cameras, Performance, and Battery Life',
-            'slug' => 'pixel-9-pro-review-cameras-performance-battery-life',
             'excerpt' => 'In-depth review of Google Pixel 9 Pro covering camera capabilities, performance benchmarks, battery life testing, and overall user experience. Discover if this flagship smartphone lives up to the hype.',
             'content' => self::getPixel9ProReviewContent(),
             'category_id' => $mobileCategory?->id,
@@ -56,7 +52,17 @@ class ArticleSeeder extends Seeder
             'published_at' => Carbon::now(),
             'featured_image' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=630&fit=crop',
             'reading_time' => 12,
-        ]);
+        ];
+        
+        $article = Article::where('slug', 'pixel-9-pro-review-cameras-performance-battery-life')->first();
+        
+        if ($article) {
+            $article->update($articleData);
+            $this->command->info("✅ Updated article: {$article->title}");
+        } else {
+            $article = Article::create(array_merge(['slug' => 'pixel-9-pro-review-cameras-performance-battery-life'], $articleData));
+            $this->command->info("✅ Created article: {$article->title}");
+        }
 
         // Attach tags
         $article->tags()->sync([

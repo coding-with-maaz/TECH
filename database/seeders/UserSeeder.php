@@ -13,28 +13,36 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Get credentials from environment or use safe defaults
+        $adminEmail = env('ADMIN_EMAIL', 'admin@example.com');
+        $adminPassword = env('ADMIN_PASSWORD', 'ChangeThisPassword123!');
+        $authorEmail = env('AUTHOR_EMAIL', 'author@example.com');
+        $authorPassword = env('AUTHOR_PASSWORD', 'ChangeThisPassword123!');
+        $userEmail = env('USER_EMAIL', 'user@example.com');
+        $userPassword = env('USER_PASSWORD', 'ChangeThisPassword123!');
+
         // Create admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@techblog.com'],
+            ['email' => $adminEmail],
             [
                 'name' => 'Admin User',
                 'username' => 'admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($adminPassword),
                 'email_verified_at' => now(),
                 'is_author' => true,
                 'role' => 'admin',
-                'bio' => 'Administrator and lead author of Nazaaracircle.',
+                'bio' => 'Administrator and lead author of Nazaara Circle.',
                 'website' => 'https://nazaaracircle.com',
             ]
         );
 
         // Create author user
         $author = User::firstOrCreate(
-            ['email' => 'author@techblog.com'],
+            ['email' => $authorEmail],
             [
                 'name' => 'John Doe',
                 'username' => 'johndoe',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($authorPassword),
                 'email_verified_at' => now(),
                 'is_author' => true,
                 'role' => 'author',
@@ -47,11 +55,11 @@ class UserSeeder extends Seeder
 
         // Create regular user
         $user = User::firstOrCreate(
-            ['email' => 'user@techblog.com'],
+            ['email' => $userEmail],
             [
                 'name' => 'Jane Smith',
                 'username' => 'janesmith',
-                'password' => Hash::make('password'),
+                'password' => Hash::make($userPassword),
                 'email_verified_at' => now(),
                 'is_author' => false,
                 'role' => 'user',
@@ -59,9 +67,10 @@ class UserSeeder extends Seeder
         );
 
         $this->command->info('✅ Users seeded successfully!');
-        $this->command->info("Admin: admin@techblog.com / password");
-        $this->command->info("Author: author@techblog.com / password");
-        $this->command->info("User: user@techblog.com / password");
+        $this->command->warn('⚠️  Please change default passwords after first login!');
+        $this->command->info("Admin: {$adminEmail}");
+        $this->command->info("Author: {$authorEmail}");
+        $this->command->info("User: {$userEmail}");
     }
 }
 

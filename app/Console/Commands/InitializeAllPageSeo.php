@@ -78,7 +78,7 @@ class InitializeAllPageSeo extends Command
     protected function createPageSeo(string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaaracircle');
+        $siteName = config('app.name', 'Nazaara Circle');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
         PageSeo::create($defaults);
@@ -90,7 +90,7 @@ class InitializeAllPageSeo extends Command
     protected function updatePageSeo(PageSeo $pageSeo, string $pageKey, string $pageName)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaaracircle');
+        $siteName = config('app.name', 'Nazaara Circle');
         $defaults = $this->getDefaultsForPage($pageKey, $pageName, $siteUrl, $siteName);
         
         // Update all fields with new defaults (force update)
@@ -202,7 +202,7 @@ class InitializeAllPageSeo extends Command
             'about' => [
                 'meta_title' => "About Us | {$siteName}",
                 'meta_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
-                'meta_keywords' => 'about us, company information, mission, values, Nazaaracircle',
+                'meta_keywords' => 'about us, company information, mission, values, Nazaara Circle',
                 'og_title' => "About Us | {$siteName}",
                 'og_description' => "Learn more about {$siteName}. Your destination for technology news, tutorials, and insights.",
                 'og_image' => asset('icon.png'),

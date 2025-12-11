@@ -19,7 +19,7 @@ class SeoService
 
     public function __construct()
     {
-        $this->siteName = config('app.name', 'Nazaaracircle');
+        $this->siteName = config('app.name', 'Nazaara Circle');
         $this->siteUrl = config('app.url', url('/'));
         $this->defaultImage = asset('icon.png');
         $this->twitterHandle = '@nazaaracircle'; // Update with your Twitter handle
@@ -42,8 +42,8 @@ class SeoService
         }
 
         $title = $data['title'] ?? $this->siteName;
-        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from Nazaaracircle. Stay updated with the latest trends in programming, web development, AI, and more.';
-        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, Nazaaracircle';
+        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from Nazaara Circle. Stay updated with the latest trends in programming, web development, AI, and more.';
+        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, Nazaara Circle';
         $image = $data['image'] ?? $this->defaultImage;
         $url = $data['url'] ?? url()->current();
         $type = $data['type'] ?? 'website';
@@ -101,6 +101,19 @@ class SeoService
             ? $pageSeo->meta_description
             : ($pageSeo->og_description ?? '');
         
+        // Parse hreflang tags - ensure it's always an array
+        $hreflangTags = [];
+        if ($pageSeo->hreflang_tags) {
+            // If it's already an array (from cast), use it directly
+            if (is_array($pageSeo->hreflang_tags)) {
+                $hreflangTags = $pageSeo->hreflang_tags;
+            } else {
+                // If it's a JSON string, decode it
+                $decoded = json_decode($pageSeo->hreflang_tags, true);
+                $hreflangTags = is_array($decoded) ? $decoded : [];
+            }
+        }
+        
         $data = [
             'title' => $title,
             'description' => $description,
@@ -111,7 +124,7 @@ class SeoService
             'canonical' => $pageSeo->canonical_url ?? url()->current(),
             'robots' => $pageSeo->meta_robots ?? 'index, follow',
             'schema' => $schema,
-            'alternate_locales' => $pageSeo->hreflang_tags ?? [],
+            'alternate_locales' => $hreflangTags,
         ];
 
         // Only merge override data for fields that are truly missing (for dynamic content)
@@ -177,7 +190,7 @@ class SeoService
     public function forHome(): array
     {
         return $this->generate([
-            'title' => 'Nazaaracircle - Latest Technology News & Tutorials',
+            'title' => 'Nazaara Circle - Latest Technology News & Tutorials',
             'description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights. Learn from expert articles and tutorials.',
             'keywords' => 'technology, programming, web development, tutorials, tech news, coding, software development, AI, machine learning',
             'type' => 'website',
@@ -201,7 +214,7 @@ class SeoService
     public function forArticlesIndex(): array
     {
         return $this->generate([
-            'title' => 'Articles - Browse All Tech Articles | Nazaaracircle',
+            'title' => 'Articles - Browse All Tech Articles | Nazaara Circle',
             'description' => 'Browse our complete collection of technology articles, tutorials, and guides. Learn programming, web development, and stay updated with tech trends.',
             'keywords' => 'tech articles, programming tutorials, web development guides, technology news, coding tutorials',
             'type' => 'website',
@@ -225,10 +238,21 @@ class SeoService
         $publishedDate = $article->published_at ? $article->published_at->format('Y-m-d') : $article->created_at->format('Y-m-d');
         $modifiedDate = $article->updated_at->format('Y-m-d');
         
-        // Get image
-        $image = $article->featured_image 
-            ? (filter_var($article->featured_image, FILTER_VALIDATE_URL) ? $article->featured_image : url($article->featured_image))
-            : $this->defaultImage;
+        // Get image - use article's featured image (banner) for OG tags
+        $image = $this->defaultImage;
+        if ($article->featured_image) {
+            // Check if it's already a full URL
+            if (filter_var($article->featured_image, FILTER_VALIDATE_URL)) {
+                $image = $article->featured_image;
+            } else {
+                // Handle storage paths - convert to full URL
+                if (str_starts_with($article->featured_image, 'storage/')) {
+                    $image = asset($article->featured_image);
+                } else {
+                    $image = url($article->featured_image);
+                }
+            }
+        }
         
         // Get category
         $category = $article->category ? $article->category->name : null;
@@ -299,8 +323,8 @@ class SeoService
             $schemas[] = $aggregateRating;
         }
 
-        return $this->generate([
-            'title' => "{$title} | Nazaaracircle",
+        $seoData = $this->generate([
+            'title' => "{$title} | Nazaara Circle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -311,6 +335,17 @@ class SeoService
             'author' => $author,
             'schema' => $schemas,
         ]);
+        
+        // Explicitly set OG and Twitter images to article's featured image (banner)
+        // This ensures the article banner is used for social media sharing instead of default icon
+        $seoData['og_image'] = $image;
+        $seoData['twitter_image'] = $image;
+        $seoData['og_title'] = $seoData['og_title'] ?? $seoData['title'];
+        $seoData['og_description'] = $seoData['og_description'] ?? $description;
+        $seoData['twitter_title'] = $seoData['twitter_title'] ?? $seoData['title'];
+        $seoData['twitter_description'] = $seoData['twitter_description'] ?? $description;
+        
+        return $seoData;
     }
 
     /**
@@ -319,7 +354,7 @@ class SeoService
     public function forCategoriesIndex(): array
     {
         return $this->generate([
-            'title' => 'Categories - Browse Tech Categories | Nazaaracircle',
+            'title' => 'Categories - Browse Tech Categories | Nazaara Circle',
             'description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more technology topics.',
             'keywords' => 'tech categories, programming categories, web development, AI, machine learning, tutorials',
             'type' => 'website',
@@ -338,7 +373,7 @@ class SeoService
         $keywords = "{$title}, tech articles, programming, tutorials, technology";
 
         return $this->generate([
-            'title' => "{$title} - Tech Articles | Nazaaracircle",
+            'title' => "{$title} - Tech Articles | Nazaara Circle",
             'description' => $description,
             'keywords' => $keywords,
             'url' => $url,
@@ -359,7 +394,7 @@ class SeoService
     public function forSeriesIndex(): array
     {
         return $this->generate([
-            'title' => 'Article Series - Browse Collections | Nazaaracircle',
+            'title' => 'Article Series - Browse Collections | Nazaara Circle',
             'description' => 'Browse our curated article series and collections. Explore related articles organized into comprehensive series.',
             'keywords' => 'article series, collections, tech series, programming series, tutorial series',
             'type' => 'website',
@@ -382,7 +417,7 @@ class SeoService
             : $this->defaultImage;
 
         return $this->generate([
-            'title' => "{$title} - Article Series | Nazaaracircle",
+            'title' => "{$title} - Article Series | Nazaara Circle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -412,7 +447,7 @@ class SeoService
         $image = $user->avatar_url ?? $this->defaultImage;
 
         return $this->generate([
-            'title' => "{$title} - Author Profile | Nazaaracircle",
+            'title' => "{$title} - Author Profile | Nazaara Circle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -427,7 +462,7 @@ class SeoService
     public function forTagsIndex(): array
     {
         return $this->generate([
-            'title' => 'Tags - Browse All Tags | Nazaaracircle',
+            'title' => 'Tags - Browse All Tags | Nazaara Circle',
             'description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
             'keywords' => 'tags, tech tags, programming tags, technology topics',
             'type' => 'website',
@@ -439,7 +474,7 @@ class SeoService
      */
     public function forSearch($query = null): array
     {
-        $title = $query ? "Search Results for '{$query}' - Nazaaracircle" : 'Search Articles - Nazaaracircle';
+        $title = $query ? "Search Results for '{$query}' - Nazaara Circle" : 'Search Articles - Nazaara Circle';
         $description = $query 
             ? "Search results for '{$query}'. Find technology articles, tutorials, and guides matching your search."
             : 'Search for technology articles, tutorials, and guides. Find what you need quickly.';
@@ -460,25 +495,25 @@ class SeoService
     {
         $pages = [
             'about' => [
-                'title' => 'About Us - Nazaaracircle',
-                'description' => 'Learn more about Nazaaracircle. Your destination for technology news, tutorials, and insights.',
+                'title' => 'About Us - Nazaara Circle',
+                'description' => 'Learn more about Nazaara Circle. Your destination for technology news, tutorials, and insights.',
             ],
             'contact' => [
-                'title' => 'Contact Us - Nazaaracircle',
-                'description' => 'Get in touch with Nazaaracircle. We\'d love to hear from you.',
+                'title' => 'Contact Us - Nazaara Circle',
+                'description' => 'Get in touch with Nazaara Circle. We\'d love to hear from you.',
             ],
             'privacy' => [
-                'title' => 'Privacy Policy - Nazaaracircle',
-                'description' => 'Privacy policy and data protection information for Nazaaracircle.',
+                'title' => 'Privacy Policy - Nazaara Circle',
+                'description' => 'Privacy policy and data protection information for Nazaara Circle.',
             ],
             'terms' => [
-                'title' => 'Terms of Service - Nazaaracircle',
-                'description' => 'Terms of service and usage policy for Nazaaracircle.',
+                'title' => 'Terms of Service - Nazaara Circle',
+                'description' => 'Terms of service and usage policy for Nazaara Circle.',
             ],
         ];
 
         $pageData = $pages[$pageKey] ?? [
-            'title' => $title ?? ucfirst($pageKey) . ' - Nazaaracircle',
+            'title' => $title ?? ucfirst($pageKey) . ' - Nazaara Circle',
             'description' => $description ?? '',
         ];
 

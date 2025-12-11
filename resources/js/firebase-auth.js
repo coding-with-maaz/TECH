@@ -3,19 +3,32 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithCredential } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyA5lTVNe3_-_pURTo5AaNF57jW7Ve0o4d0",
-    authDomain: "harpaltech-f183d.firebaseapp.com",
-    projectId: "harpaltech-f183d",
-    storageBucket: "harpaltech-f183d.firebasestorage.app",
-    messagingSenderId: "644904840702",
-    appId: "1:644904840702:web:4baaf8cf58588fc2eb24af",
-    measurementId: "G-HCVYF6TM81"
+// Get Firebase config from window object (set by Blade template)
+// If not available, Firebase will not initialize (graceful failure)
+const firebaseConfig = window.firebaseConfig || {
+    apiKey: null,
+    authDomain: null,
+    projectId: null,
+    storageBucket: null,
+    messagingSenderId: null,
+    appId: null,
+    measurementId: null
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// Only initialize if config is available
+let app = null;
+let auth = null;
+
+if (firebaseConfig.apiKey) {
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+    } catch (error) {
+        console.warn('Firebase initialization failed:', error.message);
+    }
+} else {
+    console.warn('Firebase configuration not found. Google sign-in will not be available.');
+}
 
 // Initialize Analytics with error handling (may be blocked by ad blockers)
 let analytics = null;
@@ -40,6 +53,13 @@ provider.setCustomParameters({
  * Handle Google Sign In
  */
 export async function signInWithGoogle() {
+    if (!auth || !app) {
+        return { 
+            success: false, 
+            message: 'Google sign-in is not configured. Please use the standard login form.' 
+        };
+    }
+    
     try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;

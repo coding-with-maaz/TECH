@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - Nazaaracircle')
+@section('title', 'About Us - Nazaara Circle')
 
 @section('content')
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
@@ -12,18 +12,18 @@
         <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 md:p-8 space-y-8" style="font-family: 'Poppins', sans-serif;">
             <section>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4 text-lg" style="font-weight: 400;">
-                    Welcome to <strong class="text-accent">Nazaaracircle</strong>! We are passionate about technology, programming, and sharing knowledge with the developer community. Our mission is to provide high-quality articles, tutorials, and insights about the latest trends in technology, web development, programming languages, and software engineering.
+                    Welcome to <strong class="text-accent">Nazaara Circle</strong>! We are passionate about technology, programming, and sharing knowledge with the developer community. Our mission is to provide high-quality articles, tutorials, and insights about the latest trends in technology, web development, programming languages, and software engineering.
                 </p>
             </section>
 
-            <!-- About Nazaaracircle Section -->
+            <!-- About Nazaara Circle Section -->
             <section class="border-t border-gray-200 dark:!border-border-secondary pt-6">
-                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-4" style="font-weight: 700;">About Nazaaracircle</h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:!text-white mb-4" style="font-weight: 700;">About Nazaara Circle</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    <strong>Nazaaracircle</strong> is a comprehensive technology blog platform dedicated to providing exceptional content and an outstanding user experience. Our website is thoughtfully designed to make it easy for developers, programmers, and tech enthusiasts to discover, read, and engage with valuable technology content. We focus on delivering well-structured articles, practical tutorials, and insightful analysis that helps our community stay informed and grow professionally.
+                    <strong>Nazaara Circle</strong> is a comprehensive technology blog platform dedicated to providing exceptional content and an outstanding user experience. Our website is thoughtfully designed to make it easy for developers, programmers, and tech enthusiasts to discover, read, and engage with valuable technology content. We focus on delivering well-structured articles, practical tutorials, and insightful analysis that helps our community stay informed and grow professionally.
                 </p>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    At Nazaaracircle, we believe in the power of knowledge sharing and continuous learning. Our platform serves as a bridge between complex technical concepts and practical implementation, making technology accessible to everyone from beginners to seasoned professionals. We curate content that covers a wide spectrum of topics including software development, emerging technologies, programming best practices, and industry trends.
+                    At Nazaara Circle, we believe in the power of knowledge sharing and continuous learning. Our platform serves as a bridge between complex technical concepts and practical implementation, making technology accessible to everyone from beginners to seasoned professionals. We curate content that covers a wide spectrum of topics including software development, emerging technologies, programming best practices, and industry trends.
                 </p>
             </section>
 
@@ -55,9 +55,9 @@
             </section>
 
             <section>
-                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Why Choose Nazaaracircle?</h2>
+                <h2 class="text-xl font-bold text-gray-900 dark:!text-white mb-3" style="font-weight: 700;">Why Choose Nazaara Circle?</h2>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed mb-4" style="font-weight: 400;">
-                    Nazaaracircle stands out as a premier technology resource platform, offering a seamless experience for readers and contributors alike. Our commitment to quality, accessibility, and community engagement makes us the go-to destination for technology enthusiasts seeking reliable, up-to-date information and practical guidance.
+                    Nazaara Circle stands out as a premier technology resource platform, offering a seamless experience for readers and contributors alike. Our commitment to quality, accessibility, and community engagement makes us the go-to destination for technology enthusiasts seeking reliable, up-to-date information and practical guidance.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex items-start gap-3">
@@ -122,7 +122,7 @@
                     Have questions or suggestions? We'd love to hear from you! Feel free to <a href="{{ route('contact') }}" class="text-accent hover:text-accent-light underline font-semibold" style="font-weight: 600;">contact us</a> with your feedback, article ideas, or any inquiries.
                 </p>
                 <p class="text-gray-700 dark:!text-text-secondary leading-relaxed" style="font-weight: 400;">
-                    Thank you for being part of the <strong class="text-accent">Nazaaracircle</strong> community! Together, we're building a knowledge-sharing platform that empowers developers and technology enthusiasts worldwide.
+                    Thank you for being part of the <strong class="text-accent">Nazaara Circle</strong> community! Together, we're building a knowledge-sharing platform that empowers developers and technology enthusiasts worldwide.
                 </p>
             </section>
         </div>

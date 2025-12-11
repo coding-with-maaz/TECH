@@ -297,7 +297,7 @@
             @endif
 
             <!-- Article Content -->
-            <div class="prose prose-lg dark:prose-invert max-w-none mb-8 article-content" style="font-family: 'Poppins', sans-serif;">
+            <div class="prose prose-lg dark:prose-invert max-w-none mb-8 article-content text-gray-900 dark:!text-white dark:prose-headings:!text-white dark:prose-p:!text-text-primary dark:prose-strong:!text-white dark:prose-a:!text-accent dark:prose-code:!text-white" style="font-family: 'Poppins', sans-serif;">
                 {!! $article->rendered_content !!}
             </div>
 

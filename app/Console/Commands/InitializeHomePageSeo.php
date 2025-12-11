@@ -50,7 +50,7 @@ class InitializeHomePageSeo extends Command
     protected function createHomePageSeo()
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaaracircle');
+        $siteName = config('app.name', 'Nazaara Circle');
 
         // Create schema markup
         $schemaMarkup = [
@@ -97,7 +97,7 @@ class InitializeHomePageSeo extends Command
     protected function updateHomePageSeo(PageSeo $pageSeo)
     {
         $siteUrl = config('app.url', url('/'));
-        $siteName = config('app.name', 'Nazaaracircle');
+        $siteName = config('app.name', 'Nazaara Circle');
 
         // Create schema markup
         $schemaMarkup = [

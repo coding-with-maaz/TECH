@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Register - Nazaaracircle')
+@section('title', 'Register - Nazaara Circle')
 
 @section('content')
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(to bottom right, #1a1a1a, #0d0d0d, #000000);">
@@ -148,13 +148,13 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyA5lTVNe3_-_pURTo5AaNF57jW7Ve0o4d0",
-    authDomain: "harpaltech-f183d.firebaseapp.com",
-    projectId: "harpaltech-f183d",
-    storageBucket: "harpaltech-f183d.firebasestorage.app",
-    messagingSenderId: "644904840702",
-    appId: "1:644904840702:web:4baaf8cf58588fc2eb24af",
-    measurementId: "G-HCVYF6TM81"
+    apiKey: @json(config('services.firebase.api_key')),
+    authDomain: @json(config('services.firebase.auth_domain')),
+    projectId: @json(config('services.firebase.project_id')),
+    storageBucket: @json(config('services.firebase.storage_bucket')),
+    messagingSenderId: @json(config('services.firebase.messaging_sender_id')),
+    appId: @json(config('services.firebase.app_id')),
+    measurementId: @json(config('services.firebase.measurement_id'))
 };
 
 const app = initializeApp(firebaseConfig);

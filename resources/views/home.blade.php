@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home - Nazaaracircle')
+@section('title', 'Home - Nazaara Circle')
 
 @section('content')
 <!-- Hero Section with Search -->
@@ -117,15 +117,15 @@
     </style>
 </section>
 
-<!-- About Nazaaracircle Section -->
+<!-- About Nazaara Circle Section -->
 <section class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-12 bg-gray-50 dark:!bg-bg-secondary">
     <div class="max-w-7xl mx-auto">
         <div class="text-center mb-8">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
-                About Nazaaracircle
+                About Nazaara Circle
             </h2>
             <p class="text-lg text-gray-600 dark:!text-text-secondary max-w-3xl mx-auto leading-relaxed" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                Nazaaracircle is your premier destination for discovering the latest technology articles, comprehensive programming tutorials, and cutting-edge tech insights. We are dedicated to providing high-quality, well-researched content that helps developers, tech enthusiasts, and learners stay ahead in the rapidly evolving world of technology.
+                Nazaara Circle is your premier destination for discovering the latest technology articles, comprehensive programming tutorials, and cutting-edge tech insights. We are dedicated to providing high-quality, well-researched content that helps developers, tech enthusiasts, and learners stay ahead in the rapidly evolving world of technology.
             </p>
         </div>
         

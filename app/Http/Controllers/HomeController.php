@@ -21,6 +21,17 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
+        // Verify view exists before processing data (helps with production debugging)
+        if (!view()->exists('home')) {
+            \Log::error('Home view not found', [
+                'view_paths' => view()->getFinder()->getPaths(),
+                'expected_path' => resource_path('views/home.blade.php'),
+                'file_exists' => file_exists(resource_path('views/home.blade.php')),
+            ]);
+            
+            abort(500, 'Home view not found. Please run: php artisan views:check home');
+        }
+        
         $perPage = 12;
         
         // Get latest articles
