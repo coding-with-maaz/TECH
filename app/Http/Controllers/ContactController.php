@@ -39,26 +39,25 @@ class ContactController extends Controller
             'user_agent' => $request->userAgent(),
         ]);
 
-        // Send email notification to admin (optional - configure in .env)
-        if (config('mail.from.address')) {
-            try {
-                Mail::send([], [], function ($message) use ($contactMessage) {
-                    $message->to(config('mail.from.address'))
-                        ->subject('New Contact Message: ' . ($contactMessage->subject ?: 'No Subject'))
-                        ->html("
-                            <h2>New Contact Message</h2>
-                            <p><strong>Name:</strong> {$contactMessage->name}</p>
-                            <p><strong>Email:</strong> {$contactMessage->email}</p>
-                            <p><strong>Subject:</strong> " . ($contactMessage->subject ?: 'No Subject') . "</p>
-                            <p><strong>Message:</strong></p>
-                            <p>" . nl2br(e($contactMessage->message)) . "</p>
-                            <p><a href='" . route('admin.contacts.show', $contactMessage->id) . "'>View in Admin Panel</a></p>
-                        ");
-                });
-            } catch (\Exception $e) {
-                // Log error but don't fail the request
-                \Log::error('Failed to send contact email: ' . $e->getMessage());
-            }
+        // Send email notification to admin
+        $contactEmail = config('mail.contact_email', 'drtoolofficial@gmail.com');
+        try {
+            Mail::send([], [], function ($message) use ($contactMessage, $contactEmail) {
+                $message->to($contactEmail)
+                    ->subject('New Contact Message: ' . ($contactMessage->subject ?: 'No Subject'))
+                    ->html("
+                        <h2>New Contact Message</h2>
+                        <p><strong>Name:</strong> {$contactMessage->name}</p>
+                        <p><strong>Email:</strong> {$contactMessage->email}</p>
+                        <p><strong>Subject:</strong> " . ($contactMessage->subject ?: 'No Subject') . "</p>
+                        <p><strong>Message:</strong></p>
+                        <p>" . nl2br(e($contactMessage->message)) . "</p>
+                        <p><a href='" . route('admin.contacts.show', $contactMessage->id) . "'>View in Admin Panel</a></p>
+                    ");
+            });
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Log::error('Failed to send contact email: ' . $e->getMessage());
         }
 
         return redirect()->back()->with('success', 'Thank you for your message! We will get back to you soon.');

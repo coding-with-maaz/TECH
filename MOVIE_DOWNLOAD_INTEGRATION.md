@@ -9,12 +9,12 @@ This system allows movie downloads to be processed through tech articles, showin
 On your movie website (nazaarabox.com), add download buttons that link to:
 
 ```
-https://techblog.com/go/{movie-slug}
+https://nazaaracircle.com/go/{movie-slug}
 ```
 
 **Example:**
 ```html
-<a href="https://techblog.com/go/deadpool-wolverine" class="download-btn">
+<a href="https://nazaaracircle.com/go/deadpool-wolverine" class="download-btn">
     DOWNLOAD 4K
 </a>
 ```
@@ -75,13 +75,13 @@ Movie::create([
 
 ### Test Download Flow:
 1. Create a movie entry in database
-2. Visit: `https://techblog.com/go/{movie-slug}`
+2. Visit: `https://nazaaracircle.com/go/{movie-slug}`
 3. Should redirect to article with `?dl=token`
 4. Should show download overlay with countdown
 5. After 30 seconds, redirects to download link
 
 ### Test Normal Article:
-1. Visit: `https://techblog.com/articles/{article-slug}` (no `?dl` parameter)
+1. Visit: `https://nazaaracircle.com/articles/{article-slug}` (no `?dl` parameter)
 2. Should show normal article only
 3. No download overlay
 

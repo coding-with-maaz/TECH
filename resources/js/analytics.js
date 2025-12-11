@@ -84,19 +84,29 @@
 
             if (response.ok) {
                 const data = await response.json();
-                currentViewId = data.view_id;
-                isTracking = true;
+                if (data.success && data.view_id) {
+                    currentViewId = data.view_id;
+                    isTracking = true;
 
-                // Start tracking time on page
-                startTimeTracking();
+                    // Start tracking time on page
+                    startTimeTracking();
 
-                // Track page visibility changes
-                trackVisibility();
+                    // Track page visibility changes
+                    trackVisibility();
+                }
+                // If success is false, silently fail - analytics errors shouldn't break the page
+            } else {
+                // Non-200 response - log only in development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    const errorData = await response.json().catch(() => ({}));
+                    console.warn('Analytics tracking failed:', errorData.error || 'Unknown error');
+                }
             }
         } catch (error) {
             // Silently fail - don't log errors to console in production
+            // Analytics failures should never break the user experience
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.error('Analytics tracking error:', error);
+                console.warn('Analytics tracking error:', error.message);
             }
         }
     }
@@ -136,7 +146,7 @@
         }
 
         try {
-            await fetch(config.timeRoute, {
+            const response = await fetch(config.timeRoute, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,8 +158,20 @@
                     time_on_page: timeOnPage,
                 }),
             });
+            
+            // Check if response was successful
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                // Only log in development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    console.warn('Time tracking failed:', errorData.error || 'Unknown error');
+                }
+            }
         } catch (error) {
-            console.error('Time tracking error:', error);
+            // Silently fail - analytics errors shouldn't break the page
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.warn('Time tracking error:', error.message);
+            }
         }
     }
 
@@ -208,8 +230,20 @@
                 'X-Requested-With': 'XMLHttpRequest',
             },
             body: JSON.stringify(defaults),
+        }).then(response => {
+            if (!response.ok) {
+                // Only log in development
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    response.json().then(data => {
+                        console.warn('Event tracking failed:', data.error || 'Unknown error');
+                    }).catch(() => {});
+                }
+            }
         }).catch(error => {
-            console.error('Event tracking error:', error);
+            // Silently fail - analytics errors shouldn't break the page
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.warn('Event tracking error:', error.message);
+            }
         });
     };
 

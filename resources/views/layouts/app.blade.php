@@ -669,6 +669,25 @@
             color: #B3B3B3 !important;
         }
         
+        /* Alpine.js x-cloak - Hide elements before Alpine initializes */
+        [x-cloak] {
+            display: none !important;
+        }
+        
+        /* Mobile Menu Styles */
+        @media (max-width: 767px) {
+            body.mobile-menu-open {
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+            }
+            
+            nav[x-data] [x-show] {
+                max-height: calc(100vh - 4rem);
+                overflow-y: auto;
+            }
+        }
+        
         /* Filter tabs styling - Light mode */
         .flex-wrap a.bg-white {
             background-color: #FFFFFF !important;
@@ -1040,10 +1059,10 @@
     </style>
 </head>
 <body>
-    <nav class="sticky top-0 z-50 bg-white backdrop-blur-lg shadow-lg border-b border-gray-200 dark:!bg-bg-primary/95 dark:!border-border-primary">
+    <nav class="sticky top-0 z-50 bg-white backdrop-blur-lg shadow-lg border-b border-gray-200 dark:!bg-bg-primary/95 dark:!border-border-primary" x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <a href="{{ route('home') }}" class="text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
+                <a href="{{ route('home') }}" class="text-xl sm:text-2xl md:text-3xl font-bold text-accent hover:text-accent-light transition-colors dark-mode:text-accent" style="font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.03em;">
                     Nazaaracircle
                 </a>
                 <ul class="hidden md:flex items-center gap-6 lg:gap-8">
@@ -1055,21 +1074,10 @@
                     <li><a href="{{ route('about') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">About Us</a></li>
                     <li><a href="{{ route('contact') }}" class="text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Contact</a></li>
                 </ul>
-                {{-- Search form commented out --}}
-                {{-- <form action="{{ route('search') }}" method="GET" class="hidden lg:flex items-center gap-2">
-                    <input type="text" name="q" 
-                           class="px-4 py-2 w-64 rounded-full bg-gray-100 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all dark:!bg-bg-card dark:!border-border-primary dark:!text-white dark:!placeholder-text-muted" 
-                           placeholder="Search articles..." 
-                           value="{{ request('q') }}"
-                           style="font-family: 'Poppins', sans-serif; font-weight: 400;">
-                    <button type="submit" class="px-6 py-2 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all hover:scale-105 hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
-                        Search
-                    </button>
-                </form> --}}
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 sm:gap-4">
                     @auth
-                        <!-- User Dropdown -->
-                        <div class="relative" x-data="{ open: false }">
+                        <!-- User Dropdown - Desktop -->
+                        <div class="relative hidden md:block" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 transition-all dark:!bg-bg-card dark:!border-border-primary dark:!hover:bg-bg-card-hover">
                                 @if(auth()->user()->avatar)
                                     <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full object-cover">
@@ -1078,7 +1086,7 @@
                                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                     </div>
                                 @endif
-                                <span class="hidden md:block text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif;">
+                                <span class="text-gray-900 dark:!text-white font-semibold" style="font-family: 'Poppins', sans-serif;">
                                     {{ auth()->user()->name }}
                                 </span>
                                 <svg class="w-4 h-4 text-gray-900 dark:!text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1157,7 +1165,7 @@
                             </div>
                         </div>
                     @else
-                        <!-- Login/Register Buttons -->
+                        <!-- Login/Register Buttons - Desktop -->
                         <div class="hidden md:flex items-center gap-3">
                             <a href="{{ route('login') }}" class="px-4 py-2 text-gray-900 hover:text-accent transition-colors font-semibold dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
                                 Login
@@ -1177,12 +1185,137 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                         </svg>
                     </button>
-                    <button class="md:hidden text-gray-900 hover:text-accent dark:!text-white" aria-label="Toggle mobile menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+<<<<<<< HEAD
+                    
+                    <!-- Mobile Menu Button -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 rounded-lg text-gray-900 hover:text-accent dark:!text-white transition-colors" aria-label="Toggle menu">
+                        <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: block;">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
+            </div>
+            
+            <!-- Mobile Menu Backdrop -->
+            <div x-show="mobileMenuOpen"
+                 @click="mobileMenuOpen = false"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-black/50 z-40 md:hidden"
+                 style="display: none;"
+                 x-cloak></div>
+            
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenuOpen" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-2"
+                 class="md:hidden border-t border-gray-200 dark:!border-border-primary py-4 bg-white dark:!bg-bg-primary relative z-50"
+                 style="display: none;"
+                 x-cloak>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{{ route('home') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('articles.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Articles
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('categories.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Categories
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('tags.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Tags
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('series.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Series
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('about') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            About Us
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('contact') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                            Contact
+                        </a>
+                    </li>
+                    @auth
+                        <li class="border-t border-gray-200 dark:!border-border-primary pt-2 mt-2">
+                            <div class="px-4 py-2">
+                                <div class="flex items-center gap-3 mb-3">
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover">
+                                    @else
+                                        <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-semibold">
+                                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif;">
+                                            {{ auth()->user()->name }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:!text-text-muted" style="font-family: 'Poppins', sans-serif;">
+                                            {{ auth()->user()->email }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <a href="{{ route('user.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
+                                    My Dashboard
+                                </a>
+                                @if(auth()->user()->isAuthor())
+                                    <a href="{{ route('author.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
+                                        Author Dashboard
+                                    </a>
+                                    <a href="{{ route('admin.articles.index') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
+                                        My Articles
+                                    </a>
+                                @endif
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors mb-1" style="font-family: 'Poppins', sans-serif;">
+                                        Admin Dashboard
+                                    </a>
+                                @endif
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" @click="mobileMenuOpen = false" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:!text-red-400 dark:!hover:bg-bg-card-hover rounded-lg transition-colors" style="font-family: 'Poppins', sans-serif;">
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    @else
+                        <li class="border-t border-gray-200 dark:!border-border-primary pt-2 mt-2">
+                            <div class="px-4 py-2 space-y-2">
+                                <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="block w-full text-center px-4 py-2 text-gray-900 hover:bg-gray-100 dark:!text-white dark:!hover:bg-bg-card-hover rounded-lg transition-colors font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                    Login
+                                </a>
+                                <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="block w-full text-center px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-all font-semibold" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                                    Sign Up
+                                </a>
+                            </div>
+                        </li>
+                    @endauth
+                </ul>
             </div>
         </div>
     </nav>
@@ -1251,6 +1384,49 @@
                 sunIcon.classList.remove('hidden');
                 moonIcon.classList.add('hidden');
             }
+        });
+        
+        // Mobile Menu Body Scroll Lock
+        document.addEventListener('DOMContentLoaded', () => {
+            const nav = document.querySelector('nav[x-data]');
+            if (nav) {
+                // Watch for mobile menu visibility changes
+                const mobileMenu = nav.querySelector('[x-show]');
+                if (mobileMenu) {
+                    const observer = new MutationObserver(() => {
+                        const isVisible = !mobileMenu.hasAttribute('style') || 
+                                        mobileMenu.style.display !== 'none';
+                        if (isVisible && window.innerWidth < 768) {
+                            body.classList.add('mobile-menu-open');
+                        } else {
+                            body.classList.remove('mobile-menu-open');
+                        }
+                    });
+                    
+                    observer.observe(mobileMenu, {
+                        attributes: true,
+                        attributeFilter: ['style']
+                    });
+                }
+            }
+            
+            // Close mobile menu on window resize to desktop size
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    body.classList.remove('mobile-menu-open');
+                    // Close menu via Alpine if available
+                    if (typeof Alpine !== 'undefined' && nav) {
+                        try {
+                            const navData = Alpine.$data(nav);
+                            if (navData && navData.mobileMenuOpen) {
+                                navData.mobileMenuOpen = false;
+                            }
+                        } catch (e) {
+                            // Alpine not ready yet
+                        }
+                    }
+                }
+            });
         });
     </script>
     
@@ -1363,9 +1539,29 @@
     <script>
         // Global error handler to prevent uncaught exceptions from breaking the page
         window.addEventListener('error', function(e) {
-            // Only log errors in development, silently fail in production
+            // Ignore errors from blocked scripts (ad blockers, privacy tools)
+            const blockedDomains = [
+                'googletagmanager.com',
+                'google-analytics.com',
+                'googlesyndication.com',
+                'doubleclick.net',
+                'facebook.com',
+                'facebook.net'
+            ];
+            
+            const isBlockedScript = blockedDomains.some(domain => 
+                e.filename && e.filename.includes(domain)
+            );
+            
+            if (isBlockedScript) {
+                // Silently ignore blocked script errors (ad blockers)
+                e.preventDefault();
+                return true;
+            }
+            
+            // Only log other errors in development
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.error('JavaScript error:', e.error);
+                console.warn('JavaScript error:', e.message, e.filename);
             }
             // Prevent default error handling
             e.preventDefault();
@@ -1374,13 +1570,43 @@
 
         // Handle unhandled promise rejections
         window.addEventListener('unhandledrejection', function(e) {
-            // Only log errors in development
+            // Ignore Firebase/Google auth errors that are expected (unauthorized domain, etc.)
+            if (e.reason && (
+                e.reason.message && (
+                    e.reason.message.includes('unauthorized-domain') ||
+                    e.reason.message.includes('auth/unauthorized-domain') ||
+                    e.reason.message.includes('ERR_BLOCKED_BY_CLIENT')
+                )
+            )) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Only log other errors in development
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                console.error('Unhandled promise rejection:', e.reason);
+                console.warn('Unhandled promise rejection:', e.reason);
             }
             // Prevent default error handling
             e.preventDefault();
         });
+        
+        // Handle resource loading errors (for blocked scripts)
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.tagName === 'SCRIPT') {
+                const src = e.target.src || '';
+                const blockedDomains = [
+                    'googletagmanager.com',
+                    'google-analytics.com',
+                    'googlesyndication.com'
+                ];
+                
+                if (blockedDomains.some(domain => src.includes(domain))) {
+                    // Silently ignore - this is expected with ad blockers
+                    e.preventDefault();
+                    return true;
+                }
+            }
+        }, true); // Use capture phase
     </script>
     
     <!-- Core Web Vitals Optimization -->

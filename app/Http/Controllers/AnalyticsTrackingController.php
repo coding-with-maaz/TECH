@@ -58,11 +58,13 @@ class AnalyticsTrackingController extends Controller
                 'request_data' => $request->all(),
             ]);
 
+            // Return 200 with success:false instead of 500 to prevent console errors
+            // Analytics failures shouldn't break the user experience
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to track view',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
-            ], 500);
+            ], 200);
         }
     }
 
@@ -88,10 +90,11 @@ class AnalyticsTrackingController extends Controller
                 'request_data' => $request->all(),
             ]);
 
+            // Return 200 with success:false instead of 500
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to track time on page',
-            ], 500);
+            ], 200);
         }
     }
 
@@ -131,11 +134,12 @@ class AnalyticsTrackingController extends Controller
                 'request_data' => $request->all(),
             ]);
 
+            // Return 200 with success:false instead of 500
             return response()->json([
                 'success' => false,
                 'error' => 'Failed to track event',
                 'message' => config('app.debug') ? $e->getMessage() : 'An error occurred',
-            ], 500);
+            ], 200);
         }
     }
 }
