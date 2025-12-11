@@ -19,10 +19,10 @@ class SeoService
 
     public function __construct()
     {
-        $this->siteName = config('app.name', 'HARPALJOB TECH');
+        $this->siteName = config('app.name', 'Nazaaracircle');
         $this->siteUrl = config('app.url', url('/'));
         $this->defaultImage = asset('icon.png');
-        $this->twitterHandle = '@harpaljobtech'; // Update with your Twitter handle
+        $this->twitterHandle = '@nazaaracircle'; // Update with your Twitter handle
         $this->facebookAppId = ''; // Add your Facebook App ID if available
     }
 
@@ -42,8 +42,8 @@ class SeoService
         }
 
         $title = $data['title'] ?? $this->siteName;
-        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from HARPALJOB TECH. Stay updated with the latest trends in programming, web development, AI, and more.';
-        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, HARPALJOB TECH';
+        $description = $data['description'] ?? 'Latest technology news, tutorials, and insights from Nazaaracircle. Stay updated with the latest trends in programming, web development, AI, and more.';
+        $keywords = $data['keywords'] ?? 'technology, programming, web development, tutorials, tech news, coding, software development, Nazaaracircle';
         $image = $data['image'] ?? $this->defaultImage;
         $url = $data['url'] ?? url()->current();
         $type = $data['type'] ?? 'website';
@@ -177,7 +177,7 @@ class SeoService
     public function forHome(): array
     {
         return $this->generate([
-            'title' => 'TechBlog - Latest Technology News & Tutorials',
+            'title' => 'Nazaaracircle - Latest Technology News & Tutorials',
             'description' => 'Stay updated with the latest technology news, programming tutorials, web development guides, and tech insights. Learn from expert articles and tutorials.',
             'keywords' => 'technology, programming, web development, tutorials, tech news, coding, software development, AI, machine learning',
             'type' => 'website',
@@ -201,7 +201,7 @@ class SeoService
     public function forArticlesIndex(): array
     {
         return $this->generate([
-            'title' => 'Articles - Browse All Tech Articles | TechBlog',
+            'title' => 'Articles - Browse All Tech Articles | Nazaaracircle',
             'description' => 'Browse our complete collection of technology articles, tutorials, and guides. Learn programming, web development, and stay updated with tech trends.',
             'keywords' => 'tech articles, programming tutorials, web development guides, technology news, coding tutorials',
             'type' => 'website',
@@ -300,7 +300,7 @@ class SeoService
         }
 
         return $this->generate([
-            'title' => "{$title} | TechBlog",
+            'title' => "{$title} | Nazaaracircle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -319,7 +319,7 @@ class SeoService
     public function forCategoriesIndex(): array
     {
         return $this->generate([
-            'title' => 'Categories - Browse Tech Categories | TechBlog',
+            'title' => 'Categories - Browse Tech Categories | Nazaaracircle',
             'description' => 'Browse articles by category. Find programming tutorials, web development guides, AI articles, and more technology topics.',
             'keywords' => 'tech categories, programming categories, web development, AI, machine learning, tutorials',
             'type' => 'website',
@@ -338,7 +338,7 @@ class SeoService
         $keywords = "{$title}, tech articles, programming, tutorials, technology";
 
         return $this->generate([
-            'title' => "{$title} - Tech Articles | TechBlog",
+            'title' => "{$title} - Tech Articles | Nazaaracircle",
             'description' => $description,
             'keywords' => $keywords,
             'url' => $url,
@@ -359,7 +359,7 @@ class SeoService
     public function forSeriesIndex(): array
     {
         return $this->generate([
-            'title' => 'Article Series - Browse Collections | TechBlog',
+            'title' => 'Article Series - Browse Collections | Nazaaracircle',
             'description' => 'Browse our curated article series and collections. Explore related articles organized into comprehensive series.',
             'keywords' => 'article series, collections, tech series, programming series, tutorial series',
             'type' => 'website',
@@ -382,7 +382,7 @@ class SeoService
             : $this->defaultImage;
 
         return $this->generate([
-            'title' => "{$title} - Article Series | TechBlog",
+            'title' => "{$title} - Article Series | Nazaaracircle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -412,7 +412,7 @@ class SeoService
         $image = $user->avatar_url ?? $this->defaultImage;
 
         return $this->generate([
-            'title' => "{$title} - Author Profile | TechBlog",
+            'title' => "{$title} - Author Profile | Nazaaracircle",
             'description' => $description,
             'keywords' => $keywords,
             'image' => $image,
@@ -427,7 +427,7 @@ class SeoService
     public function forTagsIndex(): array
     {
         return $this->generate([
-            'title' => 'Tags - Browse All Tags | TechBlog',
+            'title' => 'Tags - Browse All Tags | Nazaaracircle',
             'description' => 'Browse articles by tags. Find articles about specific technologies, programming languages, and topics.',
             'keywords' => 'tags, tech tags, programming tags, technology topics',
             'type' => 'website',
@@ -439,7 +439,7 @@ class SeoService
      */
     public function forSearch($query = null): array
     {
-        $title = $query ? "Search Results for '{$query}' - TechBlog" : 'Search Articles - TechBlog';
+        $title = $query ? "Search Results for '{$query}' - Nazaaracircle" : 'Search Articles - Nazaaracircle';
         $description = $query 
             ? "Search results for '{$query}'. Find technology articles, tutorials, and guides matching your search."
             : 'Search for technology articles, tutorials, and guides. Find what you need quickly.';
@@ -460,25 +460,25 @@ class SeoService
     {
         $pages = [
             'about' => [
-                'title' => 'About Us - TechBlog',
-                'description' => 'Learn more about TechBlog. Your destination for technology news, tutorials, and insights.',
+                'title' => 'About Us - Nazaaracircle',
+                'description' => 'Learn more about Nazaaracircle. Your destination for technology news, tutorials, and insights.',
             ],
             'contact' => [
-                'title' => 'Contact Us - TechBlog',
-                'description' => 'Get in touch with TechBlog. We\'d love to hear from you.',
+                'title' => 'Contact Us - Nazaaracircle',
+                'description' => 'Get in touch with Nazaaracircle. We\'d love to hear from you.',
             ],
             'privacy' => [
-                'title' => 'Privacy Policy - TechBlog',
-                'description' => 'Privacy policy and data protection information for TechBlog.',
+                'title' => 'Privacy Policy - Nazaaracircle',
+                'description' => 'Privacy policy and data protection information for Nazaaracircle.',
             ],
             'terms' => [
-                'title' => 'Terms of Service - TechBlog',
-                'description' => 'Terms of service and usage policy for TechBlog.',
+                'title' => 'Terms of Service - Nazaaracircle',
+                'description' => 'Terms of service and usage policy for Nazaaracircle.',
             ],
         ];
 
         $pageData = $pages[$pageKey] ?? [
-            'title' => $title ?? ucfirst($pageKey) . ' - TechBlog',
+            'title' => $title ?? ucfirst($pageKey) . ' - Nazaaracircle',
             'description' => $description ?? '',
         ];
 

@@ -23,8 +23,8 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'is_author' => true,
                 'role' => 'admin',
-                'bio' => 'Administrator and lead author of TechBlog.',
-                'website' => 'https://techblog.com',
+                'bio' => 'Administrator and lead author of Nazaaracircle.',
+                'website' => 'https://nazaaracircle.com',
             ]
         );
 

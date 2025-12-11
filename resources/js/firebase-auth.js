@@ -16,7 +16,19 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const analytics = getAnalytics(app);
+
+// Initialize Analytics with error handling (may be blocked by ad blockers)
+let analytics = null;
+try {
+    analytics = getAnalytics(app);
+} catch (error) {
+    // Analytics initialization failed (likely blocked by ad blocker)
+    // This is normal and shouldn't break the app
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.warn('Firebase Analytics initialization failed (may be blocked by ad blocker):', error.message);
+    }
+}
+
 const provider = new GoogleAuthProvider();
 
 // Configure Google provider
@@ -38,9 +50,34 @@ export async function signInWithGoogle() {
         // Send token to Laravel backend
         return await authenticateWithBackend(idToken);
     } catch (error) {
-        console.error('Firebase authentication error:', error);
-        showError('Failed to sign in with Google. Please try again.');
-        return { success: false, message: error.message };
+        // Handle specific Firebase errors gracefully
+        let errorMessage = 'Failed to sign in with Google. Please try again.';
+        
+        if (error.code === 'auth/unauthorized-domain') {
+            // Domain not authorized in Firebase - this is a configuration issue
+            errorMessage = 'Google sign-in is not available on this domain. Please use the standard login form.';
+            // Only log in development
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                console.warn('Firebase unauthorized domain. Add this domain to Firebase authorized domains:', window.location.hostname);
+            }
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            // User closed the popup - not really an error
+            return { success: false, message: 'Sign-in cancelled', cancelled: true };
+        } else if (error.code === 'auth/popup-blocked') {
+            errorMessage = 'Popup was blocked. Please allow popups for this site and try again.';
+        }
+        
+        // Only show error if not cancelled
+        if (error.code !== 'auth/popup-closed-by-user') {
+            showError(errorMessage);
+        }
+        
+        // Only log in development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.warn('Firebase authentication error:', error.code, error.message);
+        }
+        
+        return { success: false, message: errorMessage, code: error.code };
     }
 }
 

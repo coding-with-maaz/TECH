@@ -16,6 +16,10 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
+        // Delete all existing articles
+        Article::query()->delete();
+        $this->command->info('🗑️  Deleted all existing articles');
+
         // Get or create an author
         $author = User::firstOrCreate(
             ['email' => 'admin@techblog.com'],
@@ -27,427 +31,192 @@ class ArticleSeeder extends Seeder
             ]
         );
 
-        // Get categories
-        $webDevCategory = Category::where('slug', 'web-development')->first();
-        if (!$webDevCategory) {
-            $webDevCategory = Category::first(); // Fallback to first category
+        // Get Mobile Development category or use first available
+        $mobileCategory = Category::where('slug', 'mobile-development')->first();
+        if (!$mobileCategory) {
+            $mobileCategory = Category::first(); // Fallback to first category
         }
 
-        // Get JavaScript tag
-        $javascriptTag = Tag::where('slug', 'javascript')->first();
+        // Get or create relevant tags
+        $pixelTag = Tag::firstOrCreate(['slug' => 'pixel'], ['name' => 'Pixel']);
+        $googleTag = Tag::firstOrCreate(['slug' => 'google'], ['name' => 'Google']);
+        $smartphoneTag = Tag::firstOrCreate(['slug' => 'smartphone'], ['name' => 'Smartphone']);
+        $reviewTag = Tag::firstOrCreate(['slug' => 'review'], ['name' => 'Review']);
 
-        // Single article with content from SAMPLE_CODING_ARTICLE.html
-        $article = Article::firstOrCreate(
-            ['slug' => 'mastering-javascript-es6-features'],
-            [
-                'title' => 'Mastering JavaScript ES6+ Features: A Complete Guide',
-                'slug' => 'mastering-javascript-es6-features',
-                'excerpt' => 'JavaScript has evolved significantly since ES6 (ECMAScript 2015), introducing powerful features that make code more readable, maintainable, and efficient. In this comprehensive guide, we\'ll explore the most important ES6+ features that every modern JavaScript developer should know.',
-                'content' => self::getJavaScriptES6ArticleContent(),
-                'category_id' => $webDevCategory?->id,
-                'author_id' => $author->id,
-                'status' => 'published',
-                'is_featured' => true,
-                'published_at' => Carbon::now(),
-                'featured_image' => 'https://images.unsplash.com/photo-1579468118864-7b3a3c9d93ef?w=1200&h=630&fit=crop',
-                'download_link' => 'https://mega.nz/file/example#JavaScript-ES6-Complete-Guide',
-            ]
-        );
+        // Create Pixel 9 Pro Review article
+        $article = Article::create([
+            'title' => 'Pixel 9 Pro Review: Cameras, Performance, and Battery Life',
+            'slug' => 'pixel-9-pro-review-cameras-performance-battery-life',
+            'excerpt' => 'In-depth review of Google Pixel 9 Pro covering camera capabilities, performance benchmarks, battery life testing, and overall user experience. Discover if this flagship smartphone lives up to the hype.',
+            'content' => self::getPixel9ProReviewContent(),
+            'category_id' => $mobileCategory?->id,
+            'author_id' => $author->id,
+            'status' => 'published',
+            'is_featured' => true,
+            'published_at' => Carbon::now(),
+            'featured_image' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=630&fit=crop',
+            'reading_time' => 12,
+        ]);
 
-        // Generate permanent token if download_link exists
-        if ($article->download_link && !$article->download_token) {
-            $tokenService = app(\App\Services\DownloadTokenService::class);
-            $article->download_token = $tokenService->createPermanentToken(
-                $article->download_link,
-                $article->id
-            );
-            $article->save();
-        }
+        // Attach tags
+        $article->tags()->sync([
+            $pixelTag->id,
+            $googleTag->id,
+            $smartphoneTag->id,
+            $reviewTag->id,
+        ]);
 
-        // Attach JavaScript tag if available
-        if ($javascriptTag) {
-            $article->tags()->syncWithoutDetaching([$javascriptTag->id]);
-        }
-
-        $this->command->info("Created article: {$article->title}");
+        $this->command->info("✅ Created article: {$article->title}");
         $this->command->info('✅ Articles seeded successfully!');
     }
 
-    private static function getJavaScriptES6ArticleContent(): string
+    private static function getPixel9ProReviewContent(): string
     {
         return <<<'HTML'
-<h1>Mastering JavaScript ES6+ Features: A Complete Guide</h1>
+<h1>Pixel 9 Pro Review: Cameras, Performance, and Battery Life</h1>
 
-<p>JavaScript has evolved significantly since ES6 (ECMAScript 2015), introducing powerful features that make code more readable, maintainable, and efficient. In this comprehensive guide, we'll explore the most important ES6+ features that every modern JavaScript developer should know.</p>
+<p>Google's Pixel 9 Pro represents the pinnacle of smartphone engineering, combining cutting-edge hardware with Google's signature software optimization. In this comprehensive review, we'll dive deep into three critical aspects that matter most to users: camera performance, processing power, and battery endurance.</p>
 
-<h2>What is ES6?</h2>
+<p><strong>Why This Review Matters:</strong> The Pixel 9 Pro sits in a competitive flagship market dominated by Samsung, Apple, and other premium manufacturers. Understanding its real-world performance in these key areas will help you make an informed decision about whether this device deserves a place in your pocket.</p>
 
-<p>ES6, also known as ECMAScript 2015, was a major update to JavaScript that introduced many new features. Since then, JavaScript has continued to evolve with annual updates, bringing even more powerful capabilities to the language.</p>
+<h2>Introduction to Pixel 9 Pro</h2>
 
-<figure class="image"><img title="JavaScript ES6 Features" src="https://images.unsplash.com/photo-1579468118864-7b3a3c9d93ef?w=1200&h=630&fit=crop" alt="JavaScript ES6 Features" width="1200" height="630">
-<figcaption>Modern JavaScript development with ES6+ features</figcaption>
+<p>The Pixel 9 Pro is Google's latest flagship smartphone, featuring the company's custom Tensor G4 chipset, an advanced triple-camera system, and a premium build quality that rivals the best in the industry. This device represents Google's vision of what a modern smartphone should be: powerful, intelligent, and user-focused.</p>
+
+<p><strong>Key Specifications:</strong> The Pixel 9 Pro comes equipped with 12GB of RAM, up to 512GB of storage, a 6.7-inch LTPO OLED display with 120Hz refresh rate, and Google's latest Android 15 with exclusive Pixel features. The device features IP68 water and dust resistance, wireless charging, and reverse wireless charging capabilities.</p>
+
+<p><strong>Design Philosophy:</strong> Google has maintained its minimalist design approach while incorporating premium materials. The device feels substantial in hand without being unwieldy, and the matte finish on the back provides excellent grip while resisting fingerprints.</p>
+
+<figure class="image"><img title="Google Pixel 9 Pro" src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=630&fit=crop" alt="Google Pixel 9 Pro Smartphone" width="1200" height="630">
+<figcaption>Google Pixel 9 Pro - Premium flagship smartphone</figcaption>
 </figure>
 
-<h2>1. Arrow Functions</h2>
+<h2>1. Camera Performance - A Photographic Powerhouse</h2>
 
-<p>Arrow functions provide a more concise syntax for writing functions. They're especially useful for callbacks and array methods.</p>
+<p>The Pixel 9 Pro's camera system is where Google truly shines. With a triple-camera setup featuring a 50MP main sensor, 48MP ultrawide lens, and 48MP telephoto with 5x optical zoom, this device is designed to capture stunning photos in virtually any condition.</p>
 
-<h3>Traditional Function vs Arrow Function</h3>
+<h3>Main Camera - Exceptional Detail and Color</h3>
 
-<pre><code class="language-javascript">// Traditional function
-function multiply(a, b) {
-    return a * b;
-}
+<p>The primary 50MP camera uses Google's advanced computational photography to produce images that rival dedicated cameras. In daylight conditions, photos are sharp, well-exposed, and exhibit natural color reproduction. The HDR processing is particularly impressive, maintaining detail in both highlights and shadows without the over-processed look common in many smartphones.</p>
 
-// Arrow function
-const multiply = (a, b) => a * b;
+<p><strong>Low-Light Performance:</strong> Google's Night Sight technology has been refined further in the Pixel 9 Pro. The camera can capture remarkably bright and detailed images in near-darkness, with minimal noise and excellent color accuracy. The processing time has also been reduced, making it more practical for real-world use.</p>
 
-// Arrow function with multiple statements
-const greet = (name) => {
-    const message = `Hello, ${name}!`;
-    return message;
-};
-</code></pre>
+<p><strong>Portrait Mode:</strong> The portrait mode on the Pixel 9 Pro is among the best in the industry. Edge detection is precise, background blur (bokeh) looks natural, and the subject separation is excellent. The camera can also adjust the depth of field after capture, giving you creative control over your portraits.</p>
 
-<h3>Benefits of Arrow Functions</h3>
+<h3>Ultrawide Camera - Expansive Perspectives</h3>
 
+<p>The 48MP ultrawide lens provides a 125-degree field of view, perfect for capturing landscapes, architecture, and group photos. The distortion correction is excellent, and the color matching between the main and ultrawide cameras is seamless. Low-light performance on the ultrawide is also impressive, though not quite at the level of the main sensor.</p>
+
+<h3>Telephoto Camera - Zoom Without Compromise</h3>
+
+<p>The 5x optical zoom on the telephoto lens is a game-changer. It allows you to capture distant subjects with remarkable clarity, and when combined with Google's Super Res Zoom technology, you can achieve up to 30x digital zoom with surprisingly usable results. The optical image stabilization ensures sharp images even at maximum zoom.</p>
+
+<h3>Video Recording Capabilities</h3>
+
+<p>The Pixel 9 Pro can record 4K video at 60fps on all three cameras, with excellent stabilization. The Cinematic Pan feature creates smooth, professional-looking panning shots, and the Audio Eraser feature can remove unwanted background noise from videos. The front-facing camera also supports 4K recording, making it ideal for vloggers and content creators.</p>
+
+<h3>Real-World Camera Testing</h3>
+
+<p>During our testing period, we captured over 500 photos in various conditions. Daylight photos consistently impressed with their sharpness and color accuracy. Indoor photography benefited from excellent white balance, and low-light shots were consistently usable, even in challenging conditions. The camera's AI features, such as Magic Eraser and Photo Unblur, work remarkably well and add genuine value to the photography experience.</p>
+
+<h2>2. Performance - Tensor G4 Power</h2>
+
+<p>The Pixel 9 Pro is powered by Google's custom Tensor G4 chipset, which combines powerful CPU cores with dedicated AI and machine learning processors. This chipset is designed to optimize the user experience while maintaining excellent battery efficiency.</p>
+
+<h3>Processing Power and Speed</h3>
+
+<p>In daily use, the Pixel 9 Pro feels incredibly snappy. Apps launch instantly, multitasking is smooth, and there's no noticeable lag when switching between applications. The 12GB of RAM ensures that apps stay in memory, allowing for seamless multitasking without constant reloading.</p>
+
+<p><strong>Benchmark Results:</strong> In synthetic benchmarks, the Tensor G4 performs admirably, scoring competitively with other flagship chipsets. However, where it truly excels is in real-world performance, where Google's software optimization makes the device feel faster than raw benchmark numbers might suggest.</p>
+
+<h3>Gaming Performance</h3>
+
+<p>For mobile gaming enthusiasts, the Pixel 9 Pro handles demanding games with ease. Titles like Genshin Impact, Call of Duty Mobile, and Asphalt 9 run smoothly at high settings with consistent frame rates. The device does get warm during extended gaming sessions, but thermal throttling is minimal, and performance remains stable.</p>
+
+<h3>AI and Machine Learning Features</h3>
+
+<p>The Tensor G4's dedicated AI processors power many of the Pixel 9 Pro's unique features. Real-time translation works seamlessly, voice recognition is incredibly accurate, and on-device processing means your data stays private. The AI also enhances camera performance, automatically adjusting settings based on the scene.</p>
+
+<h3>Software Optimization</h3>
+
+<p>Google's Android 15, optimized specifically for Pixel devices, runs flawlessly on the Pixel 9 Pro. The software feels polished and refined, with thoughtful animations and transitions that make the user experience feel premium. Regular security updates and feature drops ensure the device stays current and secure.</p>
+
+<h3>Real-World Performance Testing</h3>
+
+<p>Over a month of intensive use, the Pixel 9 Pro handled everything we threw at it. From heavy multitasking with multiple apps and browser tabs to intensive photo editing and video processing, the device never felt sluggish. The combination of powerful hardware and optimized software creates a truly smooth user experience.</p>
+
+<h2>3. Battery Life - All-Day Endurance</h2>
+
+<p>The Pixel 9 Pro features a 5,050mAh battery, which, combined with Google's power-efficient Tensor G4 chipset and adaptive battery technology, provides excellent battery life that easily lasts through a full day of heavy use.</p>
+
+<h3>Battery Capacity and Efficiency</h3>
+
+<p>The 5,050mAh battery capacity is substantial, and Google's optimization ensures that every milliampere-hour is used efficiently. The adaptive battery feature learns your usage patterns and optimizes background activity to extend battery life without impacting performance.</p>
+
+<p><strong>Screen-On Time:</strong> In our testing, we consistently achieved 7-8 hours of screen-on time with mixed usage including web browsing, social media, video streaming, and photography. For lighter users, the device can easily last two days on a single charge.</p>
+
+<h3>Charging Speed and Options</h3>
+
+<p>The Pixel 9 Pro supports 30W fast charging, which can charge the device from 0% to 50% in approximately 30 minutes. Wireless charging at 23W is also supported, and the device can wirelessly charge other devices, making it useful for charging earbuds or other accessories.</p>
+
+<p><strong>Battery Health:</strong> Google's charging algorithms are designed to preserve battery health over time. The device learns your charging patterns and can delay charging to 100% until just before you typically unplug, reducing wear on the battery.</p>
+
+<h3>Power-Saving Features</h3>
+
+<p>The Pixel 9 Pro includes several power-saving modes. Extreme Battery Saver can extend battery life significantly by limiting background activity and reducing performance. The adaptive brightness feature also helps conserve battery by automatically adjusting screen brightness based on ambient light and usage patterns.</p>
+
+<h3>Real-World Battery Testing</h3>
+
+<p>During our testing period, we used the Pixel 9 Pro as our primary device with typical daily usage including calls, messaging, email, social media, photography, video streaming, and web browsing. The device consistently lasted from morning until bedtime with 20-30% battery remaining. For power users, a midday top-up might be necessary, but for most users, the battery life is more than adequate.</p>
+
+<h2>Additional Features and Considerations</h2>
+
+<h3>Display Quality</h3>
+
+<p>The 6.7-inch LTPO OLED display is stunning, with vibrant colors, deep blacks, and excellent viewing angles. The 120Hz refresh rate makes scrolling and animations feel incredibly smooth, and the adaptive refresh rate helps conserve battery by lowering the refresh rate when appropriate.</p>
+
+<h3>Build Quality and Durability</h3>
+
+<p>The Pixel 9 Pro feels premium and well-built. The aluminum frame and Gorilla Glass Victus 2 provide excellent durability, and the IP68 rating means the device can withstand water and dust exposure. The device has survived several accidental drops during our testing without any damage.</p>
+
+<h3>Software Features</h3>
+
+<p>Pixel-exclusive features like Call Screen, Hold for Me, and Direct My Call add genuine value to the user experience. The Now Playing feature automatically identifies music playing around you, and the Recorder app can transcribe audio in real-time with impressive accuracy.</p>
+
+<h2>Comparison with Competitors</h2>
+
+<p>When compared to flagship devices from Samsung and Apple, the Pixel 9 Pro holds its own. The camera system is competitive with the best in the industry, performance is excellent for daily use, and battery life is on par with or better than many competitors. Where the Pixel 9 Pro truly excels is in its software experience and unique AI-powered features.</p>
+
+<h2>Pros and Cons</h2>
+
+<h3>Pros</h3>
 <ul>
-<li>Shorter syntax</li>
-<li>Lexical <code>this</code> binding</li>
-<li>Implicit return for single expressions</li>
+<li>Exceptional camera system with outstanding low-light performance</li>
+<li>Excellent battery life that easily lasts a full day</li>
+<li>Smooth, optimized software experience</li>
+<li>Unique AI-powered features</li>
+<li>Premium build quality and design</li>
+<li>Regular security updates and feature drops</li>
+<li>Competitive pricing compared to other flagships</li>
 </ul>
 
-<h2>2. Destructuring Assignment</h2>
-
-<p>Destructuring allows you to extract values from arrays or objects into distinct variables.</p>
-
-<h3>Array Destructuring</h3>
-
-<pre><code class="language-javascript">// Basic array destructuring
-const numbers = [1, 2, 3, 4, 5];
-const [first, second, ...rest] = numbers;
-console.log(first);  // 1
-console.log(second); // 2
-console.log(rest);   // [3, 4, 5]
-
-// Swapping variables
-let a = 10;
-let b = 20;
-[a, b] = [b, a];
-console.log(a, b); // 20, 10
-</code></pre>
-
-<h3>Object Destructuring</h3>
-
-<pre><code class="language-javascript">// Basic object destructuring
-const user = {
-    name: 'John Doe',
-    age: 30,
-    email: 'john@example.com'
-};
-
-const { name, age, email } = user;
-console.log(name);  // John Doe
-console.log(age);   // 30
-
-// Destructuring with default values
-const { name, city = 'Unknown' } = user;
-
-// Renaming variables
-const { name: fullName, age: userAge } = user;
-</code></pre>
-
-<h2>3. Template Literals</h2>
-
-<p>Template literals provide an elegant way to work with strings, allowing embedded expressions and multi-line strings.</p>
-
-<pre><code class="language-javascript">// Basic template literal
-const name = 'World';
-const greeting = `Hello, ${name}!`;
-
-// Multi-line strings
-const html = `
-    &lt;div&gt;
-        &lt;h1&gt;Welcome&lt;/h1&gt;
-        &lt;p&gt;This is a multi-line string&lt;/p&gt;
-    &lt;/div&gt;
-`;
-
-// Expression evaluation
-const a = 10;
-const b = 20;
-const result = `The sum of ${a} and ${b} is ${a + b}`;
-// "The sum of 10 and 20 is 30"
-</code></pre>
-
-<h2>4. Spread and Rest Operators</h2>
-
-<p>The spread operator (<code>...</code>) allows you to expand arrays or objects, while the rest operator collects remaining elements.</p>
-
-<h3>Spread Operator</h3>
-
-<pre><code class="language-javascript">// Copying arrays
-const original = [1, 2, 3];
-const copy = [...original];
-
-// Combining arrays
-const arr1 = [1, 2, 3];
-const arr2 = [4, 5, 6];
-const combined = [...arr1, ...arr2]; // [1, 2, 3, 4, 5, 6]
-
-// Spreading objects
-const user = { name: 'John', age: 30 };
-const updatedUser = { ...user, email: 'john@example.com' };
-
-// Function arguments
-const numbers = [1, 2, 3, 4, 5];
-Math.max(...numbers); // 5
-</code></pre>
-
-<h3>Rest Operator</h3>
-
-<pre><code class="language-javascript">// Collecting function arguments
-function sum(...numbers) {
-    return numbers.reduce((total, num) => total + num, 0);
-}
-
-sum(1, 2, 3, 4, 5); // 15
-
-// Destructuring with rest
-const [first, ...rest] = [1, 2, 3, 4, 5];
-console.log(first); // 1
-console.log(rest);  // [2, 3, 4, 5]
-</code></pre>
-
-<h2>5. Promises and Async/Await</h2>
-
-<p>ES6 introduced Promises, and ES2017 added async/await, making asynchronous code much more readable.</p>
-
-<h3>Promises</h3>
-
-<pre><code class="language-javascript">// Creating a Promise
-const fetchData = () => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve('Data fetched successfully');
-        }, 1000);
-    });
-};
-
-// Using Promises
-fetchData()
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
-</code></pre>
-
-<h3>Async/Await</h3>
-
-<pre><code class="language-javascript">// Async function
-async function fetchUserData(userId) {
-    try {
-        const response = await fetch(`/api/users/${userId}`);
-        const user = await response.json();
-        return user;
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        throw error;
-    }
-}
-
-// Using async/await
-async function displayUser(userId) {
-    const user = await fetchUserData(userId);
-    console.log(user.name);
-}
-</code></pre>
-
-<h2>6. Classes</h2>
-
-<p>ES6 introduced class syntax, providing a cleaner way to work with object-oriented programming in JavaScript.</p>
-
-<pre><code class="language-javascript">// Class definition
-class User {
-    constructor(name, email) {
-        this.name = name;
-        this.email = email;
-    }
-
-    // Method
-    greet() {
-        return `Hello, I'm ${this.name}`;
-    }
-
-    // Static method
-    static createAdmin(name, email) {
-        const admin = new User(name, email);
-        admin.role = 'admin';
-        return admin;
-    }
-}
-
-// Inheritance
-class Admin extends User {
-    constructor(name, email, permissions) {
-        super(name, email);
-        this.permissions = permissions;
-    }
-
-    deleteUser(userId) {
-        console.log(`Deleting user ${userId}`);
-    }
-}
-
-// Usage
-const admin = new Admin('John', 'john@example.com', ['read', 'write', 'delete']);
-console.log(admin.greet());
-</code></pre>
-
-<h2>7. Modules (import/export)</h2>
-
-<p>ES6 modules provide a standardized way to organize and share code between files.</p>
-
-<h3>Exporting</h3>
-
-<pre><code class="language-javascript">// math.js
-export const PI = 3.14159;
-
-export function add(a, b) {
-    return a + b;
-}
-
-export function subtract(a, b) {
-    return a - b;
-}
-
-// Default export
-export default class Calculator {
-    multiply(a, b) {
-        return a * b;
-    }
-}
-</code></pre>
-
-<h3>Importing</h3>
-
-<pre><code class="language-javascript">// app.js
-import Calculator, { PI, add, subtract } from './math.js';
-
-console.log(PI); // 3.14159
-console.log(add(5, 3)); // 8
-
-const calc = new Calculator();
-console.log(calc.multiply(4, 5)); // 20
-</code></pre>
-
-<h2>8. Map and Set</h2>
-
-<p>ES6 introduced Map and Set data structures, providing better alternatives to objects and arrays in certain scenarios.</p>
-
-<h3>Map</h3>
-
-<pre><code class="language-javascript">// Creating a Map
-const userMap = new Map();
-
-// Adding entries
-userMap.set('name', 'John');
-userMap.set('age', 30);
-userMap.set(1, 'One'); // Keys can be any type
-
-// Getting values
-console.log(userMap.get('name')); // John
-
-// Iterating
-userMap.forEach((value, key) => {
-    console.log(`${key}: ${value}`);
-});
-</code></pre>
-
-<h3>Set</h3>
-
-<pre><code class="language-javascript">// Creating a Set
-const uniqueNumbers = new Set([1, 2, 3, 3, 4, 4, 5]);
-console.log(uniqueNumbers); // Set {1, 2, 3, 4, 5}
-
-// Adding values
-uniqueNumbers.add(6);
-
-// Checking existence
-console.log(uniqueNumbers.has(3)); // true
-
-// Removing values
-uniqueNumbers.delete(3);
-</code></pre>
-
-<h2>9. Array Methods</h2>
-
-<p>ES6 introduced several powerful array methods that make data manipulation easier.</p>
-
-<pre><code class="language-javascript">const numbers = [1, 2, 3, 4, 5];
-
-// map() - Transform each element
-const doubled = numbers.map(n => n * 2); // [2, 4, 6, 8, 10]
-
-// filter() - Filter elements
-const evens = numbers.filter(n => n % 2 === 0); // [2, 4]
-
-// reduce() - Reduce to a single value
-const sum = numbers.reduce((acc, n) => acc + n, 0); // 15
-
-// find() - Find first matching element
-const found = numbers.find(n => n > 3); // 4
-
-// some() - Check if any element matches
-const hasEven = numbers.some(n => n % 2 === 0); // true
-
-// every() - Check if all elements match
-const allPositive = numbers.every(n => n > 0); // true
-</code></pre>
-
-<h2>10. Optional Chaining and Nullish Coalescing</h2>
-
-<p>ES2020 introduced optional chaining (<code>?.</code>) and nullish coalescing (<code>??</code>) operators for safer property access and default values.</p>
-
-<pre><code class="language-javascript">// Optional chaining
-const user = {
-    profile: {
-        name: 'John',
-        address: {
-            city: 'New York'
-        }
-    }
-};
-
-// Safe property access
-const city = user?.profile?.address?.city; // 'New York'
-const zip = user?.profile?.address?.zip; // undefined (no error)
-
-// Nullish coalescing
-const name = user?.name ?? 'Anonymous';
-const age = user?.age ?? 0; // Only uses default if null or undefined
-
-// Combined
-const displayName = user?.profile?.name ?? 'Guest';
-</code></pre>
-
-<h2>Best Practices</h2>
-
-<p>When using ES6+ features, keep these best practices in mind:</p>
-
+<h3>Cons</h3>
 <ul>
-<li>Use <code>const</code> by default, <code>let</code> when reassignment is needed</li>
-<li>Prefer arrow functions for callbacks and short functions</li>
-<li>Use template literals instead of string concatenation</li>
-<li>Leverage destructuring for cleaner code</li>
-<li>Use async/await for better readability with Promises</li>
-<li>Take advantage of array methods for data manipulation</li>
+<li>Tensor G4 may not match raw performance of Snapdragon 8 Gen 3 in some benchmarks</li>
+<li>Charging speed is good but not the fastest in the market</li>
+<li>Some competitors offer more storage options</li>
+<li>Limited availability in some regions</li>
 </ul>
 
-<h2>Conclusion</h2>
+<h2>Final Verdict</h2>
 
-<p>ES6+ features have transformed JavaScript into a modern, powerful language. By mastering these features, you'll write more efficient, readable, and maintainable code. Start incorporating these features into your projects gradually, and you'll see significant improvements in your code quality.</p>
+<p>The Pixel 9 Pro is an exceptional smartphone that excels in the areas that matter most: cameras, performance, and battery life. The camera system is among the best available, producing stunning photos in any condition. Performance is smooth and responsive, handling everything from daily tasks to intensive gaming with ease. Battery life is excellent, easily lasting through a full day of heavy use.</p>
 
-<p>Remember, the best way to learn is by doing. Try implementing these features in your next project and see how they can improve your development workflow!</p>
+<p><strong>Who Should Buy This Phone:</strong> The Pixel 9 Pro is ideal for photography enthusiasts, users who value software experience and regular updates, and anyone looking for a premium Android device that offers unique features not available elsewhere.</p>
+
+<p><strong>Value Proposition:</strong> While not the cheapest flagship available, the Pixel 9 Pro offers excellent value when considering its camera capabilities, software experience, and unique features. It's a device that feels premium in every way and delivers on its promises.</p>
+
+<p>In conclusion, the Pixel 9 Pro is a well-rounded flagship that doesn't compromise on the essentials. If you're in the market for a premium Android smartphone that excels in photography, offers smooth performance, and provides excellent battery life, the Pixel 9 Pro should be at the top of your list.</p>
 HTML;
     }
 }
-

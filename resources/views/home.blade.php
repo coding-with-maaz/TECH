@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Home - HARPALJOB TECH')
+@section('title', 'Home - Nazaaracircle')
 
 @section('content')
 <!-- Hero Section with Search -->
-<section class="relative overflow-hidden mb-12" style="width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); background: linear-gradient(to bottom right, #1a1a1a, #0d0d0d, #000000);">
+<section class="relative overflow-x-hidden mb-12 w-full" style="background: linear-gradient(to bottom right, #1a1a1a, #0d0d0d, #000000);">
     <!-- Content -->
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
         <div class="text-center">
@@ -57,8 +57,8 @@
     </div>
     
     <!-- Bottom Wave -->
-    <div class="absolute bottom-0 left-0 right-0 w-full wave-separator" style="pointer-events: none; z-index: 10;">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" class="w-full" style="height: 100px; display: block;">
+    <div class="absolute bottom-0 left-0 right-0 w-full wave-separator overflow-hidden" style="pointer-events: none; z-index: 10;">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto" style="min-height: 60px; max-height: 100px; height: clamp(60px, 8vw, 100px); display: block;">
             <defs>
                 <filter id="waveShadowGlow" x="-50%" y="-150%" width="200%" height="400%">
                     <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur1"/>
@@ -86,6 +86,23 @@
     </div>
     
     <style>
+        .wave-separator {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        .wave-separator svg {
+            width: 100%;
+            height: auto;
+            min-height: 60px;
+            max-height: 100px;
+        }
+        @media (max-width: 640px) {
+            .wave-separator svg {
+                min-height: 50px;
+                max-height: 80px;
+            }
+        }
         .wave-separator #wavePath {
             fill: #FFFFFF;
             transition: fill 0.3s ease;
@@ -98,6 +115,79 @@
             filter: drop-shadow(0 -10px 30px rgba(229, 9, 20, 0.5)) drop-shadow(0 -5px 15px rgba(229, 9, 20, 0.3));
         }
     </style>
+</section>
+
+<!-- About Nazaaracircle Section -->
+<section class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-12 bg-gray-50 dark:!bg-bg-secondary">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:!text-white mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                About Nazaaracircle
+            </h2>
+            <p class="text-lg text-gray-600 dark:!text-text-secondary max-w-3xl mx-auto leading-relaxed" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                Nazaaracircle is your premier destination for discovering the latest technology articles, comprehensive programming tutorials, and cutting-edge tech insights. We are dedicated to providing high-quality, well-researched content that helps developers, tech enthusiasts, and learners stay ahead in the rapidly evolving world of technology.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Expert Content
+                    </h3>
+                </div>
+                <p class="text-gray-600 dark:!text-text-secondary leading-relaxed" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Our team of experienced writers and developers creates comprehensive, well-researched articles covering the latest trends in technology, programming languages, software development, and industry best practices.
+                </p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Always Updated
+                    </h3>
+                </div>
+                <p class="text-gray-600 dark:!text-text-secondary leading-relaxed" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Stay current with the latest developments in technology. We regularly publish fresh content covering new frameworks, tools, methodologies, and industry insights to keep you informed and ahead of the curve.
+                </p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="bg-white dark:!bg-bg-card border border-gray-200 dark:!border-border-secondary rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:!text-white" style="font-family: 'Poppins', sans-serif; font-weight: 700;">
+                        Community Focused
+                    </h3>
+                </div>
+                <p class="text-gray-600 dark:!text-text-secondary leading-relaxed" style="font-family: 'Poppins', sans-serif; font-weight: 400;">
+                    Join a vibrant community of developers, programmers, and technology enthusiasts. Share knowledge, engage in discussions, and grow together in your professional journey through our interactive platform.
+                </p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{{ route('about') }}" class="inline-block px-6 py-3 bg-accent hover:bg-accent-light text-white rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-accent" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                Learn More About Us
+            </a>
+        </div>
+    </div>
 </section>
 
 <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
